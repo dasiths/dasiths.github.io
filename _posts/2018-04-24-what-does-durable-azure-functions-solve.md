@@ -1,5 +1,4 @@
 ---
-layout: post
 title: "What Does Durable Azure Functions Solve?"
 date: 2018-04-24 13:36
 author: dasithlk

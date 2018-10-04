@@ -1,5 +1,4 @@
 ---
-layout: post
 title: "Speaking @LevelsConf 2018"
 date: 2018-10-01 22:06
 author: dasithlk

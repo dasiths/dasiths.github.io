@@ -1,5 +1,4 @@
 ---
-layout: post
 title: "Event Sourcing Examined Part 1 of 3"
 date: 2016-12-02 15:23
 author: dasithlk

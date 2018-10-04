@@ -1,5 +1,4 @@
 ---
-layout: post
 title: "NimbleConfig - A Simple Config Injector For .Net"
 date: 2018-10-02 23:02
 author: dasithlk

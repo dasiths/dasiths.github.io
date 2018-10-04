@@ -1,5 +1,4 @@
 ---
-layout: post
 title: "Where My Journey Began"
 slug: first-blog-post
 date: 2016-11-29 13:45

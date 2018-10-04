@@ -1,5 +1,4 @@
 ---
-layout: post
 title: "REST + AngularJS Basics With .Net Core WebAPI CRUD Example"
 date: 2017-03-23 14:28
 author: dasithlk

@@ -1,5 +1,4 @@
 ---
-layout: post
 title: "Using Azure Functions HttpTrigger As Web API"
 date: 2018-01-20 18:39
 author: dasithlk
