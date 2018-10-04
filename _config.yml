@@ -104,10 +104,10 @@ author:
   name             : "Dasith Wijesiriwardena"
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio              : |
-    HELLO<br />
+    HELLO \n
     My name is Dasith Wijesiriwardena. I’ve been developing in .NET for more than a decade now. 
-    I’m currently based in Melbourne and work for Readify.<br />
-    <br />
+    I’m currently based in Melbourne and work for Readify. \n
+    \n
     Since my early days of playing with VB5, C, Asp and php 3 software development has gone through a paradigm shift. Join me on my journey through the world of .NET and all things distributed.
   location         : "Melbourne"
   email            :
