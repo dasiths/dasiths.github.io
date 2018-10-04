@@ -19,7 +19,7 @@ locale                   : "en-US"
 title                    : "Gossip Protocol"
 title_separator          : "-"
 name                     : "Dasith Wijesiriwardena"
-description              : "An amazing website."
+description              : "The stories of a .Net developer with a distributed focus"
 url                      : "https://dasith.me" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
@@ -104,9 +104,10 @@ author:
   name             : "Dasith Wijesiriwardena"
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio              : |
-    HELLO
-    My name is Dasith Wijesiriwardena. I’ve been developing in .NET for more than a decade now. I’m currently based in Melbourne and work for Readify.
-    
+    HELLO<br />
+    My name is Dasith Wijesiriwardena. I’ve been developing in .NET for more than a decade now. 
+    I’m currently based in Melbourne and work for Readify.<br />
+    <br />
     Since my early days of playing with VB5, C, Asp and php 3 software development has gone through a paradigm shift. Join me on my journey through the world of .NET and all things distributed.
   location         : "Melbourne"
   email            :
