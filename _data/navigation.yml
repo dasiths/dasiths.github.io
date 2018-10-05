@@ -1,9 +1,11 @@
 # main links
 main:
+  - title: "Home"
+    url: /
   - title: "About"
-    url: /About
+    url: /about
   - title: "Contact Me"
-    url: /ContactMe
+    url: /contact
   # - title: "Sample Posts"
   #   url: /year-archive/
   # - title: "Sample Collections"
