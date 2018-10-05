@@ -12,7 +12,7 @@ Please note: If you are a recruiter or are looking to hire me, I prefer if you c
 <form action="https://formspree.io/dasiths@hotmail.com" method="POST">
     <input type="text" name="name" placeholder="Your name">
     <input type="email" name="_replyto" placeholder="Your email">
-	<textarea name="message" placeholder="Your message" rows=5></textarea>
+	<textarea name="message" placeholder="Your message" rows="5"></textarea>
 	<input type="text" name="_gotcha" style="display:none" />
     <input type="submit" value="Send">
 </form>
