@@ -7,7 +7,7 @@ categories: []
 tags: []
 permalink: /contact/
 ---
-Please note: If you are a recruiter or are looking to hire me, I prefer if you contact me via my linkedin at <a href="https://www.linkedin.com/in/dasiths/" target="_blank">https://www.linkedin.com/in/dasiths/</a>
+Please note: If you are a recruiter or looking to hire me, I prefer if you contact me via my linkedin at <a href="https://www.linkedin.com/in/dasiths/" target="_blank">https://www.linkedin.com/in/dasiths/</a>
 
 <form action="https://formspree.io/dasiths@hotmail.com" method="POST">
     <input type="text" name="name" placeholder="Your name">

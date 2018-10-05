@@ -28,7 +28,8 @@ After completing my Masters degree in 2009 I led the development of the best in 
 *   Utilising CQRS pattern to build performance critical systems.
 *   Event sourcing, Eventually consistent models and distributed systems.
 *   .NET CORE and containerization based deployment like Docker
-*   Severless solutions with Azure Functions and AWS Lambda.
+*   Severless solutions with Azure Functions and AWS Lambda
+
 **My technology stack usually consists of the following.**
 
 <span style="text-decoration:underline;">Technologies:</span>
@@ -46,11 +47,13 @@ After completing my Masters degree in 2009 I led the development of the best in 
 
 <span style="text-decoration:underline;">Languages &amp; Web Frameworks:</span>
 
+
 *   C#, VB, SQL, JavaScript, TypeScript
 *   Angular 2+, AngularJS, jQuery, Bootstrap
 *   CSS, SASS and HTML5
 
 <span style="text-decoration:underline;">IDE / Tools:</span>
+
 
 *   Visual Studio 2017, VSCode, ReSharper, FluentMigrator, DbUp, DevExpress Controls
 *   Git tools and Git flow
@@ -58,10 +61,12 @@ After completing my Masters degree in 2009 I led the development of the best in 
 
 <span style="text-decoration:underline;">Testing:</span>
 
+
 *   MSTest, NUnit, XUnit.net, Moq, Selenium, Jasmine + Karma
 *   Postman, SoapUI and Fiddler
 
 <span style="text-decoration:underline;">CI/CD:</span>
+
 
 *   Visual Studio Team Services
 *   TeamCity + Octopus Deploy
