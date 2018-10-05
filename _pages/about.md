@@ -7,14 +7,11 @@ categories: []
 tags: []
 permalink: /about/
 ---
-<h6 style="text-align:justify;">*Disclaimer. Most of my friends don't have the slightest idea about what I actually do. I recently had a hilarious conversation a with few friends where their best guess was something close to this.*
+Disclaimer. Most of my friends don't have the slightest idea about what I actually do. I recently had a hilarious conversation a with few friends where their best guess was something close to this.
 [youtube https://www.youtube.com/watch?v=JksqLU50sWY]
 
 
-<p style="text-align:justify;">*If you have a minute to spare have a read of this post I made about my early days as a developer. Link: [https://dasith.me/2016/11/29/first-blog-post/](http://dasith.me/2016/11/29/first-blog-post/)*
-
-
-<h2 style="text-align:justify;">My Profile
+If you have a minute to spare have a read of this post I made about my early days as a developer. Link: [https://dasith.me/2016/11/29/first-blog-post/](http://dasith.me/2016/11/29/first-blog-post/)*
 
 
 
