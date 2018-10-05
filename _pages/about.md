@@ -11,9 +11,7 @@ Disclaimer. Most of my friends don't have the slightest idea about what I actual
 [youtube https://www.youtube.com/watch?v=JksqLU50sWY]
 
 
-If you have a minute to spare have a read of this post I made about my early days as a developer. Link: [https://dasith.me/2016/11/29/first-blog-post/](http://dasith.me/2016/11/29/first-blog-post/)*
-
-
+If you have a minute to spare have a read of this post I made about my early days as a developer. Link: [https://dasith.me/2016/11/29/first-blog-post/](http://dasith.me/2016/11/29/first-blog-post/)
 
 <hr />
 
@@ -45,25 +43,25 @@ After completing my Masters degree in 2009 I led the development of the best in 
 *   IdentityServer, Auth0, AzureAD
 *   SQL Server 2016, Azure SQL, CosmosDB, Redis, RavenDB, EventStore, ElasticSearch
 *   MS Azure + AWS technologies (AppServices, Serverless, Docker), Windows Server &amp; IIS
-<span style="text-decoration:underline;">Languages &amp; Web Frameworks:</span>
 
+<span style="text-decoration:underline;">Languages &amp; Web Frameworks:</span>
 
 *   C#, VB, SQL, JavaScript, TypeScript
 *   Angular 2+, AngularJS, jQuery, Bootstrap
 *   CSS, SASS and HTML5
-<span style="text-decoration:underline;">IDE / Tools:</span>
 
+<span style="text-decoration:underline;">IDE / Tools:</span>
 
 *   Visual Studio 2017, VSCode, ReSharper, FluentMigrator, DbUp, DevExpress Controls
 *   Git tools and Git flow
 *   SSMS, RedGate SQL tools, SQLSentry
-<span style="text-decoration:underline;">Testing:</span>
 
+<span style="text-decoration:underline;">Testing:</span>
 
 *   MSTest, NUnit, XUnit.net, Moq, Selenium, Jasmine + Karma
 *   Postman, SoapUI and Fiddler
-<span style="text-decoration:underline;">CI/CD:</span>
 
+<span style="text-decoration:underline;">CI/CD:</span>
 
 *   Visual Studio Team Services
 *   TeamCity + Octopus Deploy
