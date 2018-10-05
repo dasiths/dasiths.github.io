@@ -22,7 +22,7 @@ name                     : "Dasith Wijesiriwardena"
 description              : "The stories of a .Net developer with a distributed focus"
 url                      : "https://dasiths.github.io" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
-repository               : # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
+repository               : "dasiths/dasiths.github.io"
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 # breadcrumbs            : false # true, false (default)
 words_per_minute         : 200
@@ -78,7 +78,7 @@ naver_site_verification  :
 
 # Social Sharing
 twitter:
-  username               :
+  username               : "dasiths"
 facebook:
   username               :
   app_id                 :
@@ -102,7 +102,7 @@ analytics:
 # Site Author
 author:
   name             : "Dasith Wijesiriwardena"
-  avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
+  avatar           : "/assets/b4c7e56ec325c0c55d5e29c7ab42e49f.jpeg"
   bio              : |
     HELLO <br \><br \>
     I'm fullstack .Net developer with a unhealthy love for all things distributed. I’m currently based in Melbourne and work for a consultancy firm called Readify. <br \>
