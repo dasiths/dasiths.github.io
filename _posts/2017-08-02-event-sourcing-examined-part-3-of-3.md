@@ -101,7 +101,7 @@ Look at the sample Note domain model.
 
         public string Category { get; private set; }
 
-        #region &quot;Constructor and Methods&quot;
+        #region "Constructor and Methods"
 
         public Note()
         {
@@ -194,14 +194,14 @@ Once the framework applies the event, it publishes the event using the** IEventP
 
         public MyEventPublisher(MyEventSubscriber subscriber)
         {
-            LogManager.Log(&quot;EventPublisher Started...&quot;, LogSeverity.Information);
+            LogManager.Log("EventPublisher Started...", LogSeverity.Information);
             _subscriber = subscriber;
         }
 
         public async Task PublishAsync(IEvent @event)
         {
             LogManager.Log(
-                $&quot;Event #{@event.TargetVersion + 1} Published: {@event.GetType().Name} @ {DateTime.Now.ToLongTimeString()}&quot;,
+                $"Event #{@event.TargetVersion + 1} Published: {@event.GetType().Name} @ {DateTime.Now.ToLongTimeString()}",
                 LogSeverity.Information);
 
             await Task.Run(() =>;
