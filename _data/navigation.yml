@@ -3,7 +3,7 @@ main:
   - title: "Home"
     url: /
   - title: "Posts"
-    url: /posts
+    url: /recent
   - title: "About"
     url: /about
   - title: "Contact"
