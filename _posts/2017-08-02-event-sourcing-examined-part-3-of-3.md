@@ -1,7 +1,7 @@
 ---
 title: "Event Sourcing Examined Part 3 Of 3"
 date: 2017-08-02 19:48
-author: dasithlk
+author_profile: true
 comments: true
 categories: [Event Sourcing]
 tags: [.net, aggregates, bounded context, cqrs, Domain Driven Design, neventlite]
@@ -13,14 +13,11 @@ In this 3 part series we will look at what event sourcing is and why enterprise 
 
 
 1. [Part One](http://dasith.me/2016/12/02/event-sourcing-examined-part-1-of-3/)
-
-
 *   Introduction to Event Sourcing
 *   Why Use Event Sourcing?
 *   Some Common Pitfalls
+
 2. [Part Two ](http://dasith.me/2016/12/31/event-sourcing-examined-part-2-of-3/)
-
-
 *   Getting Familiar With Aggregates
 *   Event Sourcing Workflow
 *   Commands
@@ -29,9 +26,8 @@ In this 3 part series we will look at what event sourcing is and why enterprise 
 *   Repository
 *   Storage &amp; Snapshots
 *   Event Publisher
+
 3. Part Three (This one)
-
-
 *   CQRS
 *   Read Side of CQRS
 *   Using NEventLite
@@ -93,7 +89,7 @@ We are going to look at the <a href="https://github.com/dasiths/NEventLite/tree/
 
 Look at the sample Note domain model.
 
-[code language="csharp" collapse="false" gutter="true"]
+```csharp
     public class Note : AggregateRoot, ISnapshottable
     {
         public DateTime CreatedDate { get; private set; }
@@ -134,11 +130,11 @@ Look at the sample Note domain model.
         }
 
 //... see github repo example sample for full source code
-[/code]
+```
 
 As you can see we are following the pattern of creating an event and applying it. **The internal event handlers are marked with a custom attribute** and some "reflection magic" by the framework knows to call the right one when the ApplyEvent method is called.
 
-[code language="csharp" collapse="false" gutter="true"]
+```csharp
         [InternalEventHandler]
         public void OnNoteCreated(NoteCreatedEvent @event)
         {
@@ -153,11 +149,11 @@ As you can see we are following the pattern of creating an event and applying it
         {
             Title = @event.Title;
         }
-[/code]
+```
 
 The Note class also implements** ISnapshottable** which adds these two methods allowing it to re-hydrate itself faster. (See part 2 of the blog series) .
 
-[code language="csharp" collapse="false" gutter="true"]
+```csharp
         public NEventLite.Snapshot.Snapshot TakeSnapshot()
         {
             //This method returns a snapshot which will be used to reconstruct the state
@@ -186,11 +182,11 @@ The Note class also implements** ISnapshottable** which adds these two methods a
             Description = item.Description;
             Category = item.Category;
         }
-[/code]
+```
 
 Once the framework applies the event, it publishes the event using the** IEventPublisher**. *In the example I'm using an in-memory subscriber and injecting it in. (This isn't how you would use it in production)*
 
-[code language="csharp" collapse="false" gutter="true"]
+```csharp
     public class MyEventPublisher : IEventPublisher
     {
         private readonly MyEventSubscriber _subscriber;
@@ -220,13 +216,13 @@ Once the framework applies the event, it publishes the event using the** IEventP
             o.Invoke(_subscriber, new object[] { @event });
         }
     }
-[/code]
+```
 
 Then the in-memory subscriber listens to the events and handles them. The class implements** IEventHandler** for multiple events. You can have multiple subscribers handling the same events pretty easily if you want to. Just do the required code changes to allow the publisher to find them via reflection.
 
 **In a production scenario you will publish it to a message broker and the subscribers will get it from there. Message broker approach will give you capabilities like <a href="https://www.linkedin.com/pulse/reliable-messaging-azure-service-bus-queues-senthuran-sivananthan/" target="_blank" rel="noopener">delivery guarantees</a> when required.**
 
-[code language="csharp" collapse="false" gutter="true"]
+```csharp
 public class MyEventSubscriber : IEventHandler&lt;NoteCreatedEvent&gt;,
                                     IEventHandler&lt;NoteTitleChangedEvent&gt;,
                                     IEventHandler&lt;NoteDescriptionChangedEvent&gt;,
@@ -259,11 +255,11 @@ public async Task HandleEventAsync(NoteCreatedEvent @event)
         }
 
 //See github repo for full source code
-[/code]
+```
 
 There is a very simple read model in the example.
 
-[code language="csharp" collapse="false" gutter="true"]
+```csharp
 
     public class NoteReadModel
     {
@@ -284,11 +280,11 @@ There is a very simple read model in the example.
             Category = category;
         }
     }
-[/code]
+```
 
 Finally the read model has its own repository to allow consuming pages/widgets to access it. This is optional.
 
-[code language="csharp" collapse="false" gutter="true"]
+```csharp
 public class MyReadRepository
     {
         private readonly MyInMemoryReadModelStorage _storage;
@@ -307,11 +303,11 @@ public class MyReadRepository
         {
             _storage.AddOrUpdate(note);
         }
-[/code]
+```
 
 The read models are persisted to a file in this example but you can use any form of persistence that best suits your needs. I recommend a NOSQL document store as most read models will end up being queried by their ID. You can use a relational model if you intend to have some more querying abilities. Do as you see fit.
 
-[code language="csharp" collapse="false" gutter="true"]
+```csharp
 
     public class MyInMemoryReadModelStorage
     {
@@ -353,7 +349,7 @@ The read models are persisted to a file in this example but you can use any form
             return _allNotes.ToList();
         }
     }
-[/code]
+```
 
 Run the example (Full source code is at <a href="https://github.com/dasiths/NEventLite/tree/master/src/Examples/NEventLite%20Example" target="_blank" rel="noopener">https://github.com/dasiths/NEventLite/tree/master/src/Examples/NEventLite%20Example</a>)
 
