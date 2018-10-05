@@ -203,14 +203,14 @@ Once the framework applies the event, it publishes the event using the** IEventP
                 $&quot;Event #{@event.TargetVersion + 1} Published: {@event.GetType().Name} @ {DateTime.Now.ToLongTimeString()}&quot;,
                 LogSeverity.Information);
 
-            await Task.Run(() =&gt;;
+            await Task.Run(() =>;
             {
                 InvokeSubscriber(@event);
 
             }).ConfigureAwait(false);
         }
 
-        private void InvokeSubscriber&lt;T&gt;(T @event) where T : IEvent
+        private void InvokeSubscriber<T>(T @event) where T : IEvent
         {
             var o = _subscriber.GetType().GetMethodsBySig(typeof(Task), null, true, @event.GetType()).First();
             o.Invoke(_subscriber, new object[] { @event });
@@ -223,10 +223,10 @@ Then the in-memory subscriber listens to the events and handles them. The class 
 **In a production scenario you will publish it to a message broker and the subscribers will get it from there. Message broker approach will give you capabilities like <a href="https://www.linkedin.com/pulse/reliable-messaging-azure-service-bus-queues-senthuran-sivananthan/" target="_blank" rel="noopener">delivery guarantees</a> when required.**
 
 ```csharp
-public class MyEventSubscriber : IEventHandler&lt;NoteCreatedEvent&gt;,
-                                    IEventHandler&lt;NoteTitleChangedEvent&gt;,
-                                    IEventHandler&lt;NoteDescriptionChangedEvent&gt;,
-                                    IEventHandler&lt;NoteCategoryChangedEvent&gt;
+public class MyEventSubscriber : IEventHandler<NoteCreatedEvent>,
+                                    IEventHandler<NoteTitleChangedEvent>,
+                                    IEventHandler<NoteDescriptionChangedEvent>,
+                                    IEventHandler<NoteCategoryChangedEvent>
     {
 
         private readonly MyReadRepository _repository;
@@ -312,7 +312,7 @@ The read models are persisted to a file in this example but you can use any form
     public class MyInMemoryReadModelStorage
     {
         private readonly string _memoryDumpFile;
-        private readonly List&lt;NoteReadModel&gt; _allNotes = new List&lt;NoteReadModel&gt;();
+        private readonly List<NoteReadModel> _allNotes = new List<NoteReadModel>();
 
         public MyInMemoryReadModelStorage(string memoryDumpFile)
         {
@@ -320,15 +320,15 @@ The read models are persisted to a file in this example but you can use any form
 
             if (File.Exists(_memoryDumpFile))
             {
-                _allNotes = SerializerHelper.LoadListFromFile&lt;NoteReadModel&gt;(_memoryDumpFile);
+                _allNotes = SerializerHelper.LoadListFromFile<NoteReadModel>(_memoryDumpFile);
             }
         }
 
         public void AddOrUpdate(NoteReadModel note)
         {
-            if (_allNotes.Any(o =&gt; o.Id == note.Id))
+            if (_allNotes.Any(o => o.Id == note.Id))
             {
-                _allNotes.Remove(_allNotes.Single((o =&gt; o.Id == note.Id)));
+                _allNotes.Remove(_allNotes.Single((o => o.Id == note.Id)));
                 _allNotes.Add(note);
             }
             else
@@ -336,15 +336,15 @@ The read models are persisted to a file in this example but you can use any form
                 _allNotes.Add(note);
             }
 
-            SerializerHelper.SaveListToFile&lt;NoteReadModel&gt;(_memoryDumpFile, _allNotes);
+            SerializerHelper.SaveListToFile<NoteReadModel>(_memoryDumpFile, _allNotes);
         }
 
         public NoteReadModel GetByID(Guid Id)
         {
-            return _allNotes.FirstOrDefault(o =&gt; o.Id == Id);
+            return _allNotes.FirstOrDefault(o => o.Id == Id);
         }
 
-        public IEnumerable&lt;NoteReadModel&gt; GetAll()
+        public IEnumerable<NoteReadModel> GetAll()
         {
             return _allNotes.ToList();
         }
