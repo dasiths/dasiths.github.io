@@ -21,6 +21,6 @@ The abstract is as follows.
 
 You can download the slides from <a href="https://www.slideshare.net/DasithWijesiriwarden/levelsconf-2018-event-sourcing-dasith-wijesiriwardena" target="_blank" rel="noopener">here</a>
 
-[slideshare id=117574445&amp;doc=levelsconfeventsourcing-181001115119]
-
+<iframe src="//www.slideshare.net/slideshow/embed_code/key/HEgxj4cIKYYOOo" width="595" height="485" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
+<br />
 A big thanks for everyone who helped organize this event and the junior devs who came to listen to some awesome speakers. It was so nice to meet all of you. If you have any thoughts + feedback about my talk or the event in general please feel free to leave it here or send them my way via twitter @dasiths.
