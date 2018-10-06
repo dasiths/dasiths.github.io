@@ -19,8 +19,8 @@ excerpt: "“Three Rules of Work: Out of clutter find simplicity; From discord f
 feature_row:
   - image_path: assets/images/profile_speaking.jpg
     alt: "LevelsConf2018"
-    title: "LevelsConf"
-    excerpt: "I recently spoke about Event Sourcing at the innagural LevelsConf 2018"
+    title: "#LevelsConf2018"
+    excerpt: "I recently spoke about Event Sourcing at the inaugural LevelsConf 2018"
     url: "https://dasiths.github.io/2018/10/01/speaking-levelsconf-2018"
     btn_label: "Read More"
     btn_class: "btn--primary"
