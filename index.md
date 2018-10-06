@@ -17,9 +17,12 @@ header:
   caption: "Location: [**Gellibrand River, Princetown**](https://www.visitgreatoceanroad.org.au/towns-and-villages/princetown/)"
 excerpt: "“Three Rules of Work: Out of clutter find simplicity; From discord find harmony; In the middle of difficulty lies opportunity.” ~ *Albert Einstein*"
 intro: 
+  - image_path: assets/images/profile_bio_wide.jpg
+    alt: "Profile photo"
+    title: "Profile photo"
   - excerpt: 'This is my home on the internet and where I share my stories and experiences. I hope they will help you find those simple & elegent solutions among the clutter and noise of everyday software development.'
 feature_row:
-  - image_path: assets/images/unsplash-gallery-image-1-th.jpg
+  - image_path: assets/images/profile_bio_wide.jpg
     alt: "placeholder image 1"
     title: "Placeholder 1"
     excerpt: "This is some sample content that goes here with **Markdown** formatting."

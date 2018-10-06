@@ -102,7 +102,7 @@ analytics:
 # Site Author
 author:
   name             : "Dasith Wijesiriwardena"
-  avatar           : "/assets/images/profile_bio.jpg"
+  avatar           : "/assets/images/profile_bio_small.jpg"
   bio              : |
     I'm fullstack .Net developer with a unhealthy fascination for distributed systems. I’m currently based in Melbourne and work for a consultancy firm called <a href="http://readify.net" target="_blank">Readify.</a><br />
     <br />
