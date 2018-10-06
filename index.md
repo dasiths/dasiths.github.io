@@ -17,25 +17,25 @@ header:
   caption: "Location: [**Gellibrand River, Princetown**](https://www.visitgreatoceanroad.org.au/towns-and-villages/princetown/)"
 excerpt: "“Three Rules of Work: Out of clutter find simplicity; From discord find harmony; In the middle of difficulty lies opportunity.” ~ *Albert Einstein*"
 feature_row:
-  - image_path: assets/images/profile_bio_wide.jpg
-    alt: "placeholder image 1"
-    title: "Placeholder 1"
-    excerpt: "This is some sample content that goes here with **Markdown** formatting."
-    url: "#test-link"
+  - image_path: assets/images/profile_speaking.jpg
+    alt: "LevelsConf2018"
+    title: "LevelsConf"
+    excerpt: "I recently spoke about Event Sourcing at the innagural LevelsConf 2018"
+    url: "https://dasiths.github.io/2018/10/01/speaking-levelsconf-2018"
     btn_label: "Read More"
     btn_class: "btn--primary"
-  - image_path: /assets/images/person-smartphone-office-table.jpeg
-    alt: "placeholder image 2"
-    title: "Placeholder 2"
-    excerpt: "This is some sample content that goes here with **Markdown** formatting."
-    url: "#test-link"
-    btn_label: "Read More"
+  - image_path: /assets/images/assassin-3690300_960_720-e1538485050283.jpg
+    alt: "NimbleConfig"
+    title: "NimbleConfig"
+    excerpt: "Nimble config is an open source configuration injection library for .Net with full support for Asp.Net CORE. It allows you to use configuration settings in as very simple and testable way."
+    url: "https://dasiths.github.io/2018/10/02/nimbleconfig-a-simple-config-injector-for-net"
+    btn_label: "Check It Out"
     btn_class: "btn--primary"
-  - image_path: /assets/images/pexels-photo-30732.jpg
-    title: "Placeholder 3"
-    excerpt: "This is some sample content that goes here with **Markdown** formatting."
-    url: "#test-link"
-    btn_label: "Read More"
+  - image_path: /assets/images/cqrs1.png
+    title: "NEventLite"
+    excerpt: "NEventLite is a Event Sourcing and CQRS referene framework for .Net that can get your ES+CQRS project up and running quickly."
+    url: "https://github.com/dasiths/NEventLite"
+    btn_label: "Check It Out"
     btn_class: "btn--primary"
 ---
 
