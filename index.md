@@ -21,14 +21,14 @@ feature_row:
     alt: "LevelsConf2018"
     title: "#LevelsConf2018"
     excerpt: "I recently spoke about Event Sourcing at the inaugural LevelsConf 2018. You can find the abstract and slides here."
-    url: "https://dasiths.github.io/2018/10/01/speaking-levelsconf-2018"
+    url: "https://dasiths.github.io/2018/10/01/speaking-levelsconf-2018/"
     btn_label: "Read More"
     btn_class: "btn--primary"
   - image_path: /assets/images/assassin-3690300_960_720-e1538485050283.jpg
     alt: "NimbleConfig"
     title: "NimbleConfig"
     excerpt: "NimbleConfig is an open source configuration injection library for .Net with full support for Asp.Net CORE. It allows you to use configuration settings in as very simple and testable way."
-    url: "https://dasiths.github.io/2018/10/02/nimbleconfig-a-simple-config-injector-for-net"
+    url: "https://dasiths.github.io/2018/10/02/nimbleconfig-a-simple-config-injector-for-net/"
     btn_label: "Check It Out"
     btn_class: "btn--primary"
   - image_path: /assets/images/cqrs1.png

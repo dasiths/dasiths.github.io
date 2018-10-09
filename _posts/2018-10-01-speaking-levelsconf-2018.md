@@ -2,12 +2,14 @@
 title: "Speaking @LevelsConf 2018"
 date: 2018-10-01 22:06
 comments: true
+header:
+  teaser: /assets/images/capture.png
 categories: [Conference, Event Sourcing]
 tags: [cqrs, Domain Driven Design, neventlite, public speaking]
 ---
 I recently got a chance to speak at <a href="https://www.levelsconf.com/" target="_blank" rel="noopener">Levels Conference</a> and it was my first time speaking in front of such a large audience. There were around 400 very keen junior developers there.
 
-![4.png](https://gossipprotocol.files.wordpress.com/2018/10/4-e1538478545916.png)
+![Audience](/assets/images/4-e1538478545916.png)
 
 The goal of the conference is to bring together the Developer community of Australia and beyond. They aim to give people a platform to share, grow and connect, regardless of experience level.
 
@@ -17,7 +19,7 @@ My talk was about Event Sourcing and Command Query Responsibility Segregation. I
 
 The abstract is as follows.
 
-![Capture](https://gossipprotocol.files.wordpress.com/2018/10/capture.png)
+![Abstract](/assets/images/capture.png)
 
 You can download the slides from <a href="https://www.slideshare.net/DasithWijesiriwarden/levelsconf-2018-event-sourcing-dasith-wijesiriwardena" target="_blank" rel="noopener">here</a>
 
