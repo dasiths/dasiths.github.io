@@ -33,7 +33,9 @@ After my early exploits I got to meet other like minded young developers. We had
 ## Singlish and Sinhala Transliteration
 
 
-![singlish_for_sinhala_text_box_by_dasith_wijesiriwardena](/assets/images/singlish_for_sinhala_text_box_by_dasith_wijesiriwardena.jpg)One of the unique challenges we faced was the apparent lack of support for our native language in Windows. Rather than wait for someone else to fix this I started an ambitious project to introduce a transliteration scheme for Sinhalese. It was called "Singlish" (Sinhala typed in English) and it became popular among Internet users fast.
+![singlish_for_sinhala_text_box_by_dasith_wijesiriwardena](/assets/images/singlish_for_sinhala_text_box_by_dasith_wijesiriwardena.jpg)
+
+One of the unique challenges we faced was the apparent lack of support for our native language in Windows. Rather than wait for someone else to fix this I started an ambitious project to introduce a transliteration scheme for Sinhalese. It was called "Singlish" (Sinhala typed in English) and it became popular among Internet users fast.
 
 I was encouraged to enter this into software competitions and was lucky enough to win a few of them.
 
