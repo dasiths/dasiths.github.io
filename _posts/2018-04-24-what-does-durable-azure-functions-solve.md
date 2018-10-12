@@ -1,10 +1,12 @@
 ---
 title: "What Does Durable Azure Functions Solve?"
 date: 2018-04-24 13:36
-author: dasithlk
 comments: true
-categories: []
+categories: [serverless]
 tags: [.net, azure functions, serverless]
+header:
+  teaser: /assets/images/azure_functions_featured_image.png
+  image: /assets/images/azure_functions_featured_image.png
 ---
 Azure Functions are the way serverless compute is implemented in Azure. Amazon Web Services equivalent is called AWS Lambda. I won't go into detail about what serverless is and what <a href="https://azure.microsoft.com/en-gb/overview/serverless-computing/" target="_blank" rel="noopener">advantages it provides</a> in this post. You can find my learnings from a project where I implemented my web api using Azure Functions <a href="http://dasith.me/2018/01/20/using-azure-functions-httptrigger-as-web-api/" target="_blank" rel="noopener">here</a>.
 
@@ -20,14 +22,14 @@ Before going into detail, let's see what problem durable functions promises to s
 
 Take this simple example.
 
-![function-chaining](https://gossipprotocol.files.wordpress.com/2018/04/function-chaining.png)
+![function-chaining](/assets/images/function-chaining.png)
 
 We have 4 functions that chain the output from the previous one as the input for the next. This type of orchestration in common in function design.
 
 Before durable functions, there were a couple of ways of solving this.
 
 
-1.  **Have a seperate orchestrator function and let it handle the workflow.**
+1.  **Have a separate orchestrator function and let it handle the workflow.**
 
 
     *   The orchestrator functions needs to be running the entire duration of the process. This ends up costing more because we have two functions running at the same time.
@@ -50,7 +52,7 @@ Durable functions takes away the problems we had in solution 1. The orchestrator
 ### How does the code look like?
 
 
-[code language="csharp" collapse="false" gutter="true"]
+```csharp
 
 public static async Task Run(DurableOrchestrationContext ctx)
 {
@@ -85,7 +87,7 @@ saved as the output.
     }
 }
 
-[/code]
+```
 
 
 ### How does it do it? Magic?

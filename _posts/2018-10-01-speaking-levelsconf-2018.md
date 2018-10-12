@@ -3,7 +3,7 @@ title: "Speaking @LevelsConf 2018"
 date: 2018-10-01 22:06
 comments: true
 header:
-  teaser: /assets/images/capture.png
+  teaser: /assets/images/capture2.png
 categories: [Conference, Event Sourcing]
 tags: [cqrs, Domain Driven Design, neventlite, public speaking]
 ---

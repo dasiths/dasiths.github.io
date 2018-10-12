@@ -8,7 +8,7 @@ header:
   overlay_filter: "0.5"
   overlay_image: /assets/images/IMG_20180929_142917-PANO.jpg
   actions:
-    - label: "Github"
+    - label: "GitHub"
       url: "https://github.com/dasiths/"
     - label: "Twitter"
       url: "https://twitter.com/dasiths"
