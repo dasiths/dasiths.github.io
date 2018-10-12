@@ -252,7 +252,7 @@ namespace Functions.Infrastructure.Middleware
 
             var header = req.Headers
                 .FirstOrDefault(q =>
-                    q.Key.Equals("Authorization") &amp;&amp; q.Value.FirstOrDefault() != null);
+                    q.Key.Equals("Authorization") && q.Value.FirstOrDefault() != null);
 
             string bearerToken = header.Value == null ? string.Empty : header.Value.FirstOrDefault()?.Substring("Bearer ".Length).Trim(); ;
 
@@ -362,7 +362,7 @@ namespace Functions
 
 
 
-### Our Learnings &amp; Was All That Worth The Effort?
+### Our Learnings & Was All That Worth The Effort?
 
 
 That is the million dollar question. After all we could have gone with ASP.NET WebApi and got most of the boilerplate out of the box. Yes I do mean IOC here as well.
