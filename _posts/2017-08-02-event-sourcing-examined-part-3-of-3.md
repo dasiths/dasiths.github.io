@@ -1,11 +1,11 @@
 ---
 title: "Event Sourcing Examined Part 3 Of 3"
 date: 2017-08-02 19:48
-author_profile: true
 comments: true
-classes: wide
 categories: [Event Sourcing]
 tags: [.net, aggregates, bounded context, cqrs, Domain Driven Design, neventlite]
+header:
+  teaser: /assets/images/photomania-b5c3d9f9e76bc97df7c24d959af9e133.jpg
 ---
 In this 3 part series we will look at what event sourcing is and why enterprise software for many established industries use this pattern.
 
@@ -14,24 +14,24 @@ In this 3 part series we will look at what event sourcing is and why enterprise 
 
 
 1. [Part One](http://dasith.me/2016/12/02/event-sourcing-examined-part-1-of-3/)
-*   Introduction to Event Sourcing
-*   Why Use Event Sourcing?
-*   Some Common Pitfalls
+	*   Introduction to Event Sourcing
+	*   Why Use Event Sourcing?
+	*   Some Common Pitfalls
 
 2. [Part Two ](http://dasith.me/2016/12/31/event-sourcing-examined-part-2-of-3/)
-*   Getting Familiar With Aggregates
-*   Event Sourcing Workflow
-*   Commands
-*   Domain Event
-*   Internal Event Handler
-*   Repository
-*   Storage &amp; Snapshots
-*   Event Publisher
+	*   Getting Familiar With Aggregates
+	*   Event Sourcing Workflow
+	*   Commands
+	*   Domain Event
+	*   Internal Event Handler
+	*   Repository
+	*   Storage &amp; Snapshots
+	*   Event Publisher
 
 3. Part Three (This one)
-*   CQRS
-*   Read Side of CQRS
-*   Using NEventLite
+	*   CQRS
+	*   Read Side of CQRS
+	*   Using NEventLite
 
 <hr />
 
@@ -62,23 +62,17 @@ Let’s look at the sequence of events.
 At start up,
 
 
-*   **PurchaseOrderSummaryView **subscribes to** PurchaseOrderCreated, Updated events**
-*   **ProductOrderSummaryView **subscribes to** PurchaseOrderItemAdded, Updated events**
+*   PurchaseOrderSummaryView **subscribes to** PurchaseOrderCreated, Updated events
+*   ProductOrderSummaryView **subscribes to** PurchaseOrderItemAdded, Updated events
 When customer places an order,
 
 
 1.  Domain event created
-
-
     *   Persisted to the event store (Artefact of the command side)
     *   **Broadcasted to the message queue**
-
 2.  External Event handler receives an event (message) it subscribed to (*I use the term internal event handler to describe the event handler inside the AggregateRoot*)
-3.  External Event handler reads the message and **updates the read model **to reflect the changes.
-
-
+3.  External Event handler reads the message and **updates the read model**to reflect the changes.
     *   *Optionally: Persist the last event version to the view as we can later use this to determine the “freshness” of the view.*
-
 
 
 ## Using NEventLite
@@ -152,7 +146,7 @@ As you can see we are following the pattern of creating an event and applying it
         }
 ```
 
-The Note class also implements** ISnapshottable** which adds these two methods allowing it to re-hydrate itself faster. (See part 2 of the blog series) .
+The Note class also implements **ISnapshottable** which adds these two methods allowing it to re-hydrate itself faster. (See part 2 of the blog series) .
 
 ```csharp
         public NEventLite.Snapshot.Snapshot TakeSnapshot()
@@ -185,7 +179,7 @@ The Note class also implements** ISnapshottable** which adds these two methods a
         }
 ```
 
-Once the framework applies the event, it publishes the event using the** IEventPublisher**. *In the example I'm using an in-memory subscriber and injecting it in. (This isn't how you would use it in production)*
+Once the framework applies the event, it publishes the event using the **IEventPublisher**. *In the example I'm using an in-memory subscriber and injecting it in. (This isn't how you would use it in production)*
 
 ```csharp
     public class MyEventPublisher : IEventPublisher
@@ -225,9 +219,9 @@ Then the in-memory subscriber listens to the events and handles them. The class 
 
 ```csharp
 public class MyEventSubscriber : IEventHandler<NoteCreatedEvent>,
-                                    IEventHandler<NoteTitleChangedEvent>,
-                                    IEventHandler<NoteDescriptionChangedEvent>,
-                                    IEventHandler<NoteCategoryChangedEvent>
+                                 IEventHandler<NoteTitleChangedEvent>,
+                                 IEventHandler<NoteDescriptionChangedEvent>,
+                                 IEventHandler<NoteCategoryChangedEvent>
     {
 
         private readonly MyReadRepository _repository;
@@ -356,7 +350,7 @@ Run the example (Full source code is at <a href="https://github.com/dasiths/NEve
 
 **You should see something like this confirming that real model and one constructed using replaying events have the same info.**
 
-![Untitled](https://gossipprotocol.files.wordpress.com/2017/08/untitled.png)
+![Output](/assets/images/untitled.png)
 
 
 ## Wrapping Up

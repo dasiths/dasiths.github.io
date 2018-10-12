@@ -29,7 +29,7 @@ We have 4 functions that chain the output from the previous one as the input for
 Before durable functions, there were a couple of ways of solving this.
 
 
-1.  **Have a separate orchestrator function and let it handle the workflow.**
+1.  **Have a separate orchestrator function and let it handle the work flow.**
 
 
     *   The orchestrator functions needs to be running the entire duration of the process. This ends up costing more because we have two functions running at the same time.
