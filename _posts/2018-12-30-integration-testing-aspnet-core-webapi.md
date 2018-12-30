@@ -10,7 +10,7 @@ tags: [asp.net core, webapi, testing, mocking]
 
 If you're a decent .NET developer and lucky enough to work in a good team then most of your work would be unit testable. But there is always a case to write some integration tests to make sure things work end to end.
 
-I was in such a situation recently. I had to write an integration tests for a ASP.NET core 2.2 project which had external dependencies I had to mock during the test. The Microsoft [documentation](https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-2.2) was very good but it doesn't cover all scenarios when mocking is required.
+I was in such a situation recently. I had to write integration tests for a ASP.NET core 2.2 project which had external dependencies I had to mock during the test. The Microsoft [documentation](https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-2.2) was very good but it doesn't (at the time of writting this post) cover all scenarios when mocking is required.
 
 ## Setup
 
@@ -138,7 +138,7 @@ I was in such a situation recently. I had to write an integration tests for a AS
 
     The `builder.UseContentRoot(".")` also tells the factory to use the current projects build/runing path as the root. Which is used to read our custom `appsettings.json` file.
 
-    **Important:** The reason why I passed the action in the constructor was to give each test the chance to setup the mock when instatiating the host, and not have a global or staticly configured mock. I'm using an instance of the host per test and **not** using the `IClassFixture<T>` as shown in the [documenation](https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-2.2#basic-tests-with-the-default-webapplicationfactory). If you decide to have an instance of the host per test class then your can configure your mocks differently.  Choose what's right for you in your scenario.
+    **Important:** The reason why I passed the action in the constructor was to give each test the chance to setup the mock when instatiating the host, and not have a global or staticly configured mock. I'm using an instance of the host per test and **not** using the `IClassFixture<T>` as shown in the [documenation](https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-2.2#basic-tests-with-the-default-webapplicationfactory). If you decide to have an instance of the host per test class then you should configure your mocks differently. Choose what's right for you in your scenario. Drop a message here in the comments if you get stuck.
 
 5. Mocking
 
@@ -164,7 +164,7 @@ I was in such a situation recently. I had to write an integration tests for a AS
 
 6. Testing
 
-   Testing the controllers are now a simple task. We just need to instantiate the factory and create a http client to make the calls.
+   Testing the controllers is now a simple task. We just need to instantiate the factory and create a http client to make the calls.
 
     ```csharp
     public class OperationsControllerTests : IDisposable
