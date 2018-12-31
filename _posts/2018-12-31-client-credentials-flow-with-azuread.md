@@ -29,13 +29,13 @@ It's basically the OAuth flow when you have a back end system needing to access 
 The examples I'm about to give are based on the shared secret but most of it applies to certificate based grant as well.
 
 1. Create a tenant and 2 app registrations on it. I've called one `DemoResourceApp` and the other `DemoClientApp`.
-    ![App Registrations](/assets/images/azuread-client-credentials-registration.png)
+    ![App Registrations](/assets/images/azure-ad-client-credentials-registration.png)
 
 2. Create a key for the client app and keep it stored somewhere for later.
-    ![Secret Key](/assets/images/azuread-client-credentials-key.png)
+    ![Secret Key](/assets/images/azure-ad-client-credentials-key.png)
 
 3. We need to edit the `AppManifest` of the resource app. For demo purposes I'll add 2 roles. One for reading and one for writing.
-    ![App Manifest](/assets/images/azuread-client-credentials-appmanifest.png)
+    ![App Manifest](/assets/images/azure-ad-client-credentials-appmanifest.png)
 
     ```json
     "appRoles": [
@@ -69,7 +69,7 @@ The examples I'm about to give are based on the shared secret but most of it app
     - Select the `DemoResourceApp` API then select both the permissions from the list.
     - Once the roles are selected and saved hit the `Grant Permissions` button to do exactly that.
 
-        ![Permissions](/assets/images/azuread-client-credentials-permissions.png)
+        ![Permissions](/assets/images/azure-ad-client-credentials-permissions.png)
 
 
 Now that we have AzureAD configured, we need to write the app logic. I'm going to create 2 ASP.NET core 2.1 web api projects to demonstrate the use. One will act as the resource and the other as the client.
