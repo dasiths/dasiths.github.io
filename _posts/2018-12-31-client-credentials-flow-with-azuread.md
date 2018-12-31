@@ -8,9 +8,11 @@ categories: [azure ad, oauth, asp.net core, testing]
 tags: [azure ad, oauth, asp.net core, webapi]
 ---
 
-Navigating through the various authentication and authorization flows in AzureAD can sometimes be confusing. The Microsoft documentation is quite good is a good place to start https://docs.microsoft.com/en-us/azure/active-directory/develop/app-types.
+Navigating through the various authentication and authorization flows in AzureAD can sometimes be confusing. The Microsoft [documentation on app types](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-types) is a good place to start.
 
-Today we will be looking at the [client credentials grant flow](https://tools.ietf.org/html/rfc6749#section-1.3.4). The Microsoft documentation around the flow with  regards to AzureAD can be found here https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-oauth2-client-creds-grant-flow. They have named the document `Service to service calls using client credentials` which is what the client credentials grant is used for.
+Today we will be looking at the [client credentials grant flow](https://tools.ietf.org/html/rfc6749#section-1.3.4). The Microsoft documentation around the flow with  regards to AzureAD can be found [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-oauth2-client-creds-grant-flow). They have named the document `Service to service calls using client credentials` which is what the client credentials grant is used for.
+
+![AzureAD Client Credentials Flow](/assets/images/active-directory-protocols-oauth-client-credentials-grant-flow.jpg)
 
 *It is a prerequisite of this post that you know the basics of AzureAD and how to create an `App Registration` in an `AzureAD Tenant`.*
 
@@ -18,9 +20,9 @@ Today we will be looking at the [client credentials grant flow](https://tools.ie
 
 The Microsoft documentation gives a good explanation.
 
-```
+`
 The OAuth 2.0 Client Credentials Grant Flow permits a web service (confidential client) to use its own credentials instead of impersonating a user, to authenticate when calling another web service. In this scenario, the client is typically a middle-tier web service, a daemon service, or web site. For a higher level of assurance, Azure AD also allows the calling service to use a certificate (instead of a shared secret) as a credential.
-```
+`
 
 It's basically the OAuth flow when you have a back end system needing to access another down stream service.
 
