@@ -26,7 +26,7 @@ It's basically the OAuth flow when you have a back end system needing to access 
 
 ## Azure AD Setup
 
-The examples I'm about to give are based on the shared secret but most of it applies to certificate based grant as well.
+The examples I'm about to give are based on the shared secret but most of it applies to the certificate based grant as well.
 
 1. Create a tenant and 2 app registrations on it. I've called one `DemoResourceApp` and the other `DemoClientApp`.
     ![App Registrations](/assets/images/azure-ad-client-credentials-registration.png)
@@ -34,7 +34,7 @@ The examples I'm about to give are based on the shared secret but most of it app
 2. Create a key for the client app and keep it stored somewhere for later.
     ![Secret Key](/assets/images/azure-ad-client-credentials-key.png)
 
-3. We need to edit the `AppManifest` of the resource app. For demo purposes I'll add 2 roles. One for reading and one for writing.
+3. We need to edit the `Manifest` of the resource app. For demo purposes I'll add 2 roles: one for reading and one for writing.
     ![App Manifest](/assets/images/azure-ad-client-credentials-appmanifest.png)
 
     ```json
@@ -66,8 +66,8 @@ The examples I'm about to give are based on the shared secret but most of it app
 4. The last thing we need to do on the AzureAD portal is to grant the Client app the 2 roles we created in the previous step.
     - Open up the `DemoClientApp` pane and click `Settings` to open the settings pane.
     - Click `Required Permissions` and then the `+ Add` button.
-    - Select the `DemoResourceApp` API then select both the permissions from the list.
-    - Once the roles are selected and saved hit the `Grant Permissions` button to do exactly that.
+    - Select the `DemoResourceApp` API and then select both the permissions from the list.
+    - Once the roles are selected and saved, hit the `Grant Permissions` button to do exactly that.
 
         ![Permissions](/assets/images/azure-ad-client-credentials-permissions.png)
 
@@ -76,7 +76,9 @@ Now that we have AzureAD configured, we need to write the app logic. I'm going t
 
 ## Application Logic For `DemoResourceApp`
 
-Important: You will need to take a dependency on the `Microsoft.AspNetCore.Authentication.AzureAD.UI` NuGet package. If you're unfamiliar with policy based authorization in ASP.NET core please have a read of [this](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-2.2) before continuing.
+Important: You will need to take a dependency on the `Microsoft.AspNetCore.Authentication.AzureAD.UI` NuGet package. 
+
+If you're unfamiliar with policy based authorization in ASP.NET core, please have a read of [this](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-2.2) before continuing.
 
 1. Decorate your controller with the `Authorize` attribute.
     ```csharp
@@ -120,7 +122,7 @@ Important: You will need to take a dependency on the `Microsoft.AspNetCore.Authe
 
 4. Update your `Startup.cs` to include the authorization middleware and to accept bearer tokens.
 
-    I Like to keep the auth logic in a seperate class. So I created these extension methods.
+    I Like to keep the auth logic in a seperate class. I created these extension methods.
     ```csharp
     public static class AzureAdModule
     {
@@ -164,7 +166,7 @@ Important: You will need to take a dependency on the `Microsoft.AspNetCore.Authe
             app.UseMvc();
         }
     ```
-5. Finally update the `appsettings.json` with the AzureAD app registration information. Replace the placeholders with the correct names and ids.
+5. Finally, update the `appsettings.json` with the AzureAD app registration information. Replace the placeholders with the correct names and ids.
     ```json
     {
         "AzureAd": {
@@ -181,7 +183,7 @@ This concludes what's required in the DemoResourceApp. Let's look at what's requ
 
 For the client app to call an endpoint on the resource, it would require a token from AzureAD first. This token will be retrieved using the shared secret (or certificate). The received token will have the claim with the app roles the client app has been granted. This token will then be passed in the header whenever the client app calls an endpoint on the resource app. 
 
-You can simply get the token by making a POST request as shown below.
+You can simply get the token by making a POST request as shown below:
 
 ```
 POST /contoso.com/oauth2/token HTTP/1.1
@@ -190,7 +192,7 @@ Content-Type: application/x-www-form-urlencoded
 
 grant_type=client_credentials&client_id=625bc9f6-3bf6-4b6d-94ba-e97cf07a22de&client_secret=qkDwDJlDfig2IpeuUZYKH1Wb8q1V0ju6sILxQQqhJ+s=&resource=https%3A%2F%2Fservice.contoso.com%2F
 ```
-But for brevity let's examine how you can do it via the AzureAD library. The code samples are below.
+For brevity, let's examine how you can do it via the AzureAD library. The code samples are below.
 
 1. Retrieving the token should be easy using this little helper class. You will need to take a dependency on the `Microsoft.IdentityModel.Clients.ActiveDirectory` NuGet package.
     ```csharp
@@ -245,7 +247,7 @@ But for brevity let's examine how you can do it via the AzureAD library. The cod
     }
     ```
 
-    That's it. We've implemented the OAuth Client Credentials flow using AzureAD. You can now try to incoorperate the same logic for the `Resource.Read` role to check if you've learnt the pattern. Good luck.
+    That's it. We've implemented the OAuth Client Credentials flow using AzureAD. You can now try to incoorperate the same logic for the `Resource.Read` role to check if you've learnt the pattern. Good luck!
 
 ## Final Notes
 
