@@ -20,9 +20,7 @@ Today we will be looking at the [client credentials grant flow](https://tools.ie
 
 The Microsoft documentation gives a good explanation.
 
-`
-The OAuth 2.0 Client Credentials Grant Flow permits a web service (confidential client) to use its own credentials instead of impersonating a user, to authenticate when calling another web service. In this scenario, the client is typically a middle-tier web service, a daemon service, or web site. For a higher level of assurance, Azure AD also allows the calling service to use a certificate (instead of a shared secret) as a credential.
-`
+> The OAuth 2.0 Client Credentials Grant Flow permits a web service (confidential client) to use its own credentials instead of impersonating a user, to authenticate when calling another web service. In this scenario, the client is typically a middle-tier web service, a daemon service, or web site. For a higher level of assurance, Azure AD also allows the calling service to use a certificate (instead of a shared secret) as a credential.
 
 It's basically the OAuth flow when you have a back end system needing to access another down stream service.
 
@@ -78,7 +76,7 @@ Now that we have AzureAD configured, we need to write the app logic. I'm going t
 
 ## Application Logic For `DemoResourceApp`
 
-Important: You will need to take a dependency on the `Microsoft.AspNetCore.Authentication.AzureAD.UI` NuGet package.
+Important: You will need to take a dependency on the `Microsoft.AspNetCore.Authentication.AzureAD.UI` NuGet package. If you're unfamiliar with policy based authorization in ASP.NET core please have a read of [this](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-2.2) before continuing.
 
 1. Decorate your controller with the `Authorize` attribute.
     ```csharp
@@ -101,7 +99,7 @@ Important: You will need to take a dependency on the `Microsoft.AspNetCore.Authe
     }
     ```
 
-3. Add the requirement handler
+3. Add the requirement handler to handle the requirement we introduced.
     ```csharp
     public class WriteRequirementHandler : AuthorizationHandler<WriteRequirement>
     {
@@ -120,9 +118,9 @@ Important: You will need to take a dependency on the `Microsoft.AspNetCore.Authe
     }
     ```
 
-4. Update your `Startup.cs` to include the Authorization and to accept bearer tokens.
+4. Update your `Startup.cs` to include the authorization middleware and to accept bearer tokens.
 
-    I Like to keep the aut logic in a seperate class. So I created these extension methods.
+    I Like to keep the auth logic in a seperate class. So I created these extension methods.
     ```csharp
     public static class AzureAdModule
     {
@@ -181,9 +179,20 @@ This concludes what's required in the DemoResourceApp. Let's look at what's requ
 
 ## Application Logic For `DemoClientApp`
 
-For the client app to call an endpoint on the resource, it would require a token from AzureAD first. This token will be retrieved using the shared secret (or certificate). The received token will have the claim with the app roles the client app has been granted. This token will then be passed in the header whenever the client app calls an endpoint on the resource app. Let's examine the flow with code samples.
+For the client app to call an endpoint on the resource, it would require a token from AzureAD first. This token will be retrieved using the shared secret (or certificate). The received token will have the claim with the app roles the client app has been granted. This token will then be passed in the header whenever the client app calls an endpoint on the resource app. 
 
-1. Retrieving the token using this little helper class. You will need to take a dependency on the `Microsoft.IdentityModel.Clients.ActiveDirectory` NuGet package.
+You can simply get the token by making a POST request as shown below.
+
+```
+POST /contoso.com/oauth2/token HTTP/1.1
+Host: login.microsoftonline.com
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&client_id=625bc9f6-3bf6-4b6d-94ba-e97cf07a22de&client_secret=qkDwDJlDfig2IpeuUZYKH1Wb8q1V0ju6sILxQQqhJ+s=&resource=https%3A%2F%2Fservice.contoso.com%2F
+```
+But for brevity let's examine how you can do it via the AzureAD library. The code samples are below.
+
+1. Retrieving the token should be easy using this little helper class. You will need to take a dependency on the `Microsoft.IdentityModel.Clients.ActiveDirectory` NuGet package.
     ```csharp
     public sealed class AzureAdTokenRetriever
     {
@@ -236,10 +245,12 @@ For the client app to call an endpoint on the resource, it would require a token
     }
     ```
 
-    That's it. We've implemented the OAuth Client Credentials flow using AzureAD.
+    That's it. We've implemented the OAuth Client Credentials flow using AzureAD. You can now try to incoorperate the same logic for the `Resource.Read` role to check if you've learnt the pattern. Good luck.
 
 ## Final Notes
 
-This is not production ready code. The way this was written was to show an example. Please consider refactoring the code and *DRYing* it before using it in any production scenarios.
+This is not production ready code. The priority here was to show an example in the most simple form. Please consider refactoring the code and *DRYing* it before using it in any production scenarios. Please make sure you secure the shared secret in the CI/CD pipeline.
+
+In the development environment you can even have the `AuthorizationHandler`'s succeed without a token/claims present if you don't want the burden of having to retrieve tokens when debugging. There are many ways to do it. This model is really flexible.
 
 I hope this has helped you. Please leave any feedback you have as it helps me become a better writer. Thank you for your time.
