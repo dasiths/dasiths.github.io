@@ -225,7 +225,7 @@ Conceptually I want the Mediator to take in a request, dispatch it to the domain
     }
     ```
 
-Those are the major pieces that make up the Mediator. Conceptually it is very simple but there are some implementation concern that make the code a bit complicated. I am aware of this.
+Those are the major pieces that make up the Mediator. Conceptually it is very simple but there are some implementation concerns that make the code a bit complicated. I am aware of this.
 
 ## Using It
 
@@ -287,7 +287,7 @@ Those are the major pieces that make up the Mediator. Conceptually it is very si
     - I have examples of how to set it up with IOC containers [here](https://github.com/dasiths/SimpleMediator/tree/master/SimpleMediator.Samples.Shared/Helpers). `Autofac` and `Microsoft.Extensions.DependencyInjection` currently have examples but I'll keep adding more as I go. 
     - There is also some code samples (work in progress) on how to integrate it with `MassTransit` to dispatch messages over the wire to consumers. Check it out [here](https://github.com/dasiths/SimpleMediator/tree/master/SimpleMediator.Samples.MassTransit).
 
-    As you can see, the usage it pretty straight forward and simple. The middleware gives you a lot of extensibility options and I've even been able to create constrained middleware that validates only certain types of requests.
+    As you can see, the usage is pretty straight forward and simple. The middleware gives you a lot of extensibility options and I've even been able to create constrained middleware that validates only certain types of requests.
 
 ## Conclusion 
 I hope this post has been helpful in understanding the concepts behind the mediator pattern and how you would go about implementing it. All the code is hosted at https://github.com/dasiths/SimpleMediator under the MIT license. Feel free to have a look and create a PR if you think there are improvements. Please leave any feedback you have here. Thank you.
