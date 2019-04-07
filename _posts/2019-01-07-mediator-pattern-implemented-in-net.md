@@ -27,7 +27,7 @@ I've briefly touched about the advantage of less coupling between components but
 
 *Consider the scenario below*
 
- You're developing a web api that needs to talk to the core domain objects to yield results. If you decide to communicate with your domain directly from your controllers, then inevitably you end up coupling your controller to a lot of domain level services. The line between your layers can get blurry here as well. By using the mediator pattern, you offload the heavy lifting to the request handlers. The handlers take a dependency on only the required domain services so things get much easier to understand and maintain. This gives you a clear separation from the controller layer as well.
+ You're developing a web api that needs to talk to the core domain objects to yield results. If you decide to communicate with your domain directly from your controllers, then inevitably you end up coupling your controller to a lot of domain level services. The line between your layers can get blurry here as well. By using the mediator pattern, you offload the heavy lifting to the message handlers. The handlers take a dependency on only the required domain services so things get much easier to understand and maintain. This gives you a clear separation from the controller layer as well.
 
 Because this is effectively a message dispatching pattern with the added benefit of decoupled reusable components, you can transition your project to follow a microservices type architecture later on if you wish to do so. This has been a very nice side benefit of using the pattern in my experience.
 
@@ -37,37 +37,37 @@ If you have used it before and have a story to tell, please leave a comment here
 
 ## Motivation
 
-There are a few .NET implementations around. This [post](https://drusellers.com/posts/greenpipes/) by Dru Sellers pointed me in the right direction. The most popular one of course is [MediatR](https://github.com/jbogard/MediatR) from Jimmy Bogard. It's a very simple library with a `Request` and `Response` model with support for middleware. After investigating the source for `MediatR` (Which heavily inspired my design) and some other libraries I decided to create my own.
+There are a few .NET implementations around. This [post](https://drusellers.com/posts/greenpipes/) by Dru Sellers pointed me in the right direction. The most popular one of course is [MediatR](https://github.com/jbogard/MediatR) from Jimmy Bogard. It's a very simple library with a `Message` and `Response` model with support for middleware. After investigating the source for `MediatR` (Which heavily inspired my design) and some other libraries I decided to create my own.
 
 My motivations were the following.
 
-- Defined types (of requests) for `Queries`, `Commands` and `Events`. I want the message type to convey intent.
-- Support for cancellation tokens.
-- Have a `MediationContext`. So when the request handler is called the Request is concise and lightweight. Any context related information is captured in this class.
-- Concept of `middleware`, where each request goes through the pipeline and response come back through it.
-- Have the ability to dispatch requests over the cloud (Using MassTransit or something similar) to a consumer (and get a response back). Much like how the [Brighter](https://github.com/BrighterCommand/Brighter) framework functions.
+- Defined types (of `Messages`) for `Queries`, `Commands` and `Events`. Convery the intent clearly.
+- Support for cancellation tokens all the way down to message handlers.
+- Have a `MediationContext`. So when the message handler is called the Message is **concise and lightweight**. Any context related information is captured in the MediationContext instead.
+- Concept of `Middleware`, where each message goes through the pipeline and response come back through it.
+- Have the ability to dispatch messages over the wire to a consumer (and get a response back). The ambition is **clearly not** to create a full framework that supports sending message over the wire, but rather to make this library integrate with something like [MassTransit](http://masstransit-project.com/) with minimal effort.
 
 ## Design
 
-Conceptually I want the Mediator to take in a request, dispatch it to the domain and give the caller the result back. I needed the following core pieces to achieve that.
+Conceptually I want the Mediator to take in a message, dispatch it to the domain and give the caller the result back. I needed the following core pieces to achieve that.
 
-- Request and Response
+- Message and Response
 
-    The request is defined as `IRequest<TResponse>` where `TResponse` is the type of Response. This assumes that every request has a matching response.
+    The message is defined as `IMessage<TResponse>` where `TResponse` is the type of Response. This assumes that every message has a matching response.
 
 - Queries, Command and Events
 
-    - Queries are meant to return something. Therefore it is easy to define as `IQuery<TResponse> : IReuqest<TResponse>`
-    - Commands don't return anything. To represent nothing I defined a type called `Unit`. Hence the definition for a command becomes `ICommand : IRequest<Unit>`
-    - Event is the same. `IEvent : IRequest<Unit>`
+    - Queries are meant to return something. Therefore it is easy to define as `IQuery<TResponse> : IMessage<TResponse>`
+    - Commands don't return anything. To represent nothing I defined a type called `Unit`. Hence the definition for a command becomes `ICommand : IMessage<Unit>`
+    - Event is the same. `IEvent : IMessage<Unit>`
 
-- Request Handlers
+- Message Handlers
 
-    There will be a single method with the signature `Task<TResponse> Handle(IRequest<TResponse> request, IMediationContext mediationContext, CancellationToken cancellationToken)`.
+    There will be a single method with the signature `Task<TResponse> Handle(IMessage<TResponse> message, IMediationContext mediationContext, CancellationToken cancellationToken)`.
     ```csharp
-    public interface IRequestHandler<in TRequest, TResponse> where TRequest : IRequest<TResponse> 
+    public interface IMessageHandler<in TMessage, TResponse> where TMessage : IMessage<TResponse> 
     {
-        Task<TResponse> HandleAsync(TRequest request, IMediationContext mediationContext,
+        Task<TResponse> HandleAsync(TMessage message, IMediationContext mediationContext,
             CancellationToken cancellationToken);
     }
     ```
@@ -76,40 +76,40 @@ Conceptually I want the Mediator to take in a request, dispatch it to the domain
 
     - The equivalent specialised handlers for Queries, Commands and Events are as follows.
         ```csharp
-        public interface IQueryHandler<in TQuery, TResponse> : IRequestHandler<TQuery, TResponse>
-        where TQuery : IRequest<TResponse>
+        public interface IQueryHandler<in TQuery, TResponse> : IMessageHandler<TQuery, TResponse>
+        where TQuery : IMessage<TResponse>
         {
         }
 
-        public interface ICommandHandler<in TCommand>: IRequestHandler<TCommand, Unit> where TCommand : IRequest<Unit>
+        public interface ICommandHandler<in TCommand>: IMessageHandler<TCommand, Unit> where TCommand : IMessage<Unit>
         {
         }
 
-        public interface IEventHandler<in TEvent>: IRequestHandler<TEvent, Unit> where TEvent : IRequest<Unit>
+        public interface IEventHandler<in TEvent>: IMessageHandler<TEvent, Unit> where TEvent : IMessage<Unit>
         {
         }
         ``` 
 
     - I created abstract classes from these to make the syntax a bit nicer for the Handle methods. When you inherit from it the method you have to implement conveys the intent better in my opinion. **You can always implement the interface directly if you wish to**.
         ```csharp
-        public abstract class QueryHandler<TQuery, TResponse> : IQueryHandler<TQuery, TResponse> where TQuery : IRequest<TResponse>
+        public abstract class QueryHandler<TQuery, TResponse> : IQueryHandler<TQuery, TResponse> where TQuery : IMessage<TResponse>
         {
-            public Task<TResponse> HandleAsync(TQuery request, IMediationContext mediationContext,
+            public Task<TResponse> HandleAsync(TQuery message, IMediationContext mediationContext,
                 CancellationToken cancellationToken)
             {
-                return HandleQueryAsync(request, mediationContext, cancellationToken);
+                return HandleQueryAsync(message, mediationContext, cancellationToken);
             }
 
             protected abstract Task<TResponse> HandleQueryAsync(TQuery query, IMediationContext mediationContext,
                 CancellationToken cancellationToken);
         }
 
-        public abstract class CommandHandler<TCommand> : ICommandHandler<TCommand> where TCommand : IRequest<Unit>
+        public abstract class CommandHandler<TCommand> : ICommandHandler<TCommand> where TCommand : IMessage<Unit>
         {
-            public async Task<Unit> HandleAsync(TCommand request, IMediationContext mediationContext,
+            public async Task<Unit> HandleAsync(TCommand message, IMediationContext mediationContext,
                 CancellationToken cancellationToken)
             {
-                await HandleCommandAsync(request, mediationContext, cancellationToken);
+                await HandleCommandAsync(message, mediationContext, cancellationToken);
                 return Unit.Result;
             }
 
@@ -117,12 +117,12 @@ Conceptually I want the Mediator to take in a request, dispatch it to the domain
                 CancellationToken cancellationToken);
         }
 
-        public abstract class EventHandler<TEvent> : IEventHandler<TEvent> where TEvent : IRequest<Unit>
+        public abstract class EventHandler<TEvent> : IEventHandler<TEvent> where TEvent : IMessage<Unit>
         {
-            public async Task<Unit> HandleAsync(TEvent request, IMediationContext mediationContext,
+            public async Task<Unit> HandleAsync(TEvent message, IMediationContext mediationContext,
                 CancellationToken cancellationToken)
             {
-                await HandleEventAsync(request, mediationContext, cancellationToken);
+                await HandleEventAsync(message, mediationContext, cancellationToken);
                 return Unit.Result;
             }
 
@@ -132,63 +132,63 @@ Conceptually I want the Mediator to take in a request, dispatch it to the domain
         ```
 - Middleware
 
-    If you really think about it, a middleware is another type of request handler. They are like the Russian [Matryoshka Dolls](https://en.wikipedia.org/wiki/Matryoshka_doll) with the very inner most doll being the query/command/event handler.
+    If you really think about it, a middleware is another type of message handler. They are like the Russian [Matryoshka Dolls](https://en.wikipedia.org/wiki/Matryoshka_doll) with the very inner most doll being the query/command/event handler.
 
     This is how I designed it.
     ```csharp
-    public delegate Task<TResponse> HandleRequestDelegate<in TRequest, TResponse>(TRequest request, IMediationContext mediationContext, CancellationToken cancellationToken);
+    public delegate Task<TResponse> HandleMessageDelegate<in TMessage, TResponse>(TMessage message, IMediationContext mediationContext, CancellationToken cancellationToken);
 
-    public interface IMiddleware<TRequest, TResponse> where TRequest : IRequest<TResponse>
+    public interface IMiddleware<TMessage, TResponse> where TMessage : IMessage<TResponse>
     {
-        Task<TResponse> RunAsync(TRequest request, IMediationContext mediationContext,
-            CancellationToken cancellationToken, HandleRequestDelegate<TRequest, TResponse> next);
+        Task<TResponse> RunAsync(TMessage message, IMediationContext mediationContext,
+            CancellationToken cancellationToken, HandleMessageDelegate<TMessage, TResponse> next);
     }
     ```
 
-    Notice how the method signature is exactly the same as a request handler except for the `next` argument. That's because a request handler is the last thing in the pipeline. There is no next middleware to run. That's the fundamental difference between a request handler and middleware.
+    Notice how the method signature is exactly the same as a message handler except for the `next` argument. That's because a message handler is the last thing in the pipeline. There is no next middleware to run. That's the fundamental difference between a message handler and middleware.
 
-- The Request Processor
+- The Message Processor
 
-    The job of the request processor is to accept a request and pass it through the middleware pipeline. It constructs the pipeline and calls the `RunAsync` methods on the first middleware.
+    The job of the message processor is to accept a message and pass it through the middleware pipeline. It constructs the pipeline and calls the `RunAsync` methods on the first middleware.
 
     ```csharp
-    public interface IRequestProcessor<in TRequest, TResponse>
-        where TRequest : IRequest<TResponse>
+    public interface IMessageProcessor<in TMessage, TResponse>
+        where TMessage : IMessage<TResponse>
     {
-        Task<TResponse> HandleAsync(TRequest request, IMediationContext mediationContext,
+        Task<TResponse> HandleAsync(TMessage message, IMediationContext mediationContext,
             CancellationToken cancellationToken);
     }
     ```
 
-    The implementation of this is as follows. The full code is available [here](https://github.com/dasiths/SimpleMediator/blob/master/SimpleMediator/Middleware/RequestProcessor.cs)
+    The implementation of this is as follows. The full code is available [here](https://github.com/dasiths/SimpleMediator/blob/master/SimpleMediator/Middleware/MessageProcessor.cs)
     ```csharp
-    public class RequestProcessor<TRequest, TResponse> : IRequestProcessor<TRequest, TResponse> where TRequest : IRequest<TResponse>
+    public class MessageProcessor<TMessage, TResponse> : IMessageProcessor<TMessage, TResponse> where TMessage : IMessage<TResponse>
     {
-        private readonly IEnumerable<IRequestHandler<TRequest, TResponse>> _requestHandlers;
-        private readonly IEnumerable<IMiddleware<TRequest, TResponse>> _middlewares;
+        private readonly IEnumerable<IMessageHandler<TMessage, TResponse>> _messageHandlers;
+        private readonly IEnumerable<IMiddleware<TMessage, TResponse>> _middlewares;
         // These come from the constructor. See the github repo for full code.
-        // https://github.com/dasiths/SimpleMediator/blob/master/SimpleMediator/Middleware/RequestProcessor.cs
+        // https://github.com/dasiths/SimpleMediator/blob/master/SimpleMediator/Middleware/MessageProcessor.cs
 
-        public Task<TResponse> HandleAsync(TRequest request, IMediationContext mediationContext,
+        public Task<TResponse> HandleAsync(TMessage message, IMediationContext mediationContext,
             CancellationToken cancellationToken)
         {
-            return RunMiddleware(request, HandleRequest, mediationContext, cancellationToken);
+            return RunMiddleware(message, HandleMessage, mediationContext, cancellationToken);
         }
 
-        private async Task<TResponse> HandleRequest(TRequest requestObject, IMediationContext mediationContext, CancellationToken cancellationToken)
+        private async Task<TResponse> HandleMessage(TMessage messageObject, IMediationContext mediationContext, CancellationToken cancellationToken)
         {
             // See github repo for full code
         }
 
-        private Task<TResponse> RunMiddleware(TRequest request, HandleRequestDelegate<TRequest, TResponse> handleRequestHandlerCall, 
+        private Task<TResponse> RunMiddleware(TMessage message, HandleMessageDelegate<TMessage, TResponse> handleMessageHandlerCall, 
             IMediationContext mediationContext, CancellationToken cancellationToken)
         {
-            HandleRequestDelegate<TRequest, TResponse> next = null;
+            HandleMessageDelegate<TMessage, TResponse> next = null;
 
-            next = _middlewares.Reverse().Aggregate(handleRequestHandlerCall, (requestDelegate, middleware) =>
-                ((req, ctx, ct) => middleware.RunAsync(req, ctx, ct, requestDelegate)));
+            next = _middlewares.Reverse().Aggregate(handleMessageHandlerCall, (messageDelegate, middleware) =>
+                ((req, ctx, ct) => middleware.RunAsync(req, ctx, ct, messageDelegate)));
 
-            return next.Invoke(request, mediationContext, cancellationToken);
+            return next.Invoke(message, mediationContext, cancellationToken);
         }
     }
     ```
@@ -200,12 +200,12 @@ Conceptually I want the Mediator to take in a request, dispatch it to the domain
     ```csharp
     public interface IMediator
     {
-        Task<TResponse> HandleAsync<TResponse>(IRequest<TResponse> request, IMediationContext mediationContext = default(IMediationContext),
+        Task<TResponse> HandleAsync<TResponse>(IMessage<TResponse> message, IMediationContext mediationContext = default(IMediationContext),
             CancellationToken cancellationToken = default(CancellationToken));
     }
     ```
 
-    The implementation for the interface is as follows. `IServiceFactory` is just a service locator we use to help us utilize the IOC container of our choice. We use a **single instance** of the mediator to service all requests. This means we have to request an instance of `IRequestProcessor` per request type from our IOC container. The service locator pattern was used here because of that.
+    The implementation for the interface is as follows. `IServiceFactory` is just a service locator we use to help us utilize the IOC container of our choice. We use a **single instance** of the mediator to service all messages. This means we have to message an instance of `IMessageProcessor` per message type from our IOC container. The service locator pattern was used here because of that.
     
     See how the `ServiceFactoryDelegate` (In the `AddRequiredServices()` method) is used in the code sample [linked here](https://github.com/dasiths/SimpleMediator/blob/master/SimpleMediator.Extensions.Microsoft.DependencyInjection/ReflectionUtilities.cs) if you need help understanding how it links up with the IOC container.
     ```csharp
@@ -218,7 +218,7 @@ Conceptually I want the Mediator to take in a request, dispatch it to the domain
             _serviceFactory = serviceFactory;
         }
 
-        public Task<TResponse> HandleAsync<TResponse>(IRequest<TResponse> request,
+        public Task<TResponse> HandleAsync<TResponse>(IMessage<TResponse> message,
             IMediationContext mediationContext = default(MediationContext), CancellationToken cancellationToken = default(CancellationToken))
         {
             if (mediationContext == null)
@@ -226,21 +226,21 @@ Conceptually I want the Mediator to take in a request, dispatch it to the domain
                 mediationContext = MediationContext.Default;
             }
 
-            var targetType = request.GetType();
-            var targetHandler = typeof(IRequestProcessor<,>).MakeGenericType(targetType, typeof(TResponse));
+            var targetType = message.GetType();
+            var targetHandler = typeof(IMessageProcessor<,>).MakeGenericType(targetType, typeof(TResponse));
             var instance = _serviceFactory.GetInstance(targetHandler);
 
-            var result = InvokeInstanceAsync(instance, request, targetHandler, mediationContext, cancellationToken);
+            var result = InvokeInstanceAsync(instance, message, targetHandler, mediationContext, cancellationToken);
 
             return result;
         }
 
-        private Task<TResponse> InvokeInstanceAsync<TResponse>(object instance, IRequest<TResponse> request, Type targetHandler, 
+        private Task<TResponse> InvokeInstanceAsync<TResponse>(object instance, IMessage<TResponse> message, Type targetHandler, 
             IMediationContext mediationContext, CancellationToken cancellationToken)
         {
             var method = instance.GetType()
                 .GetTypeInfo()
-                .GetMethod(nameof(IRequestProcessor<IRequest<TResponse>, TResponse>.HandleAsync));
+                .GetMethod(nameof(IMessageProcessor<IMessage<TResponse>, TResponse>.HandleAsync));
 
             if (method == null)
             {
@@ -248,7 +248,7 @@ Conceptually I want the Mediator to take in a request, dispatch it to the domain
                     instance.GetType().FullName);
             }
 
-            return (Task<TResponse>) method.Invoke(instance, new object[] {request, mediationContext, cancellationToken});
+            return (Task<TResponse>) method.Invoke(instance, new object[] {message, mediationContext, cancellationToken});
         }
 
         // See the full code at https://github.com/dasiths/SimpleMediator/blob/master/SimpleMediator/Core/Mediator.cs
@@ -259,7 +259,7 @@ Those are the major pieces that make up the Mediator. Conceptually it is very si
 
 ## Using It
 
-1. Define a request and response.
+1. Define a message and response.
     ```csharp
     public class SimpleQuery: IQuery<SimpleResponse>
     {
@@ -312,12 +312,12 @@ Those are the major pieces that make up the Mediator. Conceptually it is very si
         }
     }
     ```    
-    - You can find more examples for the concept of middleware [here](https://github.com/dasiths/SimpleMediator/tree/master/SimpleMediator.Samples.ConsoleApp). 
+    - You can find more examples for the concept of middleware [here](https://github.com/dasiths/SimpleMediator/tree/master/Samples/SimpleMediator.Samples.ConsoleApp). 
 
-    - I have examples of how to set it up with IOC containers [here](https://github.com/dasiths/SimpleMediator/tree/master/SimpleMediator.Samples.Shared/Helpers). `Autofac` and `Microsoft.Extensions.DependencyInjection` currently have examples but I'll keep adding more as I go. 
-    - There is also some code samples (work in progress) on how to integrate it with `MassTransit` to dispatch messages over the wire to consumers. Check it out [here](https://github.com/dasiths/SimpleMediator/tree/master/SimpleMediator.Samples.MassTransit).
+    - I have examples of how to set it up with IOC containers [here](https://github.com/dasiths/SimpleMediator/tree/master/Samples/SimpleMediator.Samples.Shared/Helpers). `Autofac` and `Microsoft.Extensions.DependencyInjection` currently have examples but I'll keep adding more as I go. 
+    - There is also some code samples (work in progress) on how to integrate it with `MassTransit` to dispatch messages over the wire to consumers. Check it out [here](https://github.com/dasiths/SimpleMediator/tree/master/Samples/SimpleMediator.Samples.MassTransit).
 
-    As you can see, the usage is pretty straight forward and simple. The middleware gives you a lot of extensibility options and I've even been able to create constrained middleware that validates only certain types of requests.
+    As you can see, the usage is pretty straight forward and simple. The middleware gives you a lot of extensibility options and I've even been able to create constrained middleware that validates only certain types of messages.
 
 ## Conclusion 
 I hope this post has been helpful in understanding the concepts behind the mediator pattern and how you would go about implementing it. All the code is hosted at https://github.com/dasiths/SimpleMediator under the MIT license. Feel free to have a look and create a PR if you think there are improvements. Please leave any feedback you have here. Thank you.
