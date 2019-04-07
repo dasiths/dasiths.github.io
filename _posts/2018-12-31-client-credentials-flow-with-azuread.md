@@ -183,7 +183,7 @@ This concludes what's required in the DemoResourceApp. Let's look at what's requ
 
 For the client app to call an endpoint on the resource, it would require a token from AzureAD first. This token will be retrieved using the shared secret (or certificate). The received token will have the claim with the app roles the client app has been granted. This token will then be passed in the header whenever the client app calls an endpoint on the resource app. 
 
-You can simply get the token by making a POST request as shown below:
+You can simply get the token by making a POST request as shown below: 
 
 ```
 POST /contoso.com/oauth2/token HTTP/1.1
@@ -192,7 +192,9 @@ Content-Type: application/x-www-form-urlencoded
 
 grant_type=client_credentials&client_id=625bc9f6-3bf6-4b6d-94ba-e97cf07a22de&client_secret=qkDwDJlDfig2IpeuUZYKH1Wb8q1V0ju6sILxQQqhJ+s=&resource=https%3A%2F%2Fservice.contoso.com%2F
 ```
-For brevity, let's examine how you can do it via the AzureAD library. The code samples are below.
+Note: **We are using the V1.0 endpoint here.** If you want to use the V2.0 endpoint please have a read of the Microsoft [docs](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow) and checkout this [code example using MSAL](https://github.com/Azure-Samples/active-directory-dotnetcore-daemon-v2) for the Client Credentials flow.
+
+For completeness, let's examine how you can do it via the AzureAD Authentication Library (**ADAL**). The code samples are below.
 
 1. Retrieving the token should be easy using this little helper class. You will need to take a dependency on the `Microsoft.IdentityModel.Clients.ActiveDirectory` NuGet package.
     ```csharp
