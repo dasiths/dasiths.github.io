@@ -27,13 +27,13 @@ feature_row:
   - image_path: /assets/images/assassin-3690300_960_720-e1538485050283.jpg
     alt: "NimbleConfig"
     title: "NimbleConfig"
-    excerpt: "NimbleConfig is an open source configuration injection library for .Net with full support for Asp.Net CORE. It allows you to use configuration settings in as very simple and testable way."
+    excerpt: "NimbleConfig is an open source configuration injection library for .NET with full support for ASP.NET CORE. It allows you to use configuration settings in as very simple and testable way."
     url: "https://dasiths.github.io/2018/10/02/nimbleconfig-a-simple-config-injector-for-net/"
     btn_label: "Check It Out"
     btn_class: "btn--primary"
   - image_path: /assets/images/cqrs1.png
     title: "NEventLite"
-    excerpt: "NEventLite is an open source Event Sourcing and CQRS reference framework for .Net that can get your ES+CQRS project up and running quickly and hassle free."
+    excerpt: "NEventLite is an open source Event Sourcing library for .NET that can get your ES+CQRS project up and running quickly and hassle free. It helps you manage the aggregate lifecycle and supports many event storage providers."
     url: "https://github.com/dasiths/NEventLite"
     btn_label: "Check It Out"
     btn_class: "btn--primary"

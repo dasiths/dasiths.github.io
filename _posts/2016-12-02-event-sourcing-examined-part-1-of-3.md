@@ -137,7 +137,4 @@ If your internal event handlers generate ID's then they can't be random. The ide
 
 ### So What's Next?
 
-
-In the next post I will look at some of the core concepts when trying to implement Event Sourcing. I will be using .NET and C# for code demonstrations and will introduce you to my Event Sourcing framework <a href="https://github.com/dasiths/NEventLite" target="_blank" rel="noopener">NEventLite</a>.
-
-DISCLAIMER: *You generally want to avoid "frameworks" when implementing CQRS or Event Sourcing but NEventLite will help get you on the rails. You can swap out every aspect of it if need be. Think of it as training wheels.*
+In the next post I will look at some of the core concepts when trying to implement Event Sourcing. I will be using .NET and C# for code demonstrations and will introduce you to my Event Sourcing library <a href="https://github.com/dasiths/NEventLite" target="_blank" rel="noopener">NEventLite</a>.

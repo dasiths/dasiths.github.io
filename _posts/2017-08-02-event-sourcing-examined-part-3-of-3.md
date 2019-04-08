@@ -78,9 +78,9 @@ When customer places an order,
 ## Using NEventLite
 
 
-NEventLite is a lightweight framework I created to do the mundane tasks associated with setting up an event sourced system in .net. Think of it as event sourcing on rails.
+NEventLite is a lightweight library I created to do the mundane tasks associated with setting up an event sourced system in .net. Think of it as event sourcing on rails.
 
-We are going to look at the <a href="https://github.com/dasiths/NEventLite/tree/master/src/Examples" target="_blank" rel="noopener">examples provided in my github</a> repo. We have very small project that demonstrates use of ES with snapshots and a read model.
+We are going to look at the <a href="https://github.com/dasiths/NEventLite_Legacy/tree/master/src/Examples" target="_blank" rel="noopener">examples provided in my github</a> repo. We have very small project that demonstrates use of ES with snapshots and a read model.
 
 Look at the sample Note domain model.
 
@@ -213,7 +213,7 @@ Once the framework applies the event, it publishes the event using the **IEventP
     }
 ```
 
-Then the in-memory subscriber listens to the events and handles them. The class implements** IEventHandler** for multiple events. You can have multiple subscribers handling the same events pretty easily if you want to. Just do the required code changes to allow the publisher to find them via reflection.
+Then the in-memory subscriber listens to the events and handles them. The class implements **IEventHandler** for multiple events. You can have multiple subscribers handling the same events pretty easily if you want to. Just do the required code changes to allow the publisher to find them via reflection.
 
 **In a production scenario you will publish it to a message broker and the subscribers will get it from there. Message broker approach will give you capabilities like <a href="https://www.linkedin.com/pulse/reliable-messaging-azure-service-bus-queues-senthuran-sivananthan/" target="_blank" rel="noopener">delivery guarantees</a> when required.**
 
@@ -346,7 +346,7 @@ The read models are persisted to a file in this example but you can use any form
     }
 ```
 
-Run the example (Full source code is at <a href="https://github.com/dasiths/NEventLite/tree/master/src/Examples/NEventLite%20Example" target="_blank" rel="noopener">https://github.com/dasiths/NEventLite/tree/master/src/Examples/NEventLite%20Example</a>)
+Run the example (Full source code is at <a href="https://github.com/dasiths/NEventLite_Legacy/tree/master/src/Examples/NEventLite%20Example" target="_blank" rel="noopener">https://github.com/dasiths/NEventLite_Legacy/tree/master/src/Examples/NEventLite%20Example</a>)
 
 **You should see something like this confirming that real model and one constructed using replaying events have the same info.**
 

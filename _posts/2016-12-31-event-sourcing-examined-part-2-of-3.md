@@ -105,7 +105,7 @@ This is where is gets interesting. <span style="text-decoration:underline;">**Th
 
 *   It will also add the event which triggered the state change to a "Uncommitted Changes" collection.
 This is how the source code might look.
-*NEventLite full source code for AggregateRoot is <a href="https://github.com/dasiths/NEventLite/blob/master/src/Framework/Domain/AggregateRoot.cs" target="_blank" rel="noopener">here</a>. An example is <a href="https://github.com/dasiths/NEventLite/blob/master/src/Examples/NEventLite%20Example/Domain/Note.cs" target="_blank" rel="noopener">here</a>.*
+*NEventLite full source code for AggregateRoot is <a href="https://github.com/dasiths/NEventLite_Legacy/blob/master/src/Framework/Domain/AggregateRoot.cs" target="_blank" rel="noopener">here</a>. An example is <a href="https://github.com/dasiths/NEventLite_Legacy/blob/master/src/Examples/NEventLite%20Example/Domain/Note.cs" target="_blank" rel="noopener">here</a>.*
 
 ```csharp
 public void AddItem(Guid ItemID, int Qty) {
@@ -157,7 +157,7 @@ public interface IRepository {
 
 Rather than loading all the events from history to construct an aggregate, we load the last snapshot, and ONLY apply events that are newer than the snapshot. We use our version property saved within the event to identify event sequence number.
 
-The code for saving and loading aggregates will look something like this. (*See how the Repository is implemented <a href="https://github.com/dasiths/NEventLite/blob/master/src/Framework/Repository/Repository.cs" target="_blank" rel="noopener">here</a> for a comprehensive example).*
+The code for saving and loading aggregates will look something like this. (*See how the Repository is implemented <a href="https://github.com/dasiths/NEventLite_Legacy/blob/master/src/Framework/Repository/Repository.cs" target="_blank" rel="noopener">here</a> for a comprehensive example).*
 
 ```csharp
 
@@ -271,7 +271,7 @@ You can probably see the advantages of this now. <span style="text-decoration:un
 ### What's Next
 
 
-That was a very brief explanation of what each step does and how you could go about implementing it. I've used very simple code examples. For working examples I highly recommend you have a look at my Event Sourcing and CQRS framework <a href="https://github.com/dasiths/NEventLite" target="_blank" rel="noopener">NEventLite at GitHub</a>.
+That was a very brief explanation of what each step does and how you could go about implementing it. I've used very simple code examples. For working examples I highly recommend you have a look at my Event Sourcing library <a href="https://github.com/dasiths/NEventLite" target="_blank" rel="noopener">NEventLite at GitHub</a>.
 
 Now that we have looked at the steps in the **Command Side** of CQRS the next step is to implement the read side. In the next post of the series we will look at how this can be done. I'll also demonstrate how to quickly get an ES + CQRS application up and running using NEventLite.
 
