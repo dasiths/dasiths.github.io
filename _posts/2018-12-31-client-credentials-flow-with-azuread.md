@@ -67,7 +67,7 @@ The examples I'm about to give are based on the shared secret but most of it app
     - Open up the `DemoClientApp` pane and click `Settings` to open the settings pane.
     - Click `Required Permissions` and then the `+ Add` button.
     - Select the `DemoResourceApp` API and then select both the permissions from the list.
-    - Once the roles are selected and saved, hit the `Grant Permissions` button to do exactly that.
+    - **Important:** Once the roles are selected and saved, **hit the `Grant Permissions` button** to do exactly that and grant the application the selected permissions. This requires admin access.
 
         ![Permissions](/assets/images/azure-ad-client-credentials-permissions.png)
 
@@ -119,6 +119,8 @@ If you're unfamiliar with policy based authorization in ASP.NET core, please hav
         }
     }
     ```
+
+    > Note: You can do `[Authorize(Role = "Resource.Write")]` if you don't want to use a custom policy but I like the freedom the policy gives me to use my own logic if the authorization requirement gets complex. 
 
 4. Update your `Startup.cs` to include the authorization middleware and to accept bearer tokens.
 
@@ -192,7 +194,7 @@ Content-Type: application/x-www-form-urlencoded
 
 grant_type=client_credentials&client_id=625bc9f6-3bf6-4b6d-94ba-e97cf07a22de&client_secret=qkDwDJlDfig2IpeuUZYKH1Wb8q1V0ju6sILxQQqhJ+s=&resource=https%3A%2F%2Fservice.contoso.com%2F
 ```
-Note: **We are using the V1.0 endpoint here.** If you want to use the V2.0 endpoint please have a read of the Microsoft [docs](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow) and checkout this [code example using MSAL](https://github.com/Azure-Samples/active-directory-dotnetcore-daemon-v2) for the Client Credentials flow.
+> Note: **We are using the V1.0 endpoint (with ADAL) here.** If you want to use the V2.0 endpoint please have a read of the Microsoft [docs](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow) and checkout this [code example using MSAL](https://github.com/Azure-Samples/active-directory-dotnetcore-daemon-v2) for the Client Credentials flow.
 
 For completeness, let's examine how you can do it via the AzureAD Authentication Library (**ADAL**). The code samples are below.
 
