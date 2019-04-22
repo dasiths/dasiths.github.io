@@ -51,3 +51,6 @@
   {% endfor %}
 
 </div>
+<div>
+  <p>Continue to read my recent <a href="https://dasiths.github.io/recent/">posts here.</a></p>
+</div>
