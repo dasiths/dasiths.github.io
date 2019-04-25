@@ -39,7 +39,7 @@ Given this, do you think it was senseless that they targeted the Christian faith
 
 I am trying my best to see past the irony of this last statement of yours when applied against the context of the Christchurch massacre. Your apologetic tone was the same one the alt-right used to “*explain*” the emergence of toxic white nationalism. Maybe you should think about that for a bit.
 
-P.S. I would consider myself left in the spectrum of political beliefs but I have a strong distaste dishonest reporting because how the far right and the liberal left use incidents like the one in Sri Lanka to play the identify politics game. The only request I make is that you be objective in your assessment and be provide a more nuanced perspective when you get the opportunity to discuss this further. Sri Lankan history is well publicised and you can get narratives from many ends of the political spectrum. If not anything, maybe try to get the full picture before you fall into the same trap again.
+P.S. I would consider myself left in the spectrum of political beliefs but I have a strong distaste dishonest reporting because how the far right and the liberal left use incidents like the one in Sri Lanka to play the identify politics game. The only request I make is that you be objective in your assessment and provide a more nuanced perspective when you get the opportunity to discuss this further. Sri Lankan history is well publicised and you can get narratives from many ends of the political spectrum. If not anything, maybe try to get the full picture before you fall into the same trap again.
 
 Thank you,
 
