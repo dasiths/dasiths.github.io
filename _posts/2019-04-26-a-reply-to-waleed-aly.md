@@ -8,7 +8,7 @@ tags: []
 
 Hello everyone. 
 
-I don't often get too attached to comments made by these celebrity tv show hosts but the article seemed so dishonest and apologetic and I wanted to jot down some words. I doubt Waleed will ever get to read this but at least it's now in the ether. I wanted to apologize for bringing politics into my blog but then it dawned on me that one shouldn't merely apologize for pointing out the fallacy or a argument made by someone else regardless of it being political or not.
+I doubt Waleed Aly will ever get to read this but at least it's now in the ether. I wanted to apologize for bringing politics into my blog but then it dawned on me that one shouldn't merely apologize for pointing out the fallacy of an argument made by someone else regardless of it being political or not.
 
 Dasith
 
