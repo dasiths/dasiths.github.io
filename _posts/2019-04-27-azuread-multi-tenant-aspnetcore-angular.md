@@ -13,6 +13,7 @@ Using Azure AD to implement a multi-tenant application is fairly straight forwar
 ## App Registration
 
 This is the easy part. Create an app registration from the Azure portal and turn on the multi-tenant switch. You can find it under `Properties`. If you haven't already, provide a unique `App ID URI` for the app. This has to be unique across every tenant.
+
 ![multi-tenant app registration](/assets/images/azure-ad-appregistration-multitenant-switch.png)
 
 The Microsoft [docs](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant) say this.
@@ -179,12 +180,12 @@ const routes: Routes = [
 ]
 ```
 
-Include the call-back component to handle the redirect from Azure AD when the user successfully login in. The route to this component should be the same as the one in `redirectUri`.
+Include the call-back component to handle the redirect from Azure AD when the user successfully logs in. The route to this component should be the same as the one in `redirectUri`.
 
-There are many wrappers for ADAL JS that can be used with Angular. Pick one that you like. I didn't include code samples for this purely for that reason. You should be alright as long as you stick to the overview.
+There are many wrappers for ADAL JS that can be used with Angular. Pick one that you like. I didn't include code samples for that reason. You should be alright as long as you stick to the overview.
 
 ## Conclusion
 
-As you would have noticed the scenario we tried to cover isn't very hard to implement and Azure AD has full support for it. Things get a bit more interesting when you have to support **many** authentication schemes in a multi-tenant app but that's a story for another time. Hopefully this has given you and understanding of how multi-tenancy works in Azure AD.
+As you would have noticed the scenario we tried to cover isn't very hard to implement and Azure AD has full support for it. Things get a bit more interesting when you have to support **many** authentication schemes in a multi-tenant app (specially if the authentication schemes are based on the tenant) but that's a story for another time. Hopefully this has given you and understanding of how multi-tenancy works in Azure AD.
 
 If you have thoughts or comments please feel free to share them in the comments section. Thank you.
