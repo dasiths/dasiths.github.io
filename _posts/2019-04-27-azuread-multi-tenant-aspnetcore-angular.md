@@ -8,7 +8,7 @@ categories: [.net, azure ad, multi-tenant]
 tags: [.net, azure ad, multi-tenant, aspnet core, angular]
 ---
 
-Using Azure AD to implement a multi-tenant application is fairly straight forward. It requires turning on a few nobs and switches from the portal and you're most of the way there. In this post we will look at how to setup an multi-tenant app registration and implement the logic in in the front end to direct the user to a `common` sign-in endpoint. We will also look at how we then control access to a pre determined set of tenants.
+Using Azure AD to implement a multi-tenant application is fairly straight forward. It requires turning on a few knobs and switches from the portal and you're most of the way there. In this post we will look at how to setup an multi-tenant app registration and implement the logic in in the front end to direct the user to a `common` sign-in endpoint. We will also look at how we then control access to a pre determined set of tenants.
 
 ## App Registration
 
@@ -40,11 +40,11 @@ I'm using ASP NET Core web Api project as the backend for my application. So let
 
 - Let's define a class to hold the settings.
     ```csharp
-        public class TokenValidationSettings
-        {
-            public string ClientId { get; set; }
-            public string[] AllowedIssuers { get; set; }
-        }
+    public class TokenValidationSettings
+    {
+        public string ClientId { get; set; }
+        public string[] AllowedIssuers { get; set; }
+    }
     ```
     Then update the `appsettings.json` with the values.
     ```json
@@ -60,45 +60,45 @@ I'm using ASP NET Core web Api project as the backend for my application. So let
     ```
 - Now introduce our token white listing logic
     ```csharp
-        public interface IIssuerTokenValidator
+    public interface IIssuerTokenValidator
+    {
+        string Validate(string issuer);
+    }
+
+    public class IssuerTokenValidator : IIssuerTokenValidator
+    {
+        private readonly ILogger<IssuerTokenValidator> _logger;
+        private readonly TokenValidationSettings _options;
+
+        public IssuerTokenValidator(ILogger<IssuerTokenValidator> logger, IOptions<TokenValidationSettings> options)
         {
-            string Validate(string issuer);
+            _logger = logger;
+            _options = options.Value;
         }
 
-        public class IssuerTokenValidator : IIssuerTokenValidator
+        public string Validate(string issuer)
         {
-            private readonly ILogger<IssuerTokenValidator> _logger;
-            private readonly TokenValidationSettings _options;
-
-            public IssuerTokenValidator(ILogger<IssuerTokenValidator> logger, IOptions<TokenValidationSettings> options)
+            if (_options.AllowedIssuers == null || _options.AllowedIssuers.Length == 0)
             {
-                _logger = logger;
-                _options = options.Value;
+                _logger.LogWarning("No allowed issuers configured in {@Options}", _options);
             }
 
-            public string Validate(string issuer)
+            var allowedIssuers = _options.AllowedIssuers;
+            if (allowedIssuers == null || !allowedIssuers.Contains(issuer, StringComparer.Ordinal))
             {
-                if (_options.AllowedIssuers == null || _options.AllowedIssuers.Length == 0)
+                _logger.LogError("Rejected ID token issuer {Issuer}", issuer);
+
+                throw new SecurityTokenInvalidIssuerException($"Rejected ID token issuer {issuer}")
                 {
-                    _logger.LogWarning("No allowed issuers configured in {@Options}", _options);
-                }
-
-                var allowedIssuers = _options.AllowedIssuers;
-                if (allowedIssuers == null || !allowedIssuers.Contains(issuer, StringComparer.Ordinal))
-                {
-                    _logger.LogError("Rejected ID token issuer {Issuer}", issuer);
-
-                    throw new SecurityTokenInvalidIssuerException($"Rejected ID token issuer {issuer}")
-                    {
-                        InvalidIssuer = issuer
-                    };
-                }
-
-                _logger.LogDebug("Accepted ID token issuer {Issuer}", issuer);
-
-                return issuer;
+                    InvalidIssuer = issuer
+                };
             }
+
+            _logger.LogDebug("Accepted ID token issuer {Issuer}", issuer);
+
+            return issuer;
         }
+    }
     ```
 
 - We have to wire it up in the `Startup.cs`. Use the `ConfigureServices()` method to do it.
@@ -114,7 +114,7 @@ I'm using ASP NET Core web Api project as the backend for my application. So let
     services.Configure<TokenValidationSettings>(configuration.GetSection(nameof(TokenValidationSettings)));
     ```
 
-    This requires we introduce an implementation for `IConfigureNamedOptions`. We use this class to configure our settings and let the DI container handle the creating process. More information about the pattern can be found [here](https://andrewlock.net/simplifying-dependency-injection-for-iconfigureoptions-with-the-configureoptions-helper/).
+    This requires we introduce an implementation for `IConfigureNamedOptions`. We use this class to configure our settings and let the DI container handle the creation process. More information about the pattern can be found [here](https://andrewlock.net/simplifying-dependency-injection-for-iconfigureoptions-with-the-configureoptions-helper/).
     ```csharp
     public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions>
     {
@@ -153,7 +153,7 @@ I'm using ASP NET Core web Api project as the backend for my application. So let
         }
     }
     ```
-That's it for the back end. We used an `Exception Filter` to catch `SecurityTokenInvalidIssuerException` and map it to a `401` response. It really depends on how you want to handle non white listed tenant user logging in. You can catch this exception from the front end and redirect the user to a specific place.
+That's it for the back end. We can use an `Exception Filter` to catch `SecurityTokenInvalidIssuerException` and map it to a `401` response. It really depends on how you want to handle non white listed tenant user logging in. You can catch this exception from the front end and redirect the user to a specific place. There are many examples on the internet on how to do this if you're interested.
 
 ## The single page application (Anglar app)
 
