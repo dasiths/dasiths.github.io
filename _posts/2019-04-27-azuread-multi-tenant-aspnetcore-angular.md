@@ -8,7 +8,7 @@ categories: [.net, azure ad, multi-tenant]
 tags: [.net, azure ad, multi-tenant, aspnet core, angular]
 ---
 
-Using Azure AD to implement a multi-tenant application is fairly straight forward. It requires turning on a few knobs and switches from the portal and you're most of the way there. In this post we will look at how to setup an multi-tenant app registration and implement the logic in in the front end to direct the user to a `common` sign-in endpoint. We will also look at how we then control access to a pre determined set of tenants.
+Using Azure AD to implement a multi-tenant application is fairly straight forward. It requires turning on a few knobs and switches from the portal and you're most of the way there. In this post we will look at how to setup an multi-tenant app registration and implement the logic in the front end to direct the user to a `common` sign-in endpoint. We will also look at how to control access to a pre determined set of tenants.
 
 ## App Registration
 
@@ -19,15 +19,15 @@ This is the easy part. Create an app registration from the Azure portal and turn
 The Microsoft [docs](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant) say this.
 > By default, apps created via the Azure portal have a globally unique App ID URI set on app creation, but you can change this value. For example, if the name of your tenant was contoso.onmicrosoft.com then a valid App ID URI would be https://contoso.onmicrosoft.com/myapp. If your tenant had a verified domain of contoso.com, then a valid App ID URI would also be https://contoso.com/myapp. If the App ID URI doesn’t follow this pattern, setting an application as multi-tenant fails.
 
-Now in your `Reply URLs` section, add an entry for the call-back url that Azure AD will redirect the user to, after the a successful sign-on. I usually put something like `http://localhost:4200/callback` but the host address will depend on where you host your app. For demo purposes let's assume my app is running on `localhost:4200`.
+Now in your `Reply URLs` section, add an entry for the `callback url` that Azure AD will redirect the user to, after a successful sign-on. I usually put something like `http://localhost:4200/callback` but the host address will depend on where you host your app. For demo purposes let's assume my app is running on `localhost:4200`.
 
 ## Azure AD sign-in process
 
-In a single tenant application, the user to directed to an url like `https://login.microsoftonline.com/contoso.onmicrosoft.com` where `contoso.onmicrosoft.com` is the tenant the user is expected to sign into.
+In a single tenant application, the user is directed to an url like `https://login.microsoftonline.com/contoso.onmicrosoft.com` where `contoso.onmicrosoft.com` is the tenant the user is expected to sign into.
 
-With a multi-tenant application, we don't know the the tenant of the user until then log-in. So we need to direct them to a `common` endpoint. So the sign in url becomes `https://login.microsoftonline.com/common`
+With a multi-tenant application, we don't know the the tenant of the user until they log-in. So we need to direct them to a `common` endpoint. Hence the sign in url becomes `https://login.microsoftonline.com/common`
 
-It's important to remember that `common` is not an tenant. It's just a multiplexer that lets the user log-in to a specific tenant. When Azure AD issues an `id token` for the logged in user, it has a claim called `iss` (Issuer). This claim will match the tenant the user belongs to. For example, if my `tenant id` is `31537af4-6d77-4bb9-a681-d2394888ea26` then the `iss` claim would be `https://sts.windows.net/31537af4-6d77-4bb9-a681-d2394888ea26/`
+It's important to remember that `common` is not a tenant. It's just a multiplexer that lets the user log-in to a specific tenant. When Azure AD issues an `id token` for the logged in user, it has a claim called `iss` ([Issuer](https://openid.net/specs/openid-connect-core-1_0.html#IDToken)). This claim will match the tenant the user belongs to. For example, if my `tenant id` is `31537af4-6d77-4bb9-a681-d2394888ea26` then the `iss` claim would be `https://sts.windows.net/31537af4-6d77-4bb9-a681-d2394888ea26/`
 
 The docs also say this
 > The /common endpoint is not a tenant and is not an issuer, it’s just a multiplexer. When using /common, the logic in your application to validate tokens needs to be updated to take this into account.
@@ -36,9 +36,9 @@ The docs also say this
 
 > Note: **I'm using Azure AD V1.0 endpoint for demonstration purposes**.
 
-I'm using ASP NET Core web Api project as the backend for my application. So let's go ahead and implement the whitelisting logic there.
+I'm using ASP NET Core web Api project as the backend for my application. Let's go ahead and implement the whitelisting logic there.
 
-- Let's define a class to hold the settings.
+- Define a class to hold the settings.
     ```csharp
     public class TokenValidationSettings
     {
@@ -52,8 +52,8 @@ I'm using ASP NET Core web Api project as the backend for my application. So let
     "TokenValidationSettings": {
         "ClientId": "your app registration's app id", // The Client ID is used by the application to uniquely identify itself to Azure AD. e.g. 82692da5-a86f-44c9-9d53-2f88d52b478b
         "AllowedIssuers": [
-        "https://sts.windows.net/13ae57df-8a51-444a-a59a-328118705efc/", // issuer 1, tenant Id 13ae57df-8a51-444a-a59a-328118705efc
-        "https://sts.windows.net/423504eb-8622-47d2-aa72-ddbba4584471/" // issuer 2, tenant id 423504eb-8622-47d2-aa72-ddbba4584471
+        "https://sts.windows.net/13ae57df-8a51-414a-a59a-328118705efc/", // issuer 1, tenant Id 13ae57df-8a51-414a-a59a-328118705efc
+        "https://sts.windows.net/423504eb-8652-47d2-aa72-ddbba4584471/" // issuer 2, tenant id 423504eb-8652-47d2-aa72-ddbba4584471
         ]
         }
     }
@@ -64,7 +64,8 @@ I'm using ASP NET Core web Api project as the backend for my application. So let
     {
         string Validate(string issuer);
     }
-
+    ```
+    ```csharp
     public class IssuerTokenValidator : IIssuerTokenValidator
     {
         private readonly ILogger<IssuerTokenValidator> _logger;
@@ -119,12 +120,12 @@ I'm using ASP NET Core web Api project as the backend for my application. So let
     public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions>
     {
         private readonly IIssuerTokenValidator _tokenValidator;
-        private readonly IOptions<TokenValidationSettings> _options;
+        private readonly TokenValidationSettings _options;
 
         public ConfigureJwtBearerOptions(IIssuerTokenValidator tokenValidator, IOptions<TokenValidationSettings> options)
         {
             _tokenValidator = tokenValidator;
-            _options = options;
+            _options = options.Value;
         }
 
         public void Configure(string name, JwtBearerOptions options)
@@ -132,7 +133,7 @@ I'm using ASP NET Core web Api project as the backend for my application. So let
             if (name.Equals(JwtBearerDefaults.AuthenticationScheme))
             {
                 options.Authority = "https://login.microsoftonline.com/common";
-                options.Audience = _options.Value.ClientId;
+                options.Audience = _options.ClientId;
                 options.RequireHttpsMetadata = true;
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
