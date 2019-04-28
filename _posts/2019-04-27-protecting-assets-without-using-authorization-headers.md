@@ -7,7 +7,7 @@ comments: true
 categories: [.net, aspnet core, security]
 tags: [.net, aspnet core, security, tokens]
 ---
-tldr; If you want to access an api endpoint but don't have a way to append the authorization info to your request, you need to create a magic url that is short lived and has limited use. [Go directly here for code samples](#solution-2).
+tl;dr; If you want to access an api endpoint but don't have a way to append the authorization info to your request, you need to create a magic url that is short lived and has limited use. [Go directly here for code samples](#solution-2).
 
 ---
 Consider this scenario. 
@@ -183,14 +183,14 @@ The Exception Type to throw when something goes wrong. You can map this to a 401
 That's the hard part done but we need two endpoints. One to create the magic url (token), another to exchange the token for a the actual file.
 
 ```csharp
-public AttachmentController {
+public class AttachmentController : Controller {
     private readonly ResourceAccessManager _resourceAccessManager;
 
-    public AttachmentController(ResourceAccessManager resourceAccessManager){
+    public AttachmentController(ResourceAccessManager resourceAccessManager) {
         _resourceAccessManager = resourceAccessManager;
     }
 
-    // end point to generate the token
+    // endpoint to generate the token which is secured
     [Authorize]
     [Get("token/{resourceId}")]
     public ActionResult<Guid> GetResourceAccessPass([FromRoute]string resourceId) {
@@ -202,7 +202,7 @@ public AttachmentController {
         return pass.Token;
     }
 
-    // endpoint to download the file
+    // endpoint to download the file which is open
     [AllowAnonymous]
     [Get("download/{token}")]
     public IActionResult DownloadFile([FromRoute]Guid token) {
@@ -212,7 +212,7 @@ public AttachmentController {
     }
 }
 ```
-> Note: I've simplified the logic and put this inside the controller. `_myFileAccessService` is some sort of service that reads your files from Blob Storage or disk. I won't include the code for that as it's outside the scope.
+> Note: I've simplified things for demo purposes and put everything inside the controller. Move the logic into the service layer when you do a real implementation. Assume `_myFileAccessService` is some sort of service that reads your files from Blob Storage or disk. I won't include the code for that as it's outside the scope.
 
 Finally do this in the `ConfigureServices()` method of your `Startup.cs` file. We use a singleton to persist our `ResourceAccessManager`'s passes across requests. Because the tokens are so short lived, there is no need to persist it to disk.
 
@@ -251,7 +251,7 @@ That should allow you to download the file using the new token.
 
 ## Conclusion
 
-We looked at two approaches to download a file. The second method is a bit for extensible and you can use it to solve some other requirements as well. One limitation of our magic url/token solution is that we store them in memory. So an app restart will lose them. This isn't a big deal as the tokens are short lived. I recommend using Microsoft's [Data Protection API's](https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/using-data-protection?view=aspnetcore-2.2) if you need to persist them on disk.
+We looked at two approaches to download a file. The second method is a bit more extensible and you can use it to solve some other use cases as well. One limitation of our magic url/token solution is that we store them in memory. So an app restart will clear them. This isn't a big deal as the tokens are short lived. I recommend using Microsoft's [Data Protection API's](https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/using-data-protection?view=aspnetcore-2.2) if you need to persist them on disk. I might do another post about that in the future.
 
 Thank you for reading and please let me know your thoughts and comments.
 
