@@ -7,8 +7,10 @@ comments: true
 categories: [.net, aspnet core, security]
 tags: [.net, aspnet core, security, tokens]
 ---
-Consider this scenario. 
+tldr; If you want to access an api endpoint but don't have a way to append the authorization info to your request, you need to create a magic url that is short lived and has limited use. [Go directly here for code samples](#solution-2).
 
+---
+Consider this scenario. 
 You have developed a SPA (Single Page Application) that uses some form of OAuth to retrieve an access/bearer token. You now append that to your http request header when you call your backend REST API. The backend inspects the token and processes the request. All is well. 
 
 
@@ -59,6 +61,7 @@ It's simple as doing the following.
 
 > See this [Stackoverflow question](https://stackoverflow.com/questions/35138424/how-do-i-download-a-file-with-angular2) for **more code samples** and a few NPM packages that automatically handle this for you.
 
+<a name="solution-2"></a>
 ## **Solution Approach 2**: Using short lived magic urls/tokens
 
 When the user click on the link, make an `AJAX` request with the bearer token to a special api endpoint which is protected with the `[Authorize]` attribute. This endpoint looks at your credentials and checks if you have access to the file you requested. Then generates a `magic-url` that is valid for short period of time. This `magic-url` can be used to download the file from unprotected api endpoint. We can even invalidate that `magic-url` once it has been used.
