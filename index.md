@@ -14,6 +14,8 @@ header:
       url: "https://twitter.com/dasiths"
     - label: "LinkedIn"
       url: "https://www.linkedin.com/in/dasiths/"
+    - label: "Speaker Profile"
+      url: "https://sessionize.com/dasiths/"
   caption: "Location: [**Gellibrand River, Princetown**](https://www.visitgreatoceanroad.org.au/towns-and-villages/princetown/)"
 excerpt: "“Three Rules of Work: Out of clutter find simplicity; From discord find harmony; In the middle of difficulty lies opportunity.” ~ *Albert Einstein*"
 feature_row:
