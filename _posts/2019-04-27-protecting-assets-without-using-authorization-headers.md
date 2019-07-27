@@ -206,7 +206,6 @@ public class AttachmentController : Controller {
     [AllowAnonymous]
     [Get("download/{token}")]
     public IActionResult DownloadFile([FromRoute]Guid token) {
-        var userId = HttpContext.User.Id; // or your mechanism to retrieve current user
         var pass = _resourceAccessManager.RetrievePass(token);
         return _myFileAccessService.GetFile(pass.ResourceId);
     }

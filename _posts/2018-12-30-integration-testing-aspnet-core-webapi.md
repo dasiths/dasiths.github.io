@@ -149,7 +149,7 @@ I was in such a situation recently. I had to write integration tests for a ASP.N
         {
             private readonly Func<HttpRequestMessage, HttpResponseMessage> _mockFunc;
 
-            public TestHttpClient(Func<HttpRequestMessage, HttpResponseMessage> mockFunc)
+            public MockedServiceClient(Func<HttpRequestMessage, HttpResponseMessage> mockFunc)
             {
                 _mockFunc = mockFunc;
             }

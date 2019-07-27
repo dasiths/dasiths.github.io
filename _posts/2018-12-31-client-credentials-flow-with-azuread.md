@@ -134,7 +134,7 @@ If you're unfamiliar with policy based authorization in ASP.NET core, please hav
             {
                 var writeRequirement = new WriteRequirement();
                 options.AddPolicy("WritePolicy", 
-                    customPolicy => customPolicy.Requirements.Add(WriteRequirement));
+                    customPolicy => customPolicy.Requirements.Add(writeRequirement));
             });
 
             services.AddSingleton<IAuthorizationHandler, WriteRequirementHandler>();
