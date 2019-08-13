@@ -22,8 +22,8 @@ feature_row:
   - image_path: assets/images/dddmelb2019main.jpg
     alt: "DDD Melbourne 2019"
     title: "DDD Melbourne 2019"
-    excerpt: "You can find the abstract and slides here for my talk on Modern Authentication."
-    url: "https://dasiths.github.io/2019/08/13/speaking-dddmelbourne-2019/"
+    excerpt: "You can find the abstract and slides here for my talk on Modern Authentication. I covered most OAuth flows and OpenID Connect in this session."
+    url: "https://dasiths.github.io/2019/08/13/speaking-ddd-melbourne-2019/"
     btn_label: "Read More"
     btn_class: "btn--primary"
   - image_path: assets/images/profile_speaking.jpg

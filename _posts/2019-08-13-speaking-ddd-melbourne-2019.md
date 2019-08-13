@@ -7,7 +7,7 @@ header:
 categories: [Conference, Authentication]
 tags: [dddmelbourne, authentication, security, oauth, openidconnect, public speaking]
 ---
-Last weekend I spoke at [@DDDMelbourne](https://www.dddmelbourne.com/) at it was my first time doing so. The event attracted close to 900 people and has 5 concurrent tracks. I spoke at the [@JuniorDev](https://twitter.com/juniordev_io) channel about `Modern Authentication`.
+Last weekend I spoke at [@DDDMelbourne](https://www.dddmelbourne.com/) and it was my first time doing so. The event attracted close to 900 people and had 5 concurrent tracks. I spoke at the [@JuniorDev](https://twitter.com/juniordev_io) channel about `Modern Authentication`.
 
 ![Audience](/assets/images/dddmelb2019main.jpg)
 
