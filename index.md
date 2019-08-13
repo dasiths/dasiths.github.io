@@ -19,6 +19,13 @@ header:
   caption: "Location: [**Gellibrand River, Princetown**](https://www.visitgreatoceanroad.org.au/towns-and-villages/princetown/)"
 excerpt: "“Three Rules of Work: Out of clutter find simplicity; From discord find harmony; In the middle of difficulty lies opportunity.” ~ *Albert Einstein*"
 feature_row:
+  - image_path: assets/images/dddmelb2019main.jpg
+    alt: "DDD Melbourne 2019"
+    title: "DDD Melbourne 2019"
+    excerpt: "You can find the abstract and slides here for my talk on Modern Authentication."
+    url: "https://dasiths.github.io/2019/08/13/speaking-dddmelbourne-2019/"
+    btn_label: "Read More"
+    btn_class: "btn--primary"
   - image_path: assets/images/profile_speaking.jpg
     alt: "LevelsConf2018"
     title: "#LevelsConf2018"
