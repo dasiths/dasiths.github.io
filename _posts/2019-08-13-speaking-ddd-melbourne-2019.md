@@ -16,7 +16,7 @@ DDD Melbourne is an inclusive non-profit conference for the software community.
 On the website it says
 > Our goal is to create an approachable event that appeals to the whole community, especially people who usually don’t have the opportunity to attend, or speak at, conferences.
 
-My talk was about modern authentication and how to leverage existing trust relationships with social networking web sites and other identity providers. I described the core concepts and then jumped in to a deep dive of JSON Web Tokens. I finished the talk by looking at `OAuth` and `OpenIdConnect` flows like `Implicit Grant Flow`, `Auth Code Grant Flow` and `Client Credentials Grant Flow`. I briefly touched on recent additions to the OAuth protocol like RFC7525 (Token Exchange flow) and Device Code flow as well.
+My talk was about modern authentication and how to leverage existing trust relationships with social networking web sites and other identity providers. I described the core concepts and then jumped in to a deep dive of JSON Web Tokens. I finished the talk by looking at `OAuth` and `OpenIdConnect` flows like `Implicit Grant`, `Auth Code Grant` and `Client Credentials Grant`. I briefly touched on recent additions to the OAuth 2.0 protocol like [Token Exchange Flow](https://tools.ietf.org/html/draft-ietf-oauth-token-exchange-12) and [Device Code flow](https://tools.ietf.org/html/draft-ietf-oauth-device-flow) as well.
 
 The abstract is as follows.
 
