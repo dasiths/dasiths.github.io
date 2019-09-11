@@ -3,7 +3,7 @@ title: "Upcoming talk @ API Days, Melbourne 2019"
 date: 2019-09-07 22:06
 comments: true
 header:
-  teaser: /assets/images/dddmelb2019main.jpg
+  teaser: /assets/images/apidays/logo.jpg
 categories: [Conference, Microservices]
 tags: [apidays, microservices, public speaking]
 ---
@@ -30,15 +30,15 @@ The abstract is as follows.
 
 I've worked in the industry to close to 20 years now and I've seen [SOA](https://en.wikipedia.org/wiki/Service-oriented_architecture) come and transition into Microservices. There is wealth of knowledge the industry has acquired. As a result, most lessons we learnt from SOA can directly be applied. **This talk is targeted at development teams going through a microservices transition or plan to do so.** 
 
-```
-While most of the content is at an intermediate level, we cover some advanced concepts around distributed system architecture at certain points. It is assumed these concepts are well known by the audience.
-```
+>While most of the content is at an intermediate level, we cover some advanced concepts around distributed system architecture at certain points. It is assumed these concepts are well known by the audience.
 
 Over the last few years I've also got some good results with using [DDD](https://en.wikipedia.org/wiki/Domain-driven_design) to define microservice boundaries and data ownership. In my opinion, the two biggest technical problems arrive in the form of data ownership and inter-microservice communication. Most development teams pay little to no attention to these aspects and focus on wrong things like tooling and frameworks. The better implementations of microservices don't try to fight the fact the distributed nature of them and accept the realities of distributed systems. But I've seen even the best technical implementations fail because the development teams fail to understand the domain the business requirements properly. 
 
 Conversely, the business's who truly desire the agility advantages of microservices can't expect a purely technical solution. There are so many organisational issues that prevent a business from being agile. Microservices are the least of those.
 
 I've broken my talk down to six sub topics and give a **helicopter view of some of the issues** I've come up against. Since this is a 30 minute time slot the plan isn't to go down to too much detail. My aim is to provide some context and highlight the issues. I might decide to do detailed write up of each aspect later in the year. There are plenty of resource on the internet if your Googlefu is decent :)
+
+## Slide deck
 
 <div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.1972%;"><iframe src="//speakerdeck.com/player/539d4f6dd03f4c70915f69a3d521acae" style="border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;" allowfullscreen scrolling="no" allow="encrypted-media"></iframe></div>
 
