@@ -138,7 +138,7 @@ There have been a few anti patterns I've seen in the wild. Some of these I've do
 
 - UI Monolith
 
-  Often the the monolith evolution ends with the backend being segmented in to microservices. But you end up having one UI service which is coupled all these to interact with the user. This becomes a bottleneck to development teams and impedes with team autonomy and agility.
+  Often the the monolith evolution ends with the backend being segmented in to microservices. But you end up having one UI service which is strongly coupled to many of these in order to interact with the user. This becomes a bottleneck to development teams and impedes with team autonomy and agility.
 
   The best answer to this comes in the way to micro front ends. You have the option of server side vs client side rending here. You have to be careful with the composition though. If you have too many micro front ends, it can affect page load severely as each micro front end carries its own bundle with whatever framework was used to develop it. This also means that the UI APP shell is also susceptible to framework incompatibilities caused by micro front ends it hosts. The best results are achieved when you have a smaller number of well defined micro front ends and some intelligent bundle loading mechanism on the application shell. While I don't have a lot of experience with this, there are some great resources on the internet on how to get started.
 
@@ -158,7 +158,7 @@ As your microservice count grows, you will find that the following cross cutting
 - Security & Access Control
 - Monitoring & Tracing
 
-Rather than trying to solve these in each microservice implementation, you could leverage the [side car pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/sidecar) for this. The side car can proxy all your network calls and abstract away the infrastructure concerns. This helps your microservice focus on the business logic. You might be able to take this further using a [service mesh architecture](https://www.nginx.com/blog/what-is-a-service-mesh). It gives you the ability to monitor the traffic the react to exceptional conditions faster.
+Rather than trying to solve these in each microservice implementation, you could leverage the [side car pattern](https://docs.microsoft.com/en-us/azure/architecture/patterns/sidecar) for this. The side car can proxy all your network calls and abstract away the infrastructure concerns. This helps your microservice focus on the business logic. You might be able to take this further using a [service mesh architecture](https://www.nginx.com/blog/what-is-a-service-mesh). It gives you the ability to monitor the traffic and react to exceptional conditions faster.
 
 ## Conclusion
 
