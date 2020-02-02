@@ -9,6 +9,8 @@ tags: [dddmelbourne, authentication, security, oauth, openidconnect, public spea
 ---
 Last weekend I spoke at [@DDDMelbourne](https://www.dddmelbourne.com/) and it was my first time doing so. The event attracted close to 900 people and had 5 concurrent tracks. I spoke at the [@JuniorDev](https://twitter.com/juniordev_io) channel about `Modern Authentication`.
 
+Update: I presented the same topic at the inaugural DDD Adelaide in October 2019 as well.
+
 ![Audience](/assets/images/dddmelb2019main.jpg)
 
 DDD Melbourne is an inclusive non-profit conference for the software community.
@@ -24,6 +26,10 @@ The abstract is as follows.
 
 You can download the slides from <a href="https://www.slideshare.net/DasithWijesiriwarden/ddd-melbourne-2019-modern-authentication-101-161977250" target="_blank" rel="noopener">here</a>
 
-<iframe src="//www.slideshare.net/slideshow/embed_code/key/teBa6Y4awJ4QJB" width="595" height="485" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe> 
+<iframe src="//www.slideshare.net/slideshow/embed_code/key/teBa6Y4awJ4QJB" width="595" height="485" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
+
+Video is embedded below
+
+<iframe width="1280" height="720" src="https://www.youtube.com/embed/kcDVUp93ydc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 A big thanks for everyone who helped organize this event and the everyone who came to listen to my talk. It was the 10th consecutive year of running DDD Melbourne and everyone seemed to thoroughly enjoy it. If you have any thoughts + feedback about my talk or the event in general please feel free to leave it here or send them my way via twitter @dasiths.
