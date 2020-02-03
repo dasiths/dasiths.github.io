@@ -1,5 +1,5 @@
 ---
-title: "Integration Testing An AspNet Core API That Is Protected With CSRF/XSRF Tokens"
+title: "Integration Testing an AspNet Core API That is Protected With CSRF/XSRF Tokens"
 date: 2020-02-03 12:00
 header:
   teaser: /assets/images/photo-1532678312818-7c8cfdfe5491.jpg
@@ -14,7 +14,7 @@ If you haven't done this before, the [Microsoft documentation](https://docs.micr
 
 ## How It Works
 
-On the first request to the server, it returns a `cookie` with a special name (i.e. `X-XSRF-TOKEN`). The SPA is expected to extract the value from the cookie and reattach that in the subsequent requests' headers. Each time you make a request you get a new token and that token is only valid once. This way the server prevents CSRF attacks.
+On the first request to the server, it returns a `cookie` with a special name (i.e. `XSRF-TOKEN`). The SPA is expected to extract the value from the cookie and reattach that in the subsequent request's header (i.e. as `X-XSRF-TOKEN`). Each time you make a request you get a new token and that token is only valid for the subsequent request. This way the server prevents CSRF attacks.
 
 SPA frameworks like Angular have built in interceptor mechanisms in place which makes it easier to do this extraction and re-attaching process automatically [as described here](https://angular.io/guide/security#xsrf).
 
@@ -43,14 +43,16 @@ In my `Startup.cs`
 
         services.AddMvc(options =>
             {
-                options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>(); // See https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.autovalidateantiforgerytokenattribute
+                options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>(); 
+                // See https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.autovalidateantiforgerytokenattribute
             })
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
             .AddApplicationPart(typeof(Startup).Assembly);
 
         services.AddAntiforgery(options =>
             {
-                options.HeaderName = CsrfMiddleWare.XsrfTokenHeader; // We define the header name here. Default is "X-XSRF-TOKEN"
+                options.HeaderName = CsrfMiddleWare.XsrfTokenHeaderName;
+                // We define the header name here. Default is "X-XSRF-TOKEN"
             });
     }
 
@@ -75,7 +77,8 @@ Then define your CSRF middleware.
 ```c#
     public class CsrfMiddleWare
     {
-        public const string XsrfTokenHeader = "MY-XSRF-TOKEN";
+        public const string XsrfTokenHeaderName = "MY-XSRF-TOKEN";
+        public const string XsrfCookieName = "MY-XSRF-TOKEN";
 
         private readonly RequestDelegate _next;
         private readonly IAntiforgery _antiforgery;
@@ -89,7 +92,7 @@ Then define your CSRF middleware.
         public async Task Invoke(HttpContext context)
         {
             var tokens = _antiforgery.GetAndStoreTokens(context);
-            context.Response.Cookies.Append(XsrfTokenHeader,
+            context.Response.Cookies.Append(XsrfCookieName,
                 tokens.RequestToken,
                 new CookieOptions()
                 {
@@ -145,7 +148,7 @@ We then create the `WebApplicationFactory` to use in our integration tests. You 
     }
 ```
 
-Now let's create a convenience method to retrieve a CSRF token. When we make the initial call, we get a couple of cookies returned in the `Set-Cookie` response header. One of them is the CSRF token. We extract that and then attach it to the subsequent request as a header with the name `My-XSRF-Token`. We also attach the two cookies back to the next request as well. **This simulates the behaviour of a web browser and the Angular SPA CSRF interceptor.**
+Now let's create a convenience method to retrieve a CSRF token. When we make the initial call, we get a couple of cookies returned in the `Set-Cookie` response header. One of them (`MY-XSRF-TOKEN`) is the CSRF token. We extract that and then attach it to the subsequent request as a header with the name `MY-XSRF-TOKEN`. We also attach the two cookies back to the next request as well. **This simulates the behaviour of a web browser and the Angular SPA CSRF interceptor.**
 
 I highly recommend you debug and step through the method below to get a good understanding of what it received, extracted and re-attached to the next request.
 
@@ -154,12 +157,14 @@ I haven't put any effort to clean up the code below. It's meant for demo purpose
 ```c#
     public static async Task<HttpClient> GetCsrfAwareClientAsync(this WebAppFactory factory)
     {
+        const string cookieName = CsrfMiddleWare.XsrfCookieName;
+        const string headerName = CsrfMiddleWare.XsrfTokenHeader;
+
         var client = factory.CreateClient();
         var testResult = await client.GetAsync("/api/test"); // the endpoint we created before
         var cookies = testResult.Headers.GetValues("Set-Cookie").ToList();
 
-        const string headerName = CsrfMiddleWare.XsrfTokenHeader;
-        var token = cookies.Single(x => x.StartsWith(headerName))?.Substring($"{headerName}=".Length).Split(";")[0];
+        var token = cookies.Single(x => x.StartsWith(cookieName))?.Substring($"{cookieName}=".Length).Split(";")[0];
 
         // We need to append both the cookie and the header as both are checked
         // https://github.com/aspnet/Antiforgery/blob/8124442320b6de41a89bd779dd1b82b5bb8131e7/src/Microsoft.AspNetCore.Antiforgery/Internal/DefaultAntiforgery.cs#L115
@@ -174,28 +179,28 @@ I haven't put any effort to clean up the code below. It's meant for demo purpose
 Using the `GetCsrfAwareClientAsync()` convenience method, you can easily keep the CSRF logic compartmentalized and focus on business logic when writing the integration tests.
 
 ```c#
-[Fact]
-        public async Task CsrfTokenWorked()
-        {
-            // Arrange
-            var factory = new WebAppFactory();
-            var client = await factory.GetCsrfAwareClientAsync();
-            var order = new CreateOrderModel("Order name", "Customer");
+    [Fact]
+    public async Task CsrfTokenWorked()
+    {
+        // Arrange
+        var factory = new WebAppFactory();
+        var client = await factory.GetCsrfAwareClientAsync();
+        var order = new CreateOrderModel("Order name", "Customer");
 
-            // Act
-            var response = await client
-                .PostAsJsonAsync("/Api/Orders/Create", order);
+        // Act
+        var response = await client
+            .PostAsJsonAsync("/Api/Orders/Create", order);
 
-            // Assert
-            response.EnsureSuccessStatusCode();
-        }
+        // Assert
+        response.EnsureSuccessStatusCode();
+    }
 ```
 
 *Note: There is a [much nicer way to handle cookie extraction](https://stackoverflow.com/questions/12373738/how-do-i-set-a-cookie-on-httpclients-httprequestmessage) using something called a [`CookieContainer`](https://docs.microsoft.com/en-us/dotnet/api/system.net.cookiecontainer?view=netstandard-2.1) but we can't use it in our examples because the `HttpClient` is constructed for us via the `WebApplicationFactory.CreateClient()` and we don't have access to the ClientHandler underneath to hook our own CookieContainer.*
 
 ## Conclusion
 
-CSRF protection is a must have when you are developing an web application that uses any form of cookie based authentication. But it makes it a bit harder to test as a result. This post showed you how to simulate the initial call to an open endpoint and simulate the browser/SPA behaviour when it comes to handing cookies in the response header.
+CSRF protection is a must have when you are developing a web application that uses any form of cookie based authentication. But it makes it a bit harder to test as a result. This post showed you how to simulate the initial call to an open endpoint and simulate the browser/SPA behaviour when it comes to handing cookies in the response header.
 
 I hope this has been helpful and saves you some time researching what's required to write an integration test when CSRF is in the picture.
 
