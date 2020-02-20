@@ -236,3 +236,7 @@ Yes it's really that simple. One more thing. I had some trouble with the AzureDe
 ```
 
 I hope this helps you get started on bootstrapping an integration test for your ASP.NET webapi project. Please let me know your thoughts and criticism in the comments section below. Thank your for your time.
+
+## Update 20/02/20
+
+I wrote the example for AspNetCore 2.0+. AspNet Core 3.0 uses the `HostBuilder` instead of the `WebHostBuilder` to create the web host. If you're using the examples for an AspNetCore 3+ project you might want to consider this advice https://andrewlock.net/converting-integration-tests-to-net-core-3/#using-webapplicationfactory-in-asp-net-core-3-0 and override the `CreatHostBuilder()` instead of the `CreateWebHostBuilder()` in my example.

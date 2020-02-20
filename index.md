@@ -19,10 +19,17 @@ header:
   caption: "Location: [**Gellibrand River, Princetown**](https://www.visitgreatoceanroad.org.au/towns-and-villages/princetown/)"
 excerpt: "“Three Rules of Work: Out of clutter find simplicity; From discord find harmony; In the middle of difficulty lies opportunity.” ~ *Albert Einstein*"
 feature_row:
+  - image_path: assets/images/apidays/apidays-speaking-photo.jpg
+    alt: "API Days Melbourne 2019"
+    title: "API Days Melbourne 2019"
+    excerpt: "You can find the the slides and an extended overview of the topics I covered during my talk on Microservices here."
+    url: "https://dasith.me/2019/09/07/upcoming-talk-at-apidays/"
+    btn_label: "Read More"
+    btn_class: "btn--primary"
   - image_path: assets/images/dddmelb2019main.jpg
     alt: "DDD Melbourne 2019"
     title: "DDD Melbourne 2019"
-    excerpt: "You can find the abstract and slides here for my talk on Modern Authentication. I covered most OAuth flows and OpenID Connect in this session."
+    excerpt: "You can find the video recording, abstract and slides here for my talk on Modern Authentication. I covered most OAuth flows and OpenID Connect in this session."
     url: "https://dasith.me/2019/08/13/speaking-ddd-melbourne-2019/"
     btn_label: "Read More"
     btn_class: "btn--primary"

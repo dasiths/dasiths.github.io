@@ -205,3 +205,7 @@ CSRF protection is a must have when you are developing a web application that us
 I hope this has been helpful and saves you some time researching what's required to write an integration test when CSRF is in the picture.
 
 Please leave any comments or feedback. Thank you.
+
+## Update 20/02/20
+
+I wrote the example for AspNetCore 2.2. AspNet Core 3.0 uses the `HostBuilder` instead of the `WebHostBuilder` to create the web host. If you're using the examples for an AspNetCore 3+ project you might want to consider this advice https://andrewlock.net/converting-integration-tests-to-net-core-3/#using-webapplicationfactory-in-asp-net-core-3-0 and override the `CreatHostBuilder()` instead of the `CreateWebHostBuilder()` in my example.
