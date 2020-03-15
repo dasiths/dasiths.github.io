@@ -9,7 +9,7 @@ categories: [NimbleConfig, Open Source]
 tags: [NimbleConfig, Open Source, ConfigInjector]
 ---
 
-I recently started an open sourced project called NimbleConfig. It is a simple, unambitious, convention-based configuration injector for .NET using IConfiguration (`Microsoft.Extensions.Configuration`) with full support for AspNetCore. 
+I recently started an open sourced project called NimbleConfig (hosted [in GitHub](https://github.com/dasiths/NimbleConfig)). It is a simple, unambitious, convention-based configuration injector for .NET using IConfiguration (`Microsoft.Extensions.Configuration`) with full support for AspNetCore. 
 
 
 ## A Bit of History
@@ -152,7 +152,7 @@ You can try this if you have to access some configuration setting prior to setti
 
 ```csharp
     // You still need to provide an instance of IConfiguration
-    var dirtySetting = configuration.QuickReadSetting();
+    var dirtySetting = configuration.QuickReadSetting<SomeSetting>();
 ```
 
 <hr />

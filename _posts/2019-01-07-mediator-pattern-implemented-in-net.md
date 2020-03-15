@@ -37,7 +37,7 @@ If you have used it before and have a story to tell, please leave a comment here
 
 ## Motivation
 
-There are a few .NET implementations around. This [post](https://drusellers.com/posts/greenpipes/) by Dru Sellers pointed me in the right direction. The most popular one of course is [MediatR](https://github.com/jbogard/MediatR) from Jimmy Bogard. It's a very simple library with a `Message` and `Response` model with support for middleware. After investigating the source for `MediatR` (Which heavily inspired my design) and some other libraries I decided to create my own.
+There are a few .NET implementations around. This [post](https://drusellers.com/posts/greenpipes/) by Dru Sellers pointed me in the right direction. The most popular one of course is [MediatR](https://github.com/jbogard/MediatR) from Jimmy Bogard. It's a very simple library with a `Request` and `Response` model with support for middleware. After investigating the source for `MediatR` (Which heavily inspired my design) and some other libraries I decided to create my own.
 
 My motivations were the following.
 
@@ -314,11 +314,10 @@ Those are the major pieces that make up the Mediator. Conceptually it is very si
     ```    
     - You can find more examples for the concept of middleware [here](https://github.com/dasiths/SimpleMediator/tree/master/Samples/SimpleMediator.Samples.ConsoleApp). 
 
-    - I have examples of how to set it up with IOC containers [here](https://github.com/dasiths/SimpleMediator/tree/master/Samples/SimpleMediator.Samples.Shared/Helpers). `Autofac` and `Microsoft.Extensions.DependencyInjection` currently have examples but I'll keep adding more as I go. 
+    - I have examples of how to set it up with IOC containers [here](https://github.com/dasiths/SimpleMediator/tree/master/Samples/SimpleMediator.Samples.Shared/Helpers). `Autofac` and `Microsoft.Extensions.DependencyInjection` currently have examples but I'll keep adding more as I go.
     - There is also some code samples (work in progress) on how to integrate it with `MassTransit` to dispatch messages over the wire to consumers. Check it out [here](https://github.com/dasiths/SimpleMediator/tree/master/Samples/SimpleMediator.Samples.MassTransit).
 
     As you can see, the usage is pretty straight forward and simple. The middleware gives you a lot of extensibility options and I've even been able to create constrained middleware that validates only certain types of messages.
 
 ## Conclusion 
 I hope this post has been helpful in understanding the concepts behind the mediator pattern and how you would go about implementing it. All the code is hosted at https://github.com/dasiths/SimpleMediator under the MIT license. Feel free to have a look and create a PR if you think there are improvements. Please leave any feedback you have here. Thank you.
-    
