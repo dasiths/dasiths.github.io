@@ -16,10 +16,10 @@ minimal_mistakes_skin    : "air" # "air", "aqua", "contrast", "dark", "dirt", "n
 
 # Site Settings
 locale                   : "en-US"
-title                    : "Gossip Protocol - Life of a software developer #Readifarian"
+title                    : "Gossip Protocol - Life of a developer in a #distributed world"
 title_separator          : "-"
 name                     : "Dasith Wijesiriwardena"
-description              : "The stories of a .Net developer with a distributed focus"
+description              : "The stories of a .NET developer with a focus on distributed systems and the cloud"
 url                      : "https://dasiths.github.io" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "dasiths/dasiths.github.io"
@@ -104,9 +104,9 @@ author:
   name             : "Dasith Wijesiriwardena"
   avatar           : "/assets/images/profile_bio_small.jpg"
   bio              : |
-    I'm fullstack .Net developer with a unhealthy fascination for distributed systems. I’m currently based in Melbourne and work for a consultancy firm called <a href="http://readify.net" target="_blank">Readify.</a><br />
+    Consultant | Public speaker | Solutions architect | Developer with a unhealthy fascination for distributed systems. Not in that order. I’m currently based in Melbourne and work for <a href="http://readify.net" target="_blank">Telstra Purple.</a><br />
     <br />
-    Since my early days of playing with VB5, C++, Asp and php 3, software development has gone through a paradigm shift. Join me on my journey through the world of .Net and all things distributed.
+    Since my early days of playing with VB5, C++, ASP and PHP 3, software development has gone through a paradigm shift. Join me on my journey through the world of .NET and all things distributed.
   location         : "Melbourne, VIC"
   email            :
   links:
