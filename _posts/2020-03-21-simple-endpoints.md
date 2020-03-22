@@ -13,15 +13,15 @@ I've been working with ASP.NET/CORE MVC and WebApi for a while now and there is 
 
 ## The Why
 
-Typically in a greenfield project you start with clean controller and has a few endpoints. You have some sort of domain layer or a mediator that the request gets dispatched to. So you end up doing some sort of mapping in the controller action method to transform the request parameters to a known type of view model as required. All good so far. The code base is manageable.
+Typically in a greenfield project you start with clean a controller and has a few endpoints. You have some sort of domain layer or a mediator that the request gets dispatched to. So you end up doing some sort of mapping in the controller action method to transform the request parameters to a known type of view model as required. All good so far. The code base is manageable.
 
-But then your project grows and the domain evolves. It's no longer easy to make a judgement call as to what controller your action methods should sit. Do you create a new one or do you reuse an existing one? This becomes doubly hard in the case of `REST` as you really need to understand your domain before you define your resources.
+But then your project grows and the domain evolves. It's no longer easy to make a judgement call as to what controller your action methods should sit in. Do you create a new one or do you reuse an existing one? This becomes doubly hard in the case of `REST` as you really need to understand your domain before you define your resources.
 
 ## The Problem
 
-The developers often take the path of least resistance/effort and use an existing controller when adding new features. This leads to further dependencies to the domain layer and mappers being introduced in the controller (aka coupling). If you're using dependency injection this usually means that the constructor signature keeps growing in size. If you have any controller level unit tests, this results in the unnecessary dependencies (majority) requiring mocking when you're trying to test a single action method. (TBH I don't see big value in controller unit tests anyway. Why not write integration tests for this purpose?)
+The developers often take the path of least resistance/effort and use an existing controller when adding new features. This leads to further dependencies to the domain layer and mappers being introduced in the controller (aka coupling). If you're using dependency injection this usually means that the constructor signature keeps growing in size. If you have any controller level unit tests, this results in unnecessary dependencies (majority) requiring mocking when you're trying to test a single action method. (TBH I don't see big value in controller unit tests anyway. Why not write integration tests for this purpose?)
 
-The above takes little to no effort to do but what this does over the long run is that your controller becomes bloated and fat. Your controller now does many things in the domain like some sort of god. This is what we were trying to avoid but the controller ended up being a victim of circumstance.
+The above takes little to no effort to do but over the long run your controller becomes **bloated and fat**. Your controller now does many things in the domain like some sort of god. This is what we were trying to avoid but the controller ended up being a **victim of circumstance**.
 
 The longer this keeps going on for, the harder it becomes to make decisions about the domain. Often new developers will look at the existing controllers, see a related feature and then chuck the new feature in there as well. This snowball effect makes the controller boundaries really hard to reason with. It often gets worse in proportion of how long the project has been running. What started out as a simple problem now takes considerable thinking and refactoring to weed out. If the business isn't willing to use resources to improve tech debt, then the developers quietly keep accepting the bloated nature of the controllers as inconvenient reality and move on.
 
@@ -31,7 +31,7 @@ The velocity of adding new features and consistency of your API gets affected in
 
 There is no magic bullet. In the end this really does come down to how empowered your development team is. Do they have the autonomy to deal with domain changes and refactor the current controller or API surface? Does the business work with the development team to prioritize tech debt? **Are the developers disciplined**? What does this mean to the API consumers? All very complex questions with no clear answers.
 
-But is there pattern we can embrace that directs us towards the pit of success? IMO the point which is most important in the workflow is when we decide where the action method goes. What if we introduce a pattern where each new action method sits in its own class and file? This way the developers always follow the pattern and create "endpoints" as required. Routing becomes a secondary concern.
+But is there a pattern we can embrace that directs us towards the pit of success? IMO the point which is most important in the workflow is when we decide where the action method goes. What if we introduce a pattern where each new action method sits in its own class and file? This way the developers always follow the pattern and create "endpoints" as required. Routing becomes a secondary concern.
 
 I've thought about this for a while and came up with this pattern of "Endpoints". I implemented it as a library so other people can use it.
 
@@ -108,10 +108,8 @@ Let's start with an example.
         {
             // Other services go here
 
-            services.AddControllers((options) =>
-            {
-                options.AddEndpointRoutingConvention(); // This is required to translate endpoint names
-            });
+            services.AddControllers();
+            services.AddSimpleEndpointsRouting(); // This is required to translate endpoint names
         }
     ```
 
