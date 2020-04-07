@@ -16,7 +16,7 @@ minimal_mistakes_skin    : "air" # "air", "aqua", "contrast", "dark", "dirt", "n
 
 # Site Settings
 locale                   : "en-US"
-title                    : "Gossip Protocol - Life of a developer in a #distributed world"
+title                    : "Dasith's Gossip Protocol - Life of a developer in a #distributed world"
 title_separator          : "-"
 name                     : "Dasith Wijesiriwardena"
 description              : "Dasith Wijesiriwardena (@dasiths) - The stories of a .NET developer with a focus on distributed systems and the cloud"
