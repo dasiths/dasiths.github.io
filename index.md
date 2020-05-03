@@ -1,5 +1,5 @@
 ---
-title: "Welcome to my blog"
+title: "Welcome/Ayubowan to My Blog"
 layout: splash
 permalink: /
 date: 2016-03-23T11:48:41-04:00
