@@ -1,5 +1,5 @@
 ---
-title: "Welcome to Dasith's blog"
+title: "Welcome to my blog"
 layout: splash
 permalink: /
 date: 2016-03-23T11:48:41-04:00
