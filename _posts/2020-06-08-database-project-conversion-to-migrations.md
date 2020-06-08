@@ -9,7 +9,7 @@ tags: [database, migrations, .net, visual studio, sql]
 ---
 Database projects in Visual Studio have been a very popular way to develop and manage the database schema and logic in the past. With more and more applications now preferring to have the data tier logic and validation within the bounds of the application and use the database just for persistence, I've come across clients who want to convert their database projects to a more CI/CD friendly database migrations.
 
-So I decided to share an approach I used to convert existing database project to use database migrations using [DbUp](https://dbup.github.io/).
+So I decided to share an approach used to convert existing database project to use database migrations using [DbUp](https://dbup.github.io/) I've had success with.
 
 ## Why Migrations? 
 
@@ -29,29 +29,40 @@ I've used tool like [`FluentMigrator`](https://github.com/fluentmigrator/fluentm
 
 ## Forward-only migrations
 
-DbUp doesn't support down migrations though. IMO this is a good design decision. Down migrations are rarely tested and often only give a false sense of confidence of ability to rollback. If your up migration fails then the same set of data might cause of your down migration to fail as well. To add to that not all migrations can have a down migration to consistently rollback changes. My preference is to have discipline around how you do migrations and not to destructive data changes in one migration step. As an example if I wanted to refactor a single `Name` field into `FirstName` and `LastName` columns, I wouldn't delete the `Name` column in the same migration that I introduce the other two columns. In the first migration I would introduce the columns, copy the data over and then rename the `Name` column to something like `Name-Deprecated`. I would then let the system run for a while until we are confident that everything is working as intended. If not you can create subsequent migrations to rectify the problems as you still have data in the original column. After a certain period then I would create another migration to get rid of the now deprecated column. This gives greater resiliency to the system and allows you to be more confident about changes you do.
+DbUp doesn't support down migrations though. IMO this is a good design decision. Down migrations are rarely tested and often only give a false sense of confidence of ability to rollback. If your up migration fails then the same set of data might cause your down migration to fail as well. To add to that not all migrations can have a paired down migration to consistently rollback changes. My preference is to have discipline around how you do migrations and not do destructive data changes in a single migration step.
+
+As an example if I wanted to refactor a single `FullName` field into `FirstName` and `LastName` columns, I wouldn't delete the `FullName` column in the same migration that I introduce the other two columns. In the first migration I would introduce the columns, copy the data over and then rename the `FullName` column to something like `FullName-Deprecated`. I would then let the system run for a while until we are confident that everything is working as intended. If not, you can then create subsequent migrations to rectify the problems as you still have data in the original column. After a certain period, I would then create another migration to get rid of the now deprecated column. This gives greater resiliency to the system and allows you to be more confident about changes you do.
 
 ## Preparation
 
 1. We need to create our initial migration and the easiest way to do this is to consider your current state of the database as the initial state as far as the migrations are concerned.
 
-    This means exporting all your database objects to a script. You can do this from Sql Server Management Studio (SSMS). [Follow the steps here](https://www.eversql.com/exporting-mysql-schema-structure-to-xml-using-mysql-clients/#sqlserver) to `Generate Scripts` for all your database objects you require (Tables, Views, Stored Procs etc).
+    This means exporting all your database objects to a script. You can do this from SQL Server Management Studio (SSMS). [Follow the steps here](https://www.eversql.com/exporting-mysql-schema-structure-to-xml-using-mysql-clients/#sqlserver) to `Generate Scripts` for all database objects you require to be created as a part of the initial migration (Tables, Views, Stored Procs, Functions etc).
 
     ![Generate Scripts](/assets/images/export_sql_server_schema_step1-768x624.png)
 
-    Save this file as `Initial_Migration.sql`.
+    Save this file as `Initial_Migration.sql`. Once exported open the file and remove any SQL statements at the begining that create the Database or Logins. Lets assume the migrations are run on an empty database that has already been created.
 
-2. Now repeat the same steps as above but in the last window choose the option to create a script per object. We will only select Functions and Stored Procedures to export this time as we need them to be PR review friendly. More about this later on. (Remember we exported everything in to one file file in the previous step, we are exporting a subset of those things again to their individual files.)
+2. Now repeat the same steps as above with the following changes...
+    - Only select Functions and Stored Procedures to export this time as we need them to be PR review friendly. More about this later on.
+    - In the last window, go to `Advanced` -> Scripting Options -> set `Check for object existance` to `True`. Press OK.
+    - Now choose the option to create a `Single file per object`. (Remember we exported everything in to one file file in the previous step, we are exporting a subset of those things again to their individual files.)
 
-    ![Generate Scripts](/assets/images/export_sql_server_schema_per_object.png)
+    - Save these in a folder called `PostDeployment`.
 
-    We will use these individual objects to create reviewabe post deployment scripts in our migration project. This will be very helpful if you have large `Stored Procedures` in your database project. If you didn't have them as post deployment scripts then everytime you need to change something, you would have to create a new migration and the person reviewing your change seens a new file (not just your change).
+        ![Generate Scripts](/assets/images/export_sql_server_schema_per_object.png)
 
-    There is more detail around the idea [here](https://wengier.com/reviewable-sprocs/).
+        **Why are we duplicating the Stored Procedures in our all-in-one script and again in the individual files?**
 
-    Save these in a folder called `PostDeployment`.
+        Imagine that we only used migrations and no post deployment scripts. Unlike Table or View schemas you can't alter a part of a Stored Procedure. So if you need to make a change you need to create a new migration with the full stored procedure definition. The person reviewing your change sees a new file and not just your change. It becomes very hard to review changes this way.
 
-3. You should now have one big SQL file called `Initial_Migration.sql` and lot of smaller SQL files per Stored Procedure in the `PostDeployment` folder. Now we need to give the files inside that folder a sequence number. For example if your file is called `CreateCustomer.sql` we need to rename it to `000001 - CreateCustomer.sql` and anything that depends on this script must have a sequence/order number higher than `000001`. (This is because DbUp executes the scripts in their name order. We use the name as a way to enforce dependency order for post deployment scripts.) If you have a lot of files it will be time consuming to do this manually. So I used this [BulkRenaming](https://www.bulkrenameutility.co.uk/) tool to put the sequence/order suffix. I incremented the files in 5 (So sequence is 1,6,11 etc). Once this was done I could then manually set the dependent order (by reanming the suffix manually) as required without having to rename every subsequent file after a change of dependency order. The increment by 5 meant I could squeeze 4 more files between two other numbers if required. You might need a bit of manual effort here depending on how interconnected your stored procedures are.
+        So we will use these one file per object scripts to create reviewable post deployment scripts in our migration project. The idea is you keep modifying these post deployment scripts (Stored Procedures and Functions) rather than create a new migration for them. So the reviewer sees only your change in the context of the larger set. This will be very helpful if you have large Stored Procedures in your database project.
+
+        There is more detail around the idea [here](https://wengier.com/reviewable-sprocs/).
+
+3. You should now have one big SQL file called `Initial_Migration.sql` and lot of smaller SQL files per Stored Procedure in the `PostDeployment` folder. Now we need to give the files inside that folder a sequence number. For example if your file is called `CreateCustomer.sql` we need to rename it to `000001 - CreateCustomer.sql` and anything that depends on this script must have a sequence/order number higher than `000001`. (This is because DbUp executes the scripts in their name order. We use the name as a way to enforce dependency order for post deployment scripts.)
+
+    If you have a lot of files, it will be time consuming to do this manually. So I used this [BulkRenaming](https://www.bulkrenameutility.co.uk/) tool to put the sequence/order suffix. I set it so that it suffixed files in increments of 5 (So sequence is 1, 6, 11, 16 etc). Once this was done I could then manually set the dependent order (by renaming the suffix manually) as required without having to rename every subsequent file. This is because the increment by 5 meant I could squeeze 4 more files between two other scripts if required. You might need a bit of manual effort here depending on how interconnected your Stored Procedures are.
 
 ## DbUp Migration Runner
 
@@ -61,11 +72,11 @@ DbUp doesn't support down migrations though. IMO this is a good design decision.
 
     - As you can see I put the `Initial_Migration.sql` in the `Migrations` folder and prefixed it with `000001`. All subsequent migration will have the next sequence.
 
-    - I also have `PostDeployment` and `PreDeployment` folders. I've organized Stored Procedures and Functions in their own respective folders but that is not required. This is where you need to put the individually exported SQL files from our preparation steps before.
+    - I also have `PostDeployment` and `PreDeployment` folders. I've organized Stored Procedures and Functions in their own respective folders but that is optional. This is where you need to put the individually exported SQL files (`PostDeployment` folder) from our preparation steps before.
 
-    - There are also environment specific folders which also have their own specific Pre and Post deployment folder. This gives you the ability to customisations based on the environment as well. Once you see the migration runner code it will make more sense.
+    - There are environment specific folders which also have their own specific Pre and Post deployment folders. This gives you the ability to do customisations based on the environment if required. Once you see the migration runner code it will make more sense.
 
-    - DbUp uses the fully qualified file name with the namespace to order things and we make use of this to suffix or nest folders to enforce the order of scripts.
+    - DbUp uses the fully qualified file name with the namespace to figure out the order of execution and we make use of the filename suffix or nested folders (Namespace) to enforce our desired order.
 
 2. I use config transforms to transform the `AppConfig` based on the build quality via the [SlowCheetah extension](https://www.c-sharpcorner.com/article/transform-config-using-slow-cheetah/).
 
@@ -114,9 +125,9 @@ DbUp doesn't support down migrations though. IMO this is a good design decision.
     </configuration>
     ```
 
-    My release pipeline injects the `databaseConnectionString` and `releaseEnvironment` variable in to the `App.Release.config` / `AppName.exe.Config` file upon building/deploying the app. That why you see tokens like `#{databaseConnectionString}#`. I use [this extension](https://marketplace.visualstudio.com/items?itemName=qetza.replacetokens) in Azure DevOps to do it.
+    My release pipeline injects the `databaseConnectionString` and `releaseEnvironment` variables in to the `App.Release.config` / `AppName.exe.Config` file upon building/deploying the app. That is why you see tokens like `#{databaseConnectionString}#`. I use [this extension](https://marketplace.visualstudio.com/items?itemName=qetza.replacetokens) in Azure DevOps to do it.
 
-    When running locally with the `Debug` build quality it uses the `App.Debug.Config` to transform your original config file. So you can easily run and test the migration runner locally. This makes your local development exprience consistent among the team. No more complex database update scripts to run.
+    When running locally with the `Debug` build quality `MSBuild` uses the `App.Debug.Config` to transform your original config file. So you can easily run and test the migration runner locally. This makes your local development exprience consistent among the team. No more complex database update scripts to run.
 
 3. Now let's look at my migration runner (`Program.cs`). You obviously need a reference to the `DbUp-SqlServer` NuGet as we use it to do the heavy lifting.
 
@@ -283,7 +294,11 @@ static class Program
 }
 ```
 
-4. Running the migration runner is easy. You can run it manually or run it as a part of your release pipeline with the `--nowait` argument.
+## Running the migration runner
+
+You can run it manually (From Visual Studio or Opening the executable file) or run it as a part of your release pipeline with the `--nowait` argument.
+
+Before you run it for the first time make sure to drop the existing database and create an empty database with the same name in the connection string.
 
 That's it. You now have all the pieces required to convert your database project to one that uses database migrations instead.
 
@@ -291,6 +306,6 @@ That's it. You now have all the pieces required to convert your database project
 
 We looked at why database migrations offer us a better alternative when it comes to maintaining and deploying database changes, how to export your existing database as migrations and post deployment scripts, how to structure your migration runner and how it can work in an automated release pipeline.
 
-Most of the steps we took are no different to how you would structure any other database migrations project. The interesting bit was how we leveraged the concept of post deployment scripts to put our stored procedures in and made the PR review process much more easier. This will make the process of conversion a much more acceptable prospect to a team that has been working with database project and stored procedures in the past. I've had good traction with this approach at a couple of clients I've consulted for.
+Most of the steps we took are no different to how you would structure any other database migrations project. The interesting bit was how we leveraged the concept of post deployment scripts to put our Stored Procedures in and made the PR review process much more easier. This will make the process of conversion a much more acceptable prospect for a team that has been working with database projects and Stored Procedures in the past. I've had good traction with this approach at a couple of clients I've consulted for.
 
 Please leave any comments or feedback you have here.
