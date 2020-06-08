@@ -136,7 +136,8 @@ static class Program
 
         try
         {
-            WriteToConsole($"Database Migration Runner. Version={typeof(IEnvironmentsFolderMarker).Assembly.GetName().Version}");
+            WriteToConsole($"Database Migration Runner. " +
+             $"Version={typeof(IEnvironmentsFolderMarker).Assembly.GetName().Version}");
 
             // NOTE: PLEASE MAKE SURE YOUR SCRIPT IS MARKED AS EMBEDDED
             // https://www.c-sharpcorner.com/uploadfile/40e97e/saving-an-embedded-file-in-C-Sharp/
@@ -145,11 +146,16 @@ static class Program
             var baseNamespace = typeof(Program).Namespace;
             var baseEnvironmentsNamespace = typeof(IEnvironmentsFolderMarker).Namespace;
 
-            // You can use IConfiguration (Microsoft.Extensions.Configuration) to achieve the same thing in a .NET Core project as shown here https://stackoverflow.com/questions/38114761/asp-net-core-configuration-for-net-core-console-application
+            // You can use IConfiguration (Microsoft.Extensions.Configuration) to 
+            // achieve the same thing in a .NET Core project as shown here 
+            // https://stackoverflow.com/questions/38114761/asp-net-core-configuration-for-net-core-console-application
 
-            var additionalPreDeploymentNamespace = ConfigurationManager.AppSettings["AdditionalPreDeploymentNamespace"];
-            var additionalPostDeploymentNamespace = ConfigurationManager.AppSettings["AdditionalPostDeploymentNamespace"];
-            var connectionString = ConfigurationManager.ConnectionStrings["MyConnectionString"];
+            var additionalPreDeploymentNamespace = 
+                ConfigurationManager.AppSettings["AdditionalPreDeploymentNamespace"];
+            var additionalPostDeploymentNamespace = 
+                ConfigurationManager.AppSettings["AdditionalPostDeploymentNamespace"];
+            var connectionString = 
+                ConfigurationManager.ConnectionStrings["MyConnectionString"];
 
             WriteToConsole("\nListing variables...\n");
             var variables = new Dictionary<string, string>();
@@ -158,17 +164,20 @@ static class Program
             {
                 variables.Add(k, ConfigurationManager.AppSettings[k]);
                 WriteToConsole($"${k}$ = \"{ConfigurationManager.AppSettings[k]}\"");
-                // See how to use variables in your scripts: https://dbup.readthedocs.io/en/latest/more-info/variable-substitution/
+                // See how to use variables in your scripts: 
+                // https://dbup.readthedocs.io/en/latest/more-info/variable-substitution/
             }
 
             if (!string.IsNullOrWhiteSpace(additionalPreDeploymentNamespace))
             {
-                additionalPreDeploymentNamespace = baseEnvironmentsNamespace + "." + additionalPreDeploymentNamespace;
+                additionalPreDeploymentNamespace = baseEnvironmentsNamespace +
+                     "." + additionalPreDeploymentNamespace;
             }
 
             if (!string.IsNullOrWhiteSpace(additionalPostDeploymentNamespace))
             {
-                additionalPostDeploymentNamespace = baseEnvironmentsNamespace + "." + additionalPostDeploymentNamespace;
+                additionalPostDeploymentNamespace = baseEnvironmentsNamespace +
+                     "." + additionalPostDeploymentNamespace;
             }
 
             if (!noWait)
@@ -180,26 +189,31 @@ static class Program
             // Pre deployments
             WriteToConsole("Start executing predeployment scripts...");
             string preDeploymentScriptsPath = baseNamespace + ".PreDeployment";
-            RunMigrations(connectionString, preDeploymentScriptsPath, variables, true);
+            RunMigrations(connectionString, 
+                preDeploymentScriptsPath, variables, true);
 
             if (!string.IsNullOrWhiteSpace(additionalPreDeploymentNamespace))
             {
-                RunMigrations(connectionString, additionalPreDeploymentNamespace, variables, true);
+                RunMigrations(connectionString, 
+                    additionalPreDeploymentNamespace, variables, true);
             }
 
             // Migrations
             WriteToConsole("Start executing migration scripts...");
             var migrationScriptsPath = baseNamespace + ".Migrations";
-            RunMigrations(connectionString, migrationScriptsPath, variables, false);
+            RunMigrations(connectionString, 
+                migrationScriptsPath, variables, false);
 
             // Post deployments
             WriteToConsole("Start executing postdeployment scripts...");
             string postdeploymentScriptsPath = baseNamespace + ".PostDeployment";
-            RunMigrations(connectionString, postdeploymentScriptsPath, variables, true);
+            RunMigrations(connectionString, 
+                postdeploymentScriptsPath, variables, true);
 
             if (!string.IsNullOrWhiteSpace(additionalPostDeploymentNamespace))
             {
-                RunMigrations(connectionString, additionalPostDeploymentNamespace, variables, true);
+                RunMigrations(connectionString, 
+                    additionalPostDeploymentNamespace, variables, true);
             }
         }
         catch (Exception e)
@@ -219,20 +233,28 @@ static class Program
         return exitCode;
     }
 
-    private static int RunMigrations(string connectionString, string @namespace, Dictionary<string, string> variables, bool alwaysRun = false)
+    private static int RunMigrations(string connectionString,
+        string @namespace,
+        Dictionary<string, string> variables,
+        bool alwaysRun = false)
     {
         WriteToConsole($"Executing scripts in {@namespace}");
 
         var builder = DeployChanges.To
             .SqlDatabase(connectionString)
             .WithVariables(variables)
-            .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), file =>
+            .WithScriptsEmbeddedInAssembly(
+                Assembly.GetExecutingAssembly(), file =>
             {
-                return file.ToLower().StartsWith(@namespace.ToLower());
+                return file
+                    .ToLower()
+                    .StartsWith(@namespace.ToLower());
             })
             .LogToConsole();
 
-        builder = alwaysRun ? builder.JournalTo(new NullJournal()) : builder.JournalToSqlTable("dbo", "DatabaseMigrations");
+        builder = alwaysRun ?
+             builder.JournalTo(new NullJournal()) :
+             builder.JournalToSqlTable("dbo", "DatabaseMigrations");
 
         var executor = builder.Build();
         var result = executor.PerformUpgrade();
@@ -251,7 +273,8 @@ static class Program
         WriteToConsole("Success!", ConsoleColor.Green);
     }
 
-    private static void WriteToConsole(string msg, ConsoleColor color = ConsoleColor.Green)
+    private static void WriteToConsole(string msg,
+         ConsoleColor color = ConsoleColor.Green)
     {
         Console.ForegroundColor = color;
         Console.WriteLine(msg);
