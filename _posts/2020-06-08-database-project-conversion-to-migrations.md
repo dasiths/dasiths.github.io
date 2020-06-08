@@ -13,7 +13,7 @@ So I decided to share an approach I used to convert existing database project to
 
 ## Why Migrations? 
 
-**Because Transitions are easier to manage than states**.
+**Because Transitions are easier to manage than States**.
 
 Visual Studio database projects rely on state comparison (called `diffs`) to compare your source and target schemas and come up with a deployment script. While these auto generated scripts are very good they aren't perfect. The tooling can't always create scripts for all the state transitions without causing inconsistencies (data loss etc). This makes it impossible to integrate them into an automated deployment pipeline with confidence.
 
