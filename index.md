@@ -43,7 +43,7 @@ feature_row:
   - image_path: /assets/images/assassin-3690300_960_720-e1538485050283.jpg
     alt: "NimbleConfig"
     title: "NimbleConfig"
-    excerpt: "NimbleConfig is an open source configuration injection library for .NET with full support for ASP.NET CORE. It allows you to use configuration settings in as very simple and testable way."
+    excerpt: "NimbleConfig is an open source configuration injection library for .NET with full support for ASP.NET CORE. It allows you to inject configuration settings in as very simple and testable way."
     url: "https://dasith.me/2018/10/02/nimbleconfig-a-simple-config-injector-for-net/"
     btn_label: "Check It Out"
     btn_class: "btn--primary"
