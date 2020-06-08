@@ -1,5 +1,5 @@
 ---
-title: "Converting a Visual Studio database project to migrations"
+title: "Converting a Visual Studio database project to use DbUp migrations"
 date: 2020-06-08 12:00
 header:
   teaser: /assets/images/database-project-dbup.png
@@ -7,7 +7,7 @@ comments: true
 categories: [sql, database, visual studio, .net]
 tags: [database, migrations, .net, visual studio, sql]
 ---
-Database projects in Visual Studio have been very popular way to develop and manage the database schema and logic in the past. With more and more applications now preferring to have the data tier logic and validation within the bounds of the application and use the database just for persistence, I've come across clients who want to convert their database projects to a more CI/CD friendly database migrations.
+Database projects in Visual Studio have been a very popular way to develop and manage the database schema and logic in the past. With more and more applications now preferring to have the data tier logic and validation within the bounds of the application and use the database just for persistence, I've come across clients who want to convert their database projects to a more CI/CD friendly database migrations.
 
 So I decided to share an approach I used to convert existing database project to use database migrations using [DbUp](https://dbup.github.io/).
 
@@ -120,145 +120,145 @@ DbUp doesn't support down migrations though. IMO this is a good design decision.
 
 3. Now let's look at my migration runner (`Program.cs`). You obviously need a reference to the `DbUp-SqlServer` NuGet as we use it to do the heavy lifting.
 
-    ```csharp
-    static class Program
+```csharp
+static class Program
+{
+    static int Main(string[] args)
+    {
+        var noWait = false;
+
+        if (args.Length == 1 && args[0] == "--nowait")
         {
-            static int Main(string[] args)
+            noWait = true;
+        }
+
+        int exitCode = 0;
+
+        try
+        {
+            WriteToConsole($"Database Migration Runner. Version={typeof(IEnvironmentsFolderMarker).Assembly.GetName().Version}");
+
+            // NOTE: PLEASE MAKE SURE YOUR SCRIPT IS MARKED AS EMBEDDED
+            // https://www.c-sharpcorner.com/uploadfile/40e97e/saving-an-embedded-file-in-C-Sharp/
+            WriteToConsole("\nIMPORTANT: Please ensure your scripts are EMBEDDED in the executable.");
+
+            var baseNamespace = typeof(Program).Namespace;
+            var baseEnvironmentsNamespace = typeof(IEnvironmentsFolderMarker).Namespace;
+
+            // You can use IConfiguration (Microsoft.Extensions.Configuration) to achieve the same thing in a .NET Core project as shown here https://stackoverflow.com/questions/38114761/asp-net-core-configuration-for-net-core-console-application
+
+            var additionalPreDeploymentNamespace = ConfigurationManager.AppSettings["AdditionalPreDeploymentNamespace"];
+            var additionalPostDeploymentNamespace = ConfigurationManager.AppSettings["AdditionalPostDeploymentNamespace"];
+            var connectionString = ConfigurationManager.ConnectionStrings["MyConnectionString"];
+
+            WriteToConsole("\nListing variables...\n");
+            var variables = new Dictionary<string, string>();
+
+            foreach (var k in ConfigurationManager.AppSettings.AllKeys)
             {
-                var noWait = false;
-
-                if (args.Length == 1 && args[0] == "--nowait")
-                {
-                    noWait = true;
-                }
-
-                int exitCode = 0;
-
-                try
-                {
-                    WriteToConsole($"Database Migration Runner. Version={typeof(IEnvironmentsFolderMarker).Assembly.GetName().Version}");
-
-                    // NOTE: PLEASE MAKE SURE YOUR SCRIPT IS MARKED AS EMBEDDED
-                    // https://www.c-sharpcorner.com/uploadfile/40e97e/saving-an-embedded-file-in-C-Sharp/
-                    WriteToConsole("\nIMPORTANT: Please ensure your scripts are EMBEDDED in the executable.");
-
-                    var baseNamespace = typeof(Program).Namespace;
-                    var baseEnvironmentsNamespace = typeof(IEnvironmentsFolderMarker).Namespace;
-
-                    // You can use IConfiguration (Microsoft.Extensions.Configuration) to achieve the same thing in a .NET Core project as shown here https://stackoverflow.com/questions/38114761/asp-net-core-configuration-for-net-core-console-application
-
-                    var additionalPreDeploymentNamespace = ConfigurationManager.AppSettings["AdditionalPreDeploymentNamespace"];
-                    var additionalPostDeploymentNamespace = ConfigurationManager.AppSettings["AdditionalPostDeploymentNamespace"];
-                    var connectionString = ConfigurationManager.ConnectionStrings["MyConnectionString"];
-
-                    WriteToConsole("\nListing variables...\n");
-                    var variables = new Dictionary<string, string>();
-
-                    foreach (var k in ConfigurationManager.AppSettings.AllKeys)
-                    {
-                        variables.Add(k, ConfigurationManager.AppSettings[k]);
-                        WriteToConsole($"${k}$ = \"{ConfigurationManager.AppSettings[k]}\"");
-                        // See how to use variables in your scripts: https://dbup.readthedocs.io/en/latest/more-info/variable-substitution/
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(additionalPreDeploymentNamespace))
-                    {
-                        additionalPreDeploymentNamespace = baseEnvironmentsNamespace + "." + additionalPreDeploymentNamespace;
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(additionalPostDeploymentNamespace))
-                    {
-                        additionalPostDeploymentNamespace = baseEnvironmentsNamespace + "." + additionalPostDeploymentNamespace;
-                    }
-
-                    if (!noWait)
-                    {
-                        Console.Write("\nPress return to run scripts...");
-                        Console.ReadLine();
-                    }
-
-                    // Pre deployments
-                    WriteToConsole("Start executing predeployment scripts...");
-                    string preDeploymentScriptsPath = baseNamespace + ".PreDeployment";
-                    RunMigrations(connectionString, preDeploymentScriptsPath, variables, true);
-
-                    if (!string.IsNullOrWhiteSpace(additionalPreDeploymentNamespace))
-                    {
-                        RunMigrations(connectionString, additionalPreDeploymentNamespace, variables, true);
-                    }
-
-                    // Migrations
-                    WriteToConsole("Start executing migration scripts...");
-                    var migrationScriptsPath = baseNamespace + ".Migrations";
-                    RunMigrations(connectionString, migrationScriptsPath, variables, false);
-
-                    // Post deployments
-                    WriteToConsole("Start executing postdeployment scripts...");
-                    string postdeploymentScriptsPath = baseNamespace + ".PostDeployment";
-                    RunMigrations(connectionString, postdeploymentScriptsPath, variables, true);
-
-                    if (!string.IsNullOrWhiteSpace(additionalPostDeploymentNamespace))
-                    {
-                        RunMigrations(connectionString, additionalPostDeploymentNamespace, variables, true);
-                    }
-                }
-                catch (Exception e)
-                {
-                    WriteToConsole(e.Message, ConsoleColor.Red);
-
-                    exitCode = -1;
-                }
-
-                if (!noWait)
-                {
-                    Console.Write("Press return key to exit...");
-                    Console.ResetColor();
-                    Console.ReadKey();
-                }
-
-                return exitCode;
+                variables.Add(k, ConfigurationManager.AppSettings[k]);
+                WriteToConsole($"${k}$ = \"{ConfigurationManager.AppSettings[k]}\"");
+                // See how to use variables in your scripts: https://dbup.readthedocs.io/en/latest/more-info/variable-substitution/
             }
 
-            private static int RunMigrations(string connectionString, string @namespace, Dictionary<string, string> variables, bool alwaysRun = false)
+            if (!string.IsNullOrWhiteSpace(additionalPreDeploymentNamespace))
             {
-                WriteToConsole($"Executing scripts in {@namespace}");
-
-                var builder = DeployChanges.To
-                    .SqlDatabase(connectionString)
-                    .WithVariables(variables)
-                    .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), file =>
-                    {
-                        return file.ToLower().StartsWith(@namespace.ToLower());
-                    })
-                    .LogToConsole();
-
-                builder = alwaysRun ? builder.JournalTo(new NullJournal()) : builder.JournalToSqlTable("dbo", "DatabaseMigrations");
-
-                var executor = builder.Build();
-                var result = executor.PerformUpgrade();
-
-                if (!result.Successful)
-                {
-                    throw new Exception(result.Error.ToString());
-                }
-
-                ShowSuccess();
-                return 0;
+                additionalPreDeploymentNamespace = baseEnvironmentsNamespace + "." + additionalPreDeploymentNamespace;
             }
 
-            private static void ShowSuccess()
+            if (!string.IsNullOrWhiteSpace(additionalPostDeploymentNamespace))
             {
-                WriteToConsole("Success!", ConsoleColor.Green);
+                additionalPostDeploymentNamespace = baseEnvironmentsNamespace + "." + additionalPostDeploymentNamespace;
             }
 
-            private static void WriteToConsole(string msg, ConsoleColor color = ConsoleColor.Green)
+            if (!noWait)
             {
-                Console.ForegroundColor = color;
-                Console.WriteLine(msg);
-                Console.ResetColor();
+                Console.Write("\nPress return to run scripts...");
+                Console.ReadLine();
+            }
+
+            // Pre deployments
+            WriteToConsole("Start executing predeployment scripts...");
+            string preDeploymentScriptsPath = baseNamespace + ".PreDeployment";
+            RunMigrations(connectionString, preDeploymentScriptsPath, variables, true);
+
+            if (!string.IsNullOrWhiteSpace(additionalPreDeploymentNamespace))
+            {
+                RunMigrations(connectionString, additionalPreDeploymentNamespace, variables, true);
+            }
+
+            // Migrations
+            WriteToConsole("Start executing migration scripts...");
+            var migrationScriptsPath = baseNamespace + ".Migrations";
+            RunMigrations(connectionString, migrationScriptsPath, variables, false);
+
+            // Post deployments
+            WriteToConsole("Start executing postdeployment scripts...");
+            string postdeploymentScriptsPath = baseNamespace + ".PostDeployment";
+            RunMigrations(connectionString, postdeploymentScriptsPath, variables, true);
+
+            if (!string.IsNullOrWhiteSpace(additionalPostDeploymentNamespace))
+            {
+                RunMigrations(connectionString, additionalPostDeploymentNamespace, variables, true);
             }
         }
-    ```
+        catch (Exception e)
+        {
+            WriteToConsole(e.Message, ConsoleColor.Red);
+
+            exitCode = -1;
+        }
+
+        if (!noWait)
+        {
+            Console.Write("Press return key to exit...");
+            Console.ResetColor();
+            Console.ReadKey();
+        }
+
+        return exitCode;
+    }
+
+    private static int RunMigrations(string connectionString, string @namespace, Dictionary<string, string> variables, bool alwaysRun = false)
+    {
+        WriteToConsole($"Executing scripts in {@namespace}");
+
+        var builder = DeployChanges.To
+            .SqlDatabase(connectionString)
+            .WithVariables(variables)
+            .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), file =>
+            {
+                return file.ToLower().StartsWith(@namespace.ToLower());
+            })
+            .LogToConsole();
+
+        builder = alwaysRun ? builder.JournalTo(new NullJournal()) : builder.JournalToSqlTable("dbo", "DatabaseMigrations");
+
+        var executor = builder.Build();
+        var result = executor.PerformUpgrade();
+
+        if (!result.Successful)
+        {
+            throw new Exception(result.Error.ToString());
+        }
+
+        ShowSuccess();
+        return 0;
+    }
+
+    private static void ShowSuccess()
+    {
+        WriteToConsole("Success!", ConsoleColor.Green);
+    }
+
+    private static void WriteToConsole(string msg, ConsoleColor color = ConsoleColor.Green)
+    {
+        Console.ForegroundColor = color;
+        Console.WriteLine(msg);
+        Console.ResetColor();
+    }
+}
+```
 
 4. Running the migration runner is easy. You can run it manually or run it as a part of your release pipeline with the `--nowait` argument.
 
