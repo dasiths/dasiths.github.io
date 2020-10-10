@@ -19,6 +19,13 @@ header:
   caption: "Location: [**Gellibrand River, Princetown**](https://www.visitgreatoceanroad.org.au/towns-and-villages/princetown/)"
 excerpt: "“Three Rules of Work: Out of clutter find simplicity; From discord find harmony; In the middle of difficulty lies opportunity.” ~ *Albert Einstein*"
 feature_row:
+  - image_path: assets/images/apidays/banner2020.png
+    alt: "API Days Live 2020"
+    title: "API Days Live 2020"
+    excerpt: "You can find a live recording of the talk I did about \"building distributed systems on the shoulders of giants\" here."
+    url: "https://dasith.me/2020/10/11/building-ditributed-systems-apidays-2020/"
+    btn_label: "Read More"
+    btn_class: "btn--primary"
   - image_path: assets/images/apidays/apidays-speaking-photo.jpg
     alt: "API Days Melbourne 2019"
     title: "API Days Melbourne 2019"
