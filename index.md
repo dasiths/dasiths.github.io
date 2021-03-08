@@ -61,6 +61,13 @@ feature_row:
     url: "https://dasith.me/2018/10/01/speaking-levelsconf-2018/"
     btn_label: "Read More"
     btn_class: "btn--primary"
+  - image_path: /assets/images/simple-endpoints-banner.png
+    alt: "SimpleEndpoints"
+    title: "SimpleEndpoints"
+    excerpt: "A simple, convention-based, endpoint per action pattern implementation for AspNetCore 3.0+"
+    url: "https://dasith.me/2020/03/21/simple-endpoints/"
+    btn_label: "Check It Out"
+    btn_class: "btn--primary"
   - image_path: /assets/images/assassin-3690300_960_720-e1538485050283.jpg
     alt: "NimbleConfig"
     title: "NimbleConfig"
