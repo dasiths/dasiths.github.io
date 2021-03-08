@@ -19,6 +19,20 @@ header:
   caption: "Location: [**Gellibrand River, Princetown**](https://www.visitgreatoceanroad.org.au/towns-and-villages/princetown/)"
 excerpt: "“Three Rules of Work: Out of clutter find simplicity; From discord find harmony; In the middle of difficulty lies opportunity.” ~ *Albert Einstein*"
 feature_row:
+  - image_path: assets/images/apidays/apidays-jakarta-2021.png
+    alt: "API Days Jakarta 2021"
+    title: "API Days Jakarta 2021"
+    excerpt: "A live recording and slides for my talk \"The Shell Game Called Eventual Consistency\" are here."
+    url: "https://dasith.me/2021/03/09/eventual-consistency-apidays-jakarta-2021/"
+    btn_label: "Read More"
+    btn_class: "btn--primary"
+  - image_path: assets/images/ndc_sydney_header.png
+    alt: "NDC Sydney 2020"
+    title: "NDC Sydney 2020"
+    excerpt: "A replay of \"Not All Microservices Frameworks Are Made The Same\" and slides are here."
+    url: "https://dasith.me/2021/03/08/microservices-frameworks-ndc-sydney-2020/"
+    btn_label: "Read More"
+    btn_class: "btn--primary"
   - image_path: assets/images/apidays/banner2020.png
     alt: "API Days Live 2020"
     title: "API Days Live 2020"
