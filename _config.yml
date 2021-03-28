@@ -71,7 +71,7 @@ google:
   search_engine_id       : 003458347618814896259:vub2_tywktk # YOUR_SEARCH_ENGINE_ID
   instant_search         : true # false (default), true
 # SEO Related
-google_site_verification :
+google_site_verification : 5Fb-UZxtHNEsTwTGjm2rp1kDo0_cKplvYlMXwBdIsiM
 bing_site_verification   :
 yandex_site_verification :
 naver_site_verification  :
@@ -104,9 +104,13 @@ author:
   name             : "Dasith Wijesiriwardena"
   avatar           : "/assets/images/profile_bio_small.jpg"
   bio              : |
-    Consultant | Public speaker | Solutions architect | Developer with a unhealthy fascination for distributed systems. Not in that order. I’m currently based in Melbourne and work for <a href="http://readify.net" target="_blank">Telstra Purple.</a><br />
+    Consultant | Public speaker | Solutions architect | Developer with a unhealthy fascination for distributed systems and a #microsoftie. Not in that order. I’m currently based in Melbourne and work for <a href="https://www.microsoft.com/en-us/msservices/consulting" target="_blank">Microsoft.</a>
     <br />
-    Since my early days of playing with VB5, C++, ASP and PHP 3, software development has gone through a paradigm shift. Join me on my journey through the world of .NET and all things distributed.
+    <br />
+    I've been developing software for close to 2 decades now. Since my early days of playing with C++, VB, ASP and PHP, software development has gone through a paradigm shift. These days I mostly work on things that run natively on the cloud. Join me on my journey through the world of .NET and all things distributed.
+    <br />
+    <br />
+    <i>Consider any opinion expressed here as my own.</i>
   location         : "Melbourne, VIC"
   email            :
   links:
@@ -223,7 +227,7 @@ sass:
 
 # Outputting
 permalink: /:year/:month/:day/:slug/
-paginate: 5 # amount of posts to show
+paginate: 10 # amount of posts to show
 paginate_path: recent/page:num/
 timezone: Australia/Melbourne
 
