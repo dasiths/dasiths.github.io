@@ -17,7 +17,7 @@ header:
     - label: "Speaker Profile"
       url: "https://sessionize.com/dasiths/"
   caption: "Location: [**Gellibrand River, Princetown**](https://www.visitgreatoceanroad.org.au/towns-and-villages/princetown/)"
-excerpt: "“Three Rules of Work: Out of clutter find simplicity; From discord find harmony; In the middle of difficulty lies opportunity.” ~ *Albert Einstein*"
+excerpt: "“We can only see a short distance ahead, but we can see plenty there that needs to be done.” ~ *Alan Turing*, [Computing machinery and intelligence](https://www.goodreads.com/book/show/17697774-computing-machinery-and-intelligence)"
 feature_row:
   - image_path: assets/images/apidays/apidays-jakarta-2021.png
     alt: "API Days Jakarta 2021"
