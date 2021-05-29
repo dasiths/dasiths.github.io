@@ -32,9 +32,7 @@ The abstract is as follows.
 
 ## Recording & Slide deck
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/oT50SMMvOHo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-<br />
+<iframe width="560" height="315" src="https://www.youtube.com/embed/4oSDZI4oiAw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <script async class="speakerdeck-embed" data-id="966c93d11f88426fb7ad5e81c4a725e0" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
 
