@@ -162,9 +162,10 @@ Notice how I didn't bother with an interface here. The truth is you don't need o
 
 Can't we just do away with dependency injection and just use a static `CustomerViewModelMapper` class with a static `Map()` method? IMO this defeats one of the aspects I wanted to achieve. Understandability of object capability easily. I made the point about how using statement, constructor signature and public settable properties are my go to place to understand the capabilities of the class. When you have calls the static methods sprinkled in code it becomes another cognitive load to understand object capability.
 
-## Revelations (from functional programming)
+## Bonus: Revelations (from functional programming)
 
-Given the above options the best outcome here is if we can do this
+Given the above options the best outcome here is to rely on a mapping function to be injected. I'll wait for a proponent on a functional programming to give a more theoretical answer to why this is the most elegant answer.
+
 ```csharp
 public class Foo {
 
@@ -177,7 +178,7 @@ public class Foo {
 }
 ```
 
-Where we don't rely on a class. We rather rely on much more narrowly scoped capability via a Function signature. But then again Visual Studio (or any IDE I know) support navigation from a `Func<CustomerDomainModel, CustomerViewModel>` to the implementation easily. I'll wait for a proponent on a functional programming to give a more theoretical answer to why this is the most elegant answer.
+Here we don't rely on a class. We rather rely on much more narrowly scoped capability via a Function signature (or delegate). But then again Visual Studio (or any IDE I know) does not support navigation from a `Func<CustomerDomainModel, CustomerViewModel>` to the implementation easily.
 
 ## Closing Remarks
 
