@@ -45,6 +45,12 @@ The abstract is as follows.
 
 <iframe class="speakerdeck-iframe" frameborder="0" src="https://speakerdeck.com/player/f1da42d624cb4fb5afc7ea9beb6ce52a" title="Propagating context and tracing across your distributed process boundaries using OpenTelemetry" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true" style="border: 0px; background: padding-box padding-box rgba(0, 0, 0, 0.1); margin: 0px; padding: 0px; border-radius: 6px; box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 40px; width: 560px; height: 314px;" data-ratio="1.78343949044586"></iframe>
 
+<br />
+
+I gave an extended version of the talk at Melbourne .NET user group meetup as well. The recording can be found below. <br />
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/nN9YSbnQXpY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 <br /><br />
 
 If you have any thoughts or comments please leave them here. Thanks for taking the time to read this post.
