@@ -45,11 +45,9 @@ I also developed a fully functional word processing application that made word p
 
 This was my first venture into commercial software development. I started working for a small software development company and quickly started building custom software for government and private organizations.
 
-
 ## Venture Into .NET
 
-
-During this time as a fresh out of school teenager I had many distractions. Luckily for me I had caught the attention of Jinashri Samarakoon from Microsoft Sri Lanka. She invited me to come to the Microsoft head office and gave me a copy of Visual Studio 2003 complete with MSDN documentation. I had not used .NET before that day.
+During this time as a fresh out of school teenager I had many distractions. Luckily for me I had caught the attention of the country education manager from Microsoft Sri Lanka (Ms Jinashri Samarakoon). She invited me to come to the Microsoft head office and gave me a copy of Visual Studio 2003 complete with MSDN documentation. I had not used .NET before that day.
 
 Up until this point my web development was in classic asp and php. ASP.Net was different and my favourite VB had changed. I struggled with concepts of Object Oriented development at first. But it was this paradigm shift and ability to self teach that has left me confident of any new technology challenge to this day. For I had taught myself to fish and would never go hungry again. :D
 
@@ -57,9 +55,7 @@ Here is a small interview I did in 2005 after winning "Best Young Software Devel
 
 [![Interview on Rupavahini](https://img.youtube.com/vi/Xq5fpFy3Q6Q/0.jpg)](https://www.youtube.com/watch?v=Xq5fpFy3Q6Q)
 
-
 ## .NET And Beyond
-
 
 I completed my tertiary studies at Swinburne University of Technology and fell in love with fundamentals of computer science. I had a head start on most of my colleagues in terms of software development experience but the core concepts of software architecture and design were a real eye opener for me. In many ways I was learning in reverse but this has given me a very unique take on problem solving.
 
