@@ -19,6 +19,13 @@ header:
   caption: "Location: [**Gellibrand River, Princetown**](https://www.visitgreatoceanroad.org.au/towns-and-villages/princetown/)"
 excerpt: "“We can only see a short distance ahead, but we can see plenty there that needs to be done.” ~ *Alan Turing*, [Computing machinery and intelligence](https://www.goodreads.com/book/show/17697774-computing-machinery-and-intelligence)"
 feature_row:
+  - image_path: assets/images/apidays/teaser-2022.png
+    alt: "API Days Australia 2022"
+    title: "API Days Australia 2022"
+    excerpt: "My team's presentation on our learning about EdgeDevOps can be found here."
+    url: "https://dasith.me/2023/01/07/edge-devops-apidays-australia-2022/"
+    btn_label: "Read More"
+    btn_class: "btn--primary"
   - image_path: assets/images/apidays/api-days-australia-teaser.png
     alt: "API Days Australia 2021"
     title: "API Days Australia 2021"
