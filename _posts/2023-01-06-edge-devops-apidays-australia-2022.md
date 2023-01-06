@@ -1,6 +1,6 @@
 ---
 title: "Lessons learned from doing EdgeDevOps (GitOps) in the bush, air and underwater - API Days Australia 2022"
-date: 2023-01-07 22:06
+date: 2023-01-06 22:06
 comments: true
 header:
   teaser: /assets/images/apidays/teaser-2022.png

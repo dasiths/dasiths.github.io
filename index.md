@@ -23,7 +23,7 @@ feature_row:
     alt: "API Days Australia 2022"
     title: "API Days Australia 2022"
     excerpt: "My team's presentation on our learnings about EdgeDevOps can be found here."
-    url: "https://dasith.me/2023/01/07/edge-devops-apidays-australia-2022/"
+    url: "https://dasith.me/2023/01/06/edge-devops-apidays-australia-2022/"
     btn_label: "Read More"
     btn_class: "btn--primary"
   - image_path: assets/images/apidays/api-days-australia-teaser.png
