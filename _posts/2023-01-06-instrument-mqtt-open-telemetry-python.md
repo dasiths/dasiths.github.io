@@ -1,6 +1,6 @@
 ---
 title: "Instrument MQTT based python messaging app using Open Telemetry"
-date: 2023-01-26 22:06
+date: 2023-01-06 22:06
 comments: true
 header:
   teaser: /assets/images/otel_diagram.png
@@ -8,7 +8,7 @@ categories: [OpenTelemetry, Distributed Tracing, MQTT, Python]
 tags: [opentelemetry, distributed-tracing, python, mqtt]
 ---
 
-Some time back I did a [bit of an intro to OpenTelemetry](https://dasith.me/2022/01/23/open-telemetry-apidays-australia-2021/) and in there I covered some basics like what Signals and Context Propagation are. I also spoke about how concepts like Tracing, Spans and Instrumentation interrelate to one another. I even put some [code samples up at github](https://github.com/dasiths/OpenTelemetryDistributedTracingSample) to demo this.
+Some time back I did a [bit of an intro to OpenTelemetry](https://dasith.me/2022/01/23/open-telemetry-apidays-australia-2021/) and in there I covered some basics like what Signals and Context Propagation are. I also spoke about how concepts like Tracing, Spans and Instrumentation interrelate to one another. I even put some [code samples up at GitHub](https://github.com/dasiths/OpenTelemetryDistributedTracingSample) to demo this.
 
 Most if not all of those code samples are in .NET and they demo tracing and baggage. Since I did that talk in 2021 the OpenTelemetry community have decided to [add logs as a signal](https://www.honeycomb.io/blog/opentelemetry-logs-go-etc). 
 
