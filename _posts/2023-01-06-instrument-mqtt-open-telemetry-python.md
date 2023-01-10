@@ -297,7 +297,7 @@ def on_message(client, userdata, msg):
 ### Summary
 The above code samples should now allow you to setup tracing, metrics and logging for a python app, instrument paho-mqtt library for trace context propagation and then export telemetry to a OTLP endpoint (OTLP Collector).
 
-You can find the code samples [here](https://github.com/dasiths/OpenTelemetryDistributedTracingSample/python).
+You can find the code samples [here](https://github.com/dasiths/OpenTelemetryDistributedTracingSample/tree/master/python).
 
 ## OTEL Architecture
 
@@ -454,7 +454,7 @@ Have a look at how [Dapr configures the OTEL Collector](https://docs.dapr.io/ope
 
 ## Finishing Up
 
-We looked at how to instrument a python app using MQTT and how to export telemetry via an OTEL Collector instance. Hopefully this serves as a starting point to help you orient yourself with the basic concepts of OTEL Signals and telemetry exporting. The code samples will be uploaded to https://github.com/dasiths/OpenTelemetryDistributedTracingSample
+We looked at how to instrument a python app using MQTT and how to export telemetry via an OTEL Collector instance. Hopefully this serves as a starting point to help you orient yourself with the basic concepts of OTEL Signals and telemetry exporting. The code samples will be uploaded to https://github.com/dasiths/OpenTelemetryDistributedTracingSample/tree/master/python
 
 If you have any questions please reach out to me via twitter @dasiths. Happy coding.
 
