@@ -65,14 +65,14 @@ from opentelemetry.sdk.trace.export import (
 
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 
-oltp_endpoint = "http://127.0.0.1:4317"
+OTLP_endpoint = "http://127.0.0.1:4317"
 
 def add_console_exporter(provider: TracerProvider):
     processor = BatchSpanProcessor(span_exporter=ConsoleSpanExporter(), schedule_delay_millis=1000)
     provider.add_span_processor(processor)
 
 def add_otlp_exporter(provider: TracerProvider):
-    otlp_exporter = OTLPSpanExporter(endpoint=oltp_endpoint, insecure=True)
+    otlp_exporter = OTLPSpanExporter(endpoint=OTLP_endpoint, insecure=True)
     otlp_span_processor = BatchSpanProcessor(span_exporter=otlp_exporter, schedule_delay_millis=1000)
     provider.add_span_processor(otlp_span_processor)
 
@@ -123,10 +123,10 @@ from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader, Cons
 
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
 
-oltp_endpoint = "http://127.0.0.1:4317"
+OTLP_endpoint = "http://127.0.0.1:4317"
 
 console_metric_reader = PeriodicExportingMetricReader(exporter=ConsoleMetricExporter(), export_interval_millis=1000)
-otlp_metric_reader = PeriodicExportingMetricReader(exporter=OTLPMetricExporter(endpoint=oltp_endpoint, insecure=True),
+otlp_metric_reader = PeriodicExportingMetricReader(exporter=OTLPMetricExporter(endpoint=OTLP_endpoint, insecure=True),
                                                    export_interval_millis=1000)
 meter_provider = MeterProvider(resource=resource,
                                metric_readers=[console_metric_reader, otlp_metric_reader])
@@ -295,7 +295,7 @@ def on_message(client, userdata, msg):
 ```
 
 ### Summary
-The above code samples should now allow you to setup tracing, metrics and logging for a python app, instrument paho-mqtt library for trace context propagation and then export telemetry to a OTLP endpoint (OTLP Collector).
+The above code samples should now allow you to setup tracing, metrics and logging for a python app, instrument paho-mqtt library for trace context propagation and then export telemetry to a OTLP endpoint (OTEL Collector).
 
 You can find the code samples [here](https://github.com/dasiths/OpenTelemetryDistributedTracingSample/tree/master/python).
 
@@ -303,7 +303,7 @@ You can find the code samples [here](https://github.com/dasiths/OpenTelemetryDis
 
 There are 2 ways of exporting OTEL specific telemetry out of your application and getting them displayed in an observability tool like Zipkin, Jaeger, Prometheus, Azure Monitor etc.
 - Export it directly to the tool of your choice using an exporter library. (See this [example for ZipKin](https://opentelemetry-python.readthedocs.io/en/latest/exporter/zipkin/zipkin.html)).
-- [Export it using the OTLP format](https://opentelemetry-python.readthedocs.io/en/latest/exporter/otlp/otlp.html) to a OTEL Collector instance, and then [configure the OLTP Collector](https://opentelemetry.io/docs/collector/configuration/) to export the telemetry from there to the observability frontend of your choice. ![Example from https://opentelemetry.io/docs/](/assets/images/otel_diagram.png)
+- [Export it using the OTLP format](https://opentelemetry-python.readthedocs.io/en/latest/exporter/otlp/otlp.html) to a OTEL Collector instance, and then [configure the OTEL Collector](https://opentelemetry.io/docs/collector/configuration/) to export the telemetry from there to the observability frontend of your choice. ![Example from https://opentelemetry.io/docs/](/assets/images/otel_diagram.png)
 
 I prefer the latter option because it allows me to change my observability tools at anytime during the lifetime of the application without any code changes to the app. I only need to update the OTEL Collector configuration and redeploy the collector instance. It is much more enterprise friendly and less coupled to the app this way. Your OPS team will like this approach as it gives them control over observability without having to touch your code.
 
@@ -311,7 +311,7 @@ I prefer the latter option because it allows me to change my observability tools
 
 If you're using the basic built in exporters like Zipkin and Prometheus you can use the [OTEL Collector Operator for K8s](https://opentelemetry.io/docs/k8s-operator/).
 
-In my case I wanted to export to Azure Monitor so I had to use the `contrib` variant from ` otel/opentelemetry-collector-contrib` docker hub image.
+In my case I wanted to export to Azure Monitor so I had to use the `contrib` variant from `otel/opentelemetry-collector-contrib` docker hub image.
 
 If you want to use the contrib variant, an [example with k8s manifests can be found here](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/examples/kubernetes/otel-collector.yaml).
 
