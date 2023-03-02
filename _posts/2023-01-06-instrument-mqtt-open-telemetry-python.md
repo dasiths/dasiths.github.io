@@ -6,6 +6,8 @@ header:
   teaser: /assets/images/otel_diagram.png
 categories: [OpenTelemetry, Distributed Tracing, MQTT, Python]
 tags: [opentelemetry, distributed-tracing, python, mqtt]
+toc: true
+toc_label: "Content"
 ---
 
 Some time back I did a [bit of an intro to OpenTelemetry](https://dasith.me/2022/01/23/open-telemetry-apidays-australia-2021/) and in there I covered some basics like what Signals and Context Propagation are. I also spoke about how concepts like Tracing, Spans and Instrumentation interrelate to one another. I even put some [code samples up at GitHub](https://github.com/dasiths/OpenTelemetryDistributedTracingSample) to demo this.
