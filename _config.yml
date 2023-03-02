@@ -301,6 +301,7 @@ defaults:
       share: true
       related: true
       show_date: true
+      date_format: "%-d %b %Y"
   # _pages
   - scope:
       path: ""
@@ -309,3 +310,4 @@ defaults:
       author_profile: true
       layout: single
       share: true
+      date_format: "%-d %b %Y"
