@@ -6,9 +6,6 @@ categories: [Event Sourcing]
 tags: [.net, aggregates, bounded context, cqrs, Domain Driven Design, neventlite]
 header:
   teaser: /assets/images/photomania-b5c3d9f9e76bc97df7c24d959af9e133.jpg
-toc: true
-toc_label: "Content"
-toc_sticky: false
 ---
 In this 3 part series we will look at what event sourcing is and why enterprise software for many established industries use this pattern.
 

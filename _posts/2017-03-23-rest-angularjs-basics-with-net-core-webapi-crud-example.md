@@ -6,9 +6,6 @@ categories: [Angular, Web API]
 tags: [.net, angularjs, netcore, rest, webapi]
 header:
   teaser: /assets/images/angularwebapi.png
-toc: true
-toc_label: "Content"
-toc_sticky: false
 ---
 In this blog post I look at some basic examples of using AngularJs with Asp.Net WebApi.
 

@@ -16,13 +16,13 @@ If you haven't lived under a rock for the last 18 months you would know 'Serverl
 I won't go into the various pros and cons of a serverless application in this blog post. There have been various posts written about the nuances of serverless you can Google for. I recommend having a read of Martin Fowler's <a href="https://martinfowler.com/articles/serverless.html" target="_blank" rel="noopener">post here</a>.
 
 
-### Some Context
+## Some Context
 
 
 I recently worked on a project at Readify that was a POC (proof of concept) mobile app in a team of 4 people. We used Ionic for the app and Azure Functions was chosen for implement the back end web API. We didn't have a lot of surface area to expose through the API so spinning up an app service with a hosted ASP.NET WebApi project wasn't deemed necessary. We decided to have the mobile app talk directly to the Azure Function API endpoints. We deliberated on using API Management but ultimately decided not to since it was a POC project with limited scope.
 
 
-### Reasons For Our Technology Choices
+## Reasons For Our Technology Choices
 
 
 - **Ionic** 
@@ -43,7 +43,7 @@ I recently worked on a project at Readify that was a POC (proof of concept) mobi
     We initially started with API Management provisioned in Azure but quickly found out that we can't have it emulated locally so things like the CORS (Cross Origin Resource Sharing) functionality or authentication would not be possible to test if wanted to have the app test/debug against the azure functions running locally. This threw a big wrench in our plans. API management wasn't cheap either. It didn't fit with the consumption based costing model we were going with. So we decided to drop it and implement CORS and authentication ourselves.
 
 
-### How Did We Implement The API?
+## How Did We Implement The API?
 
 
 An <del>Azure Function</del> serverless function needs to be very lightweight. We were very careful not to introduce unnecessary complexity.
@@ -160,7 +160,7 @@ namespace Functions.Infrastructure
 We just *Register()* the middleware we want and call the *ExecuteAsync()* with the *FunctionContext*. Couldn't be any more simpler right? :)
 
 
-### CORS
+## CORS
 
 
 Let's look at an example of how we would implement CORS using our middleware now. I've allowed any origin here by using *. Use an appropriate value that works for you. (**The CORS feature pane in your Azure Function settings might need an entry with just a * as well**. The online guidance for this isn't very clear. We found that putting one entry with a * worked for us)
@@ -229,7 +229,7 @@ namespace Functions.Infrastructure.Middleware
 ```
 
 
-### JWT Bearer Token Authentication
+## JWT Bearer Token Authentication
 
 
 Here is an simple example of how you could do bearer token authentication using this middleware concept. We used <a href="https://github.com/jwt-dotnet/jwt" target="_blank" rel="noopener">JWT.NET</a> to implement JWT bearer tokens authentication in our *TokenValidator* class. I won't include that code here as it is out of scope. Leave a comment here or email me if you get stuck implementing it.
@@ -287,7 +287,7 @@ namespace Functions.Infrastructure.Middleware
 I agree it is a fair bit of boilerplate but hang in there with me. :) We will get more into this topic of boilerplate in my learnings section of this post.
 
 
-### We've got Auth and CORS working but where is the middleware that actually does the handling of the API call?
+## We've got Auth and CORS working but where is the middleware that actually does the handling of the API call?
 
 
 Here is an example from an API call that returns the current odometer reading for a car based on a registration number in the JWT claims. Notice how we are assuming the Context.User will be populated? That's because of the authentication middleware we used before. Is it all starting to make sense now?
@@ -365,7 +365,7 @@ namespace Functions
 
 
 
-### Our Learnings & Was All That Worth The Effort?
+## Our Learnings & Was All That Worth The Effort?
 
 
 That is the million dollar question. After all we could have gone with ASP.NET WebApi and got most of the boilerplate out of the box. Yes I do mean IOC here as well.
@@ -373,14 +373,14 @@ That is the million dollar question. After all we could have gone with ASP.NET W
 **We wanted to challenge ourselves to see if we could do this POC app using a pay for consumption model**. AppService hosted WebApi doesn't fit that mould entirely. Nor does Azure Api Management yet. This biggest issue with API Management though is that tooling isn't there for developers to emulate it when running your azure function locally against the mobile/web app. For a project that has many API endpoints, there is no easy way to setup API management easily. (ie We can use Swashbuckle when using ASP.NET WebApi to get a swagger file and import in API management but no such feature exists for Azure Functions http triggers).
 
 
-### What about AWS Lambda?
+## What about AWS Lambda?
 
 
 AWS Lambda supports <a href="https://aws.amazon.com/blogs/developer/deploy-an-existing-asp-net-core-web-api-to-aws-lambda/" target="_blank" rel="noopener">hosting ASP.NET WebApi projects as a severless app</a>. I haven't used this feature before but we would have chosen that option if it were available for us in Azure Functions. It solves the problem of boilerplate. It's also interesting to note that at the time of development of this app Azure Functions didn't support .NET core but Lambda did.
 
 <hr />
 
-### Conclusions (Confused?)
+## Conclusions (Confused?)
 
 
 Don't be. We went with the approach of serverless consumption model first but ended up having to implement our own OWIN like middleware and do auth and CORS our selves. It didn't add any significant startup or performance cost to the app but if the project boilerplate was any larger it could have.
@@ -404,7 +404,7 @@ Before you start to implement a web api using Azure Functions http triggers cons
     Yes this is where the serverless paradigm shines through. Be careful though. Azure functions work great with its <a href="https://docs.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings" target="_blank" rel="noopener">bindings/triggers</a> but they are geared towards cloud platforms. If you need to write to a SQL database, or worse call a SOAP endpoint you will have to do it the old fashioned way without integration support in the form of bindings/triggers from the framework. We ended up using TableStorage, Storage Queues and Blobs. Any additional integration points were implemented using Logic Apps. This is a great combination you can use.
 
 
-### Final Words
+## Final Words
 
 
 For most of us this was the first time we built a mobile app paired with a serverless web api. I learned a lot about the capabilities of Azure Functions and areas where ASP.NET WebApi outshines it. Your mileage may vary but keep these considerations and experiences in your mind then next time you are presented with the opportunity to implement a web api using Azure Functions or AWS Lambda.

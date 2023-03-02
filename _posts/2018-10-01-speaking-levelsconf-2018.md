@@ -6,9 +6,6 @@ header:
   teaser: /assets/images/capture2.png
 categories: [Conference, Event Sourcing]
 tags: [cqrs, Domain Driven Design, neventlite, public speaking]
-toc: true
-toc_label: "Content"
-toc_sticky: false
 ---
 I recently got a chance to speak at <a href="https://www.levelsconf.com/" target="_blank" rel="noopener">Levels Conference</a> and it was my first time speaking in front of such a large audience. There were around 400 very keen junior developers there.
 
