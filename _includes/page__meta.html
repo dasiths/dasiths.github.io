@@ -25,6 +25,11 @@
         {% else %}
           {{ words | divided_by: words_per_minute }} {{ site.data.ui-text[site.locale].minute_read | default: "minute read" }}
         {% endif %}
+        {% if document == post % }
+          <i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> {% include modified-date.html %}
+        {% else %}
+          <i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> {% include page__modified.html %}
+        {% endif %}
       </span>
     {% endif %}
   </p>
