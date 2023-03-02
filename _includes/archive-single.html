@@ -19,12 +19,13 @@
         <a href="{{ post.url | relative_url }}" rel="permalink">{{ title }}</a>
       {% endif %}      
     </h2>
+    {% include page__meta.html type=include.type %}
+    <!--The following "grid" and teaser condition and block has been added to display the imge teaser when browsing posts-->
     {% if include.type == "grid" or teaser %}
     <div class="archive__item-teaser">
       <img src="{{ teaser | relative_url }}" alt="">
     </div>
     {% endif %}
-    {% include page__meta.html type=include.type %}
     {% if post.excerpt %}<p class="archive__item-excerpt" itemprop="description">{{ post.excerpt | markdownify | strip_html | truncate: 160 }}</p>{% endif %}
   </article>
 </div>
