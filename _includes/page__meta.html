@@ -25,11 +25,17 @@
         {% else %}
           {{ words | divided_by: words_per_minute }} {{ site.data.ui-text[site.locale].minute_read | default: "minute read" }}
         {% endif %}
-        {% if document == post % }
+        {% if document.date %}
+        {% assign date = document.date %}
+        <i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i>
+        {% assign date_format = site.date_format | default: "%B %-d, %Y" %}
+        <time datetime="{{ date | date_to_xmlschema }}">{{ date | date: date_format }}</time>
+        {% endif %}
+        <!-- {% if document == post % }
           <i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> {% include modified-date.html %}
         {% else %}
           <i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> {% include page__modified.html %}
-        {% endif %}
+        {% endif %} -->
       </span>
     {% endif %}
   </p>
