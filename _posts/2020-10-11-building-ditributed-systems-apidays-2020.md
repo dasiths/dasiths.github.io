@@ -6,6 +6,9 @@ header:
   teaser: /assets/images/apidays/teaser-2020.jpg
 categories: [Conference, Microservices, Distributed Systems]
 tags: [apidays, microservices, distributed systems, public speaking]
+toc: true
+toc_label: "Content"
+toc_sticky: false
 ---
 I recently spoke about building distributed systems at [API Days Australia](https://www.apidays.co/australia/) conference. My talk is titled `Building distributed systems on the shoulders of giants`. It's a reference to the [popular metaphor](https://en.wikipedia.org/wiki/Standing_on_the_shoulders_of_giants) about leveraging the knowledge on people who have been here before us.
 

@@ -4,6 +4,9 @@ date: 2022-01-23 22:06
 comments: true
 categories: [.NET, EF Core, SQL Server]
 tags: [.net, efcore, sql server]
+toc: true
+toc_label: "Content"
+toc_sticky: false
 ---
 I am working on a greenfield project that uses EF Core 6 with AspNetCore 6 at the moment. The project involves exposing a set of legacy data through an API. Simple enough right?
 

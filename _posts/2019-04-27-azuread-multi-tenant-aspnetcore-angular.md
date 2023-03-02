@@ -6,6 +6,9 @@ header:
 comments: true
 categories: [.net, azure ad, multi-tenant]
 tags: [.net, azure ad, multi-tenant, aspnet core, angular]
+toc: true
+toc_label: "Content"
+toc_sticky: false
 ---
 
 Using Azure AD to implement a multi-tenant application is fairly straight forward. It requires turning on a few knobs and switches from the portal and you're most of the way there. In this post we will look at how to setup an multi-tenant app registration and implement the logic in the front end to direct the user to a `common` sign-in endpoint. We will also look at how to control access to a pre determined set of tenants.

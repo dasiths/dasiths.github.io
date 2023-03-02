@@ -7,6 +7,9 @@ tags: [.net, azure functions, serverless]
 header:
   teaser: /assets/images/azure_functions_featured_image.png
   image: /assets/images/azure_functions_featured_image.png
+toc: true
+toc_label: "Content"
+toc_sticky: false
 ---
 Azure Functions are the way serverless compute is implemented in Azure. Amazon Web Services equivalent is called AWS Lambda. I won't go into detail about what serverless is and what <a href="https://azure.microsoft.com/en-gb/overview/serverless-computing/" target="_blank" rel="noopener">advantages it provides</a> in this post. You can find my learnings from a project where I implemented my web api using Azure Functions <a href="http://dasith.me/2018/01/20/using-azure-functions-httptrigger-as-web-api/" target="_blank" rel="noopener">here</a>.
 

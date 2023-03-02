@@ -6,6 +6,9 @@ header:
   teaser: /assets/images/apidays/teaser-2022.png
 categories: [Conference, Edge, DevOps, Distributed Systems]
 tags: [apidays, devops, edge, distributed systems, public speaking]
+toc: true
+toc_label: "Content"
+toc_sticky: false
 ---
 I recently spoke at [API Days Australia](https://www.apidays.global/australia/) about my experiences building distributed systems and some challenges my team faced deploying and running them on the edge.
 

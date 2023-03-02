@@ -6,6 +6,9 @@ header:
   teaser: /assets/images/dddmelb2019main.jpg
 categories: [Conference, Authentication]
 tags: [dddmelbourne, authentication, security, oauth, openidconnect, public speaking]
+toc: true
+toc_label: "Content"
+toc_sticky: false
 ---
 Last weekend I spoke at [@DDDMelbourne](https://www.dddmelbourne.com/) and it was my first time doing so. The event attracted close to 900 people and had 5 concurrent tracks. I spoke at the [@JuniorDev](https://twitter.com/juniordev_io) channel about `Modern Authentication`.
 

@@ -6,6 +6,9 @@ header:
 comments: true
 categories: [.net, aspnet core]
 tags: [.net, aspnet core, controller, endpoint, pattern]
+toc: true
+toc_label: "Content"
+toc_sticky: false
 ---
 I've been working with ASP.NET/CORE MVC and WebApi for a while now and there is a problem I often run in to. It's the case of the fat/bloated/god controller. This is a fairly simple problem to diagnose and most developers I speak to understand why this is an anti pattern. But why does it keep happening and how do we prevent it? What makes good developers fall into this trap?
 

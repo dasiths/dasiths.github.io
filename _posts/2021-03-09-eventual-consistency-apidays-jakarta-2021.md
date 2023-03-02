@@ -6,6 +6,9 @@ header:
   teaser: /assets/images/apidays/api-days-jakarta-talk.jpg
 categories: [Conference, Microservices, Distributed Systems]
 tags: [apidays, microservices, distributed systems, public speaking]
+toc: true
+toc_label: "Content"
+toc_sticky: false
 ---
 A few weeks ago I spoke at [API Days Jakarta](https://www.apidays.global/jakarta/) about some of experiences building distributed systems.
 

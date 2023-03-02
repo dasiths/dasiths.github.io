@@ -6,6 +6,9 @@ header:
 comments: true
 categories: [sql, database, visual studio, .net]
 tags: [database, migrations, .net, visual studio, sql]
+toc: true
+toc_label: "Content"
+toc_sticky: false
 ---
 Database projects in Visual Studio have been a very popular way to develop and manage the database schema and logic in the past. With more and more applications now preferring to have the data tier logic and validation within the bounds of the application and use the database just for persistence, I've come across clients who want to convert their database projects to a more CI/CD friendly database migrations.
 

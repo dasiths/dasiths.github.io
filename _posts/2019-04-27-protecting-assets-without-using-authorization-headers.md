@@ -6,6 +6,9 @@ header:
 comments: true
 categories: [.net, aspnet core, security]
 tags: [.net, aspnet core, security, tokens]
+toc: true
+toc_label: "Content"
+toc_sticky: false
 ---
 tl;dr; If you want to access an api endpoint but don't have a way to append the authorization info to your request, you need to create a magic url that is short lived and has limited use. [Go directly here for code samples](#solution-2).
 

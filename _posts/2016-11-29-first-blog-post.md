@@ -7,6 +7,9 @@ tags: []
 header:
   teaser: /assets/images/kandy-photos11.jpg
   image: /assets/images/kandy-photos11.jpg
+toc: true
+toc_label: "Content"
+toc_sticky: false
 ---
 
 This story begins in Colombo, Sri Lanka. Before computers sparked my interest I used to be an avid reader and loved novels by the likes of <a href="https://en.wikipedia.org/wiki/Martin_Wickramasinghe" target="_blank">Martin Wickramasinghe</a> and <a href="https://en.wikipedia.org/wiki/Richard_Lionel_Spittel" target="_blank">R.L.Spittel</a>. I loved playing and watching cricket, still do.

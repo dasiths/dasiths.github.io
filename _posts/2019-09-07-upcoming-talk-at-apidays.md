@@ -6,6 +6,9 @@ header:
   teaser: /assets/images/apidays/logo.jpg
 categories: [Conference, Microservices]
 tags: [apidays, microservices, public speaking]
+toc: true
+toc_label: "Content"
+toc_sticky: false
 ---
 I'll be speaking about some of my Microservices scars at the upcoming [API Days](https://www.apidays.co/australia/) conference to be held at Melbourne convention & exhibition centre. My talk is titled `A Game of Snake And Ladders Called Microservices`. It's a reference to the popular board game and hopeful to carry the theme throughout my talk.
 

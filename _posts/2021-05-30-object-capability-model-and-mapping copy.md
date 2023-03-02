@@ -6,6 +6,9 @@ header:
   teaser: /assets/images/rc-4309881_640.jpg
 categories: [Design Patterns, Object Oriented Programming]
 tags: [design-patterns, software, object-oriented-programming]
+toc: true
+toc_label: "Content"
+toc_sticky: false
 ---
 Almost any type of software development work requires some sort mapping in the logic. Either from the persistence models to domain model or from the domain models to view models. In my experience dealing with a lot of brownfield projects, I've seen some practices that age poorly and make it difficult to understand intent. Most mapping approaches age gracefully like beer. Although my aim is not to kick a dead horse and [rant about AutoMapper](https://cezarypiatek.github.io/post/why-i-dont-use-automapper/), I agree with the sentiments provided in that linked post. I recommend you read it if you haven't already. **Pay attention to the comment thread** there where Jimmy Bogard gives some decent pointers on when and when not to use it.
 

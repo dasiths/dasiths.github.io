@@ -6,6 +6,9 @@ header:
 comments: true
 categories: [.net, open source, mediator]
 tags: [.net, open source, mediator, domain driven design]
+toc: true
+toc_label: "Content"
+toc_sticky: false
 ---
 
 The mediator pattern or the "domain whisperer" as I like to call it has been around for a long time and the main selling point of it is the reduction of coupling and enforcing clear separation of the domain logic from UI/Top layers.

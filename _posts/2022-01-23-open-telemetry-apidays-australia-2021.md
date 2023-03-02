@@ -6,6 +6,9 @@ header:
   teaser: /assets/images/apidays/api-days-australia-teaser.png
 categories: [Conference, Microservices, Distributed Systems, OpenTelemetry]
 tags: [apidays, microservices, distributed systems, tracing, open telemetry, public speaking]
+toc: true
+toc_label: "Content"
+toc_sticky: false
 ---
 I spoke at [API Days Australia](https://www.apidays.global/australia/) about my experiences building distributed systems and some challenges I've faced.
 

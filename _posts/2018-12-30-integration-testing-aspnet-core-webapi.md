@@ -6,6 +6,9 @@ header:
 comments: true
 categories: [asp.net core, testing]
 tags: [asp.net core, webapi, testing, mocking]
+toc: true
+toc_label: "Content"
+toc_sticky: false
 ---
 
 If you're a decent .NET developer and lucky enough to work in a good team then most of your work would be unit testable. But there is always a case to write some integration tests to make sure things work end to end.
