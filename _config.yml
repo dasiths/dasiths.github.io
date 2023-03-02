@@ -294,12 +294,13 @@ defaults:
       type: posts
     values:
       layout: single
-      #classes: wide
+      # classes: wide # if you need wide layout. But this disabled right side bar toc.
       author_profile: true
       read_time: true
       comments: true
       share: true
       related: true
+      show_date: true
   # _pages
   - scope:
       path: ""
