@@ -8,7 +8,7 @@ categories: [.net, aspnet core, testing]
 tags: [.net, aspnet core, testing, tokens, csrf]
 toc: true
 toc_label: "Content"
-toc_sticky: false
+toc_sticky: true
 ---
 
 I was working on writing integrations tests for an AspNet Core Web API project recently ([I blogged about how to write integration tests here](https://dasith.me/2018/12/30/integration-testing-aspnet-core-webapi/)). The front end was developed using Angular and we had CSRF protection enabled.

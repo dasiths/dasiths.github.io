@@ -8,7 +8,7 @@ categories: [Conference, Microservices, Distributed Systems]
 tags: [ndc, microservices, distributed systems, public speaking]
 toc: true
 toc_label: "Content"
-toc_sticky: false
+toc_sticky: true
 ---
 Last October I spoke at [NDC Sydney](https://ndcsydney.com/) about the pitfalls associated with microservices frameworks and how you can still leverage libraries and runtimes to help with distributed system complexities. In my experience, microservices frameworks tend to give diminishing results as your project evolves and even makes your team less agile and productive. Microservices are an architectural style and frameworks tie you down to a lot of opinions that do not age well.
 

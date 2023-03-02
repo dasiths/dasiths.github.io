@@ -9,7 +9,7 @@ categories: [NimbleConfig, Open Source]
 tags: [NimbleConfig, Open Source, ConfigInjector]
 toc: true
 toc_label: "Content"
-toc_sticky: false
+toc_sticky: true
 ---
 
 I recently started an open sourced project called NimbleConfig (hosted [in GitHub](https://github.com/dasiths/NimbleConfig)). It is a simple, unambitious, convention-based configuration injector for .NET using IConfiguration (`Microsoft.Extensions.Configuration`) with full support for AspNetCore. 

@@ -6,7 +6,7 @@ categories: []
 tags: []
 toc: true
 toc_label: "Content"
-toc_sticky: false
+toc_sticky: true
 ---
 I doubt Waleed Aly will ever get to read this but at least it's now in the ether. I wanted to apologize for bringing politics into my blog but then it dawned on me that one shouldn't merely apologize for pointing out the fallacy of an argument made by someone else regardless of it being political or not. My only hope is that it drives a conversation.
 

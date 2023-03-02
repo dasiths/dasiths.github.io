@@ -8,7 +8,7 @@ categories: [azure ad, oauth, asp.net core, testing]
 tags: [azure ad, oauth, asp.net core, webapi]
 toc: true
 toc_label: "Content"
-toc_sticky: false
+toc_sticky: true
 ---
 
 Navigating through the various authentication and authorization flows in AzureAD can sometimes be confusing. The Microsoft [documentation on app types](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-types) is a good place to start.

@@ -6,7 +6,7 @@ categories: [.NET, EF Core, SQL Server]
 tags: [.net, efcore, sql server]
 toc: true
 toc_label: "Content"
-toc_sticky: false
+toc_sticky: true
 ---
 I am working on a greenfield project that uses EF Core 6 with AspNetCore 6 at the moment. The project involves exposing a set of legacy data through an API. Simple enough right?
 

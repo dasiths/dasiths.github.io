@@ -9,7 +9,7 @@ header:
   image: /assets/images/azure_functions_featured_image.png
 toc: true
 toc_label: "Content"
-toc_sticky: false
+toc_sticky: true
 ---
 If you haven't lived under a rock for the last 18 months you would know 'Serverless' is the new cool kid in town. Microsoft's offer is called Azure Functions while Amazon calls it AWS Lambda.
 

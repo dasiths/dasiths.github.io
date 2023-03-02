@@ -8,7 +8,7 @@ categories: [.net, azure ad, oauth, openidconnect]
 tags: [.net, azure ad, oauth, openidconnect]
 toc: true
 toc_label: "Content"
-toc_sticky: false
+toc_sticky: true
 ---
 
 I am currently working on a project that uses [EasyAuth](https://docs.microsoft.com/en-us/azure/app-service/overview-authentication-authorization) to protect a web app hosted on Azure App Services. Think of it as a layer that operates above your web app that handles authentication and then inserts some special headers with the logged in users information. Your backend web application can read these special headers and extract claims about the user.
