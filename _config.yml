@@ -26,6 +26,7 @@ repository               : "dasiths/dasiths.github.io"
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 # breadcrumbs            : false # true, false (default)
 words_per_minute         : 200
+date_format              : "%-d %b %Y"
 comments:
   provider               : "disqus" # false (default), "disqus", "discourse", "facebook", "google-plus", "staticman", "staticman_v2" "custom"
   disqus:
@@ -301,7 +302,6 @@ defaults:
       share: true
       related: true
       show_date: true
-      date_format: "%-d %b %Y"
   # _pages
   - scope:
       path: ""
@@ -310,4 +310,3 @@ defaults:
       author_profile: true
       layout: single
       share: true
-      date_format: "%-d %b %Y"
