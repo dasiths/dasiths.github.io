@@ -3,7 +3,7 @@ title: "What is ORAS and why should you care?"
 date: 2023-06-04 22:06
 comments: true
 header:
-  teaser: /assets/images/otel_diagram.png
+  teaser: /assets/images/oras_page_header.png
 categories: [Containers, Kubernetes, OCI, Secure Supply Chain]
 tags: [containers, docker, oci, k8s, kubernetes, secure-supply-chain]
 toc: true
