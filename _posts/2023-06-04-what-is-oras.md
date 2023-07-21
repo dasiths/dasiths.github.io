@@ -29,7 +29,7 @@ Over the years OCI have defined their own specification and standards to support
 - [Docker image manifest spec](https://docs.docker.com/registry/spec/manifest-v2-2/#example-image-manifest)
 - [OCI image manifest spec](https://github.com/opencontainers/image-spec/blob/v1.0/manifest.md#example-image-manifest)
 
-[![Docker vs OCI image manifest](../assets/images/docker_vs_oci_image_manifest.png)](../assets/images/docker_vs_oci_image_manifest.png)
+[![Docker vs OCI image manifest](/assets/images/docker_vs_oci_image_manifest.png)](/assets/images/docker_vs_oci_image_manifest.png)
 *Click to enlarge*.
 
 As you can observe the key differences are just in the `mediaType` fields. In stead of the `application/vnd.docker.*` the OCI spec has `application/vnd.oci.*`. The OCI spec additionally supports annotations as well.
