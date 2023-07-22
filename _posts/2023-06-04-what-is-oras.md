@@ -11,6 +11,10 @@ toc_label: "Content"
 toc_sticky: true
 ---
 
+Most systems we built today are delivered as containers. Container registries and associated technologies are an important cog in this ecosystem. As the container eco system matures, there is an increased need to consume associated artefacts like Helm packages, software bill of materials, evidence of provenance, machine learning data sets etc from the same storage. There are even upcoming use cases like WebAssembly libraries that need a home. Container registries have evolved to become more than their initial need.
+
+The [OCI Working Group for Reference Types](https://github.com/opencontainers/wg-reference-types) are planning changes to the OCI spec to support these scenarios. In this post we will have a look at how we got here and how projects like ORAS are driving innovation when it comes to storing artefacts and how it's redefining what a container registry is.
+
 ## Intro to OCI
 
 You have no doubt heard of Docker and containers. Since [Docker donated their technology to the open source community](https://www.informationweek.com/cloud/open-container-initiative-finds-footing-in-linux-foundation), a large community of people including tech giants have come together to make containers the defacto unit of software delivery.
@@ -45,7 +49,7 @@ I won't do a side by side comparison here but you will see the same differences 
 
 ## That's great for images, but what about other artefacts?
 
-We live in a container world, in fact [we live in a Kubernetes world](https://community.f5.com/t5/technical-articles/it-s-a-kubernetes-world-and-i-m-just-living-in-it/tac-p/313021). So container registries have become paramount in this eco system.
+We live in a container world, in fact [we live in a Kubernetes world](https://community.f5.com/t5/technical-articles/it-s-a-kubernetes-world-and-i-m-just-living-in-it/tac-p/313021). So container registries have become paramount in this ecosystem.
 
 But your software system might not be composed of just container images. What about thing like Helm Charts? You may also have files or other supply chain assets like [SBOMs](https://en.wikipedia.org/wiki/Software_supply_chain) as well.
 
