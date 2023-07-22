@@ -11,7 +11,7 @@ toc_label: "Content"
 toc_sticky: true
 ---
 
-Most systems we build today are delivered as containers. Container registries and associated technologies are an important cog in this ecosystem. As the container eco system matures, there is an increased need to consume associated artefacts like Helm packages, software bill of materials, evidence of provenance, machine learning data sets etc from the same storage. There are even upcoming use cases like WebAssembly libraries that need a home. Container registries have evolved to become more than their initial need.
+Most systems we build today are delivered as containers. Container registries and associated technologies are an important cog in this ecosystem. As the container ecosystem matures, there is an increased need to consume associated artefacts like Helm packages, software bill of materials, evidence of provenance, machine learning data sets etc from the same storage. There are even upcoming use cases like WebAssembly libraries that need a home. Container registries have evolved to become more than their initial need.
 
 The [OCI Working Group for Reference Types](https://github.com/opencontainers/wg-reference-types) are planning changes to the OCI spec to support these scenarios. In this post we will have a look at how we got here and how projects like ORAS are driving innovation when it comes to storing artefacts and how it's redefining what a container registry is.
 
