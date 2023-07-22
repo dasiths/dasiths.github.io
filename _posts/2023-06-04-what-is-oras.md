@@ -32,7 +32,7 @@ Over the years OCI have defined their own specification and standards to support
 [![Docker vs OCI image manifest](/assets/images/docker_vs_oci_image_manifest.png)](/assets/images/docker_vs_oci_image_manifest.png)
 *Click to enlarge*.
 
-As you can observe the key differences are just in the `mediaType` fields. In stead of the `application/vnd.docker.*` the OCI spec has `application/vnd.oci.*`. The OCI spec additionally supports annotations as well.
+As you can observe the key differences are just in the `mediaType` fields. Instead of the `application/vnd.docker.*` the OCI spec has `application/vnd.oci.*`. The OCI spec additionally supports annotations as well.
 
 ### Same story with the Index Manifest
 
@@ -47,7 +47,7 @@ I won't do a side by side comparison here but you will see the same differences 
 
 We live in a container world, in fact [we live in a Kubernetes world](https://community.f5.com/t5/technical-articles/it-s-a-kubernetes-world-and-i-m-just-living-in-it/tac-p/313021). So container registries have become paramount in this eco system.
 
-But your software system might not just be composed of container images. What about thing like Helm Charts? You may also have files or other supply chain assets like [SBOMs](https://en.wikipedia.org/wiki/Software_supply_chain) as well.
+But your software system might not be composed of just container images. What about thing like Helm Charts? You may also have files or other supply chain assets like [SBOMs](https://en.wikipedia.org/wiki/Software_supply_chain) as well.
 
 If you need those files inside your k8s cluster, you used to have 2 options.
 - Store the file in some blob storage and allow the cluster to pull it down as required. But what about edge and disconnected scenarios?
@@ -79,7 +79,7 @@ With OCI v1.1 spec we finally [got support for artefacts](https://github.com/ope
 
   This would allow artefacts/manifests to be linked. i.e. An SBOM could be linked/attached to the container image it represented.
 
-- The OCI Distribution Spec 1.1 also introduced the [Referrers API](https://github.com/opencontainers/distribution-spec/blob/main/spec.md#listing-referrers). This allowed clients to query for related artefacts.
+- The OCI distribution spec 1.1 introduced the [Referrers API](https://github.com/opencontainers/distribution-spec/blob/main/spec.md#listing-referrers). This allowed clients to query for related artefacts.
 
 ### Not All Good News Though
 
@@ -90,6 +90,14 @@ With OCI v1.1 spec we finally [got support for artefacts](https://github.com/ope
 ## Pushing This Further With ORAS
 
 The [ORAS (OCI Registry As Storage)](https://oras.land/) project aims to "Distribute Artifacts Across OCI Registries With Ease".
+
+ORAS extends the OCI 1.1 specification and allows artefacts to be used in an easily discoverable way. This is done by storing independent but softly linked artefacts without making any changes to the existing image manifest. This makes it ideal for supply chain scenarios where you have many artefacts accompanying container image.
+
+The below object graph shows such a scenario where a container image, SBOM and their signatures to verify provenance. They are associated with the container image using the `subject` field.
+
+![Artefact association](https://github.com/oras-project/artifacts-spec/raw/v1.0.0-rc.2/media/net-monitor-graph.svg)
+
+## How Does ORAS Extend The OCI 1.1 Spec?
 
 The following is from the "Comparing the ORAS Artifact Manifest and OCI Image Manifest" [section](https://github.com/oras-project/artifacts-spec/blob/main/README.md#comparing-the-oras-artifact-manifest-and-oci-image-manifest).
 
@@ -128,7 +136,7 @@ There are no future releases or work items planned.
 
 > The output of this project has been proposed to the [OCI Reference Types Working Group](https://github.com/opencontainers/wg-reference-types). Future discussions about artifacts in OCI registries should happen in the [OCI distribution-spec](https://github.com/opencontainers/distribution-spec) & [image-spec](https://github.com/opencontainers/image-spec) repositories.
 
-The idea is to get the proposed changes adopted via the OCI spec and make the artefact use common across all registries and clients.
+The idea is to get the proposed changes adopted via the OCI spec upstream and make the artefact use common across all registries and clients that way.
 
 ## ORAS Use Cases And Adopters
 - [Helm](https://v3.helm.sh/docs/topics/registries/): Store packages.
