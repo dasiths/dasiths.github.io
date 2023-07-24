@@ -54,12 +54,12 @@ We live in a container world, in fact [we live in a Kubernetes world](https://co
 But your software system might not be composed of just container images. What about thing like Helm Charts? You may also have files or other supply chain assets like [SBOMs](https://en.wikipedia.org/wiki/Software_supply_chain) as well.
 
 If you need those files inside your k8s cluster, you used to have 2 options.
-- Store the file in some blob storage and allow the cluster to pull it down as required. But what about edge and disconnected scenarios?
+- Store the file in some blob storage and allow the cluster to pull it down as required. But what about versioning, replication, edge and disconnected scenarios etc?
 - Store your file inside a container image and store it in a container registry. At least this way the dependencies are in the same place as the container image. But this feels like cheating.
 
 As the world kept moving more and more workloads to k8s, the industry realized **we need a way to store more than container images in container registries and we needed to support that as a first class concept.**
 
-Think about it, the container registry is the best place to store it. Thing can be versioned and the inherent nature of the registry where manifests and blob content can be stored separately made it ideal.
+Think about it, the container registry is the best place to store it. Artefacts can be versioned and the inherent nature of the registry where manifests and blob content can be stored separately made it ideal.
 
 **Container registries needed to metamorphosize into artefact registries.**
 
