@@ -55,7 +55,7 @@ But your software system might not be composed of just container images. What ab
 
 If you need those files inside your k8s cluster, you used to have 2 options.
 - Store the file in some blob storage and allow the cluster to pull it down as required. But what about edge and disconnected scenarios?
-- Store your file inside a container image and store it in a container registry. At least this way the dependencies are in the same place the container image. But this feels like cheating.
+- Store your file inside a container image and store it in a container registry. At least this way the dependencies are in the same place as the container image. But this feels like cheating.
 
 As the world kept moving more and more workloads to k8s, the industry realized **we need a way to store more than container images in container registries and we needed to support that as a first class concept.**
 
