@@ -73,7 +73,7 @@ With OCI v1.1 spec we finally [got support for artefacts](https://github.com/ope
 
 > Content other than OCI container images MAY be packaged using the image manifest. When this is done, the `config.mediaType` value MUST be set to a value specific to the artifact type or the empty value. If the `config.mediaType` is set to the empty value, the `artifactType` MUST be defined. If the artifact does not need layers, a single layer SHOULD be included with a non-zero size. The suggested content for an unused `layers` array is the [empty descriptor](https://github.com/opencontainers/image-spec/blob/main/manifest.md#guidance-for-an-empty-descriptor).
 
-- an [image].`artefactType` field was also introduced.
+- an [image].`artifactType` field was also introduced.
   > This OPTIONAL property contains the type of an artifact when the manifest is used for an artifact. This MUST be set when `config.mediaType` is set to the [empty value](https://github.com/opencontainers/image-spec/blob/main/manifest.md#guidance-for-an-empty-descriptor). If defined, the value MUST comply with RFC 6838, including the [naming requirements](https://tools.ietf.org/html/rfc6838#section-4.2) in its section 4.2, and MAY be registered with [IANA](https://www.iana.org/assignments/media-types/media-types.xhtml). Implementations storing or copying image manifests MUST NOT error on encountering an artifactType that is unknown to the implementation.
 
 - This meant artefact authors could now leverage the existing `image manifest` to store artefacts in a way that works with the Content Addressable Storage (CAS) capabilities of [OCI Distribution](https://github.com/opencontainers/distribution-spec/blob/main/spec.md).
@@ -141,6 +141,22 @@ There are no future releases or work items planned.
 > The output of this project has been proposed to the [OCI Reference Types Working Group](https://github.com/opencontainers/wg-reference-types). Future discussions about artifacts in OCI registries should happen in the [OCI distribution-spec](https://github.com/opencontainers/distribution-spec) & [image-spec](https://github.com/opencontainers/image-spec) repositories.
 
 The idea is to get the proposed changes adopted via the OCI spec upstream and make the artefact use common across all registries and clients that way.
+
+### Update: 04-Aug-2023
+
+The OCI working group have [made an announcement](https://opencontainers.org/posts/blog/2023-07-07-summary-of-upcoming-changes-in-oci-image-and-distribution-specs-v-1-1/) on what proposals from ORAS they have incorporated.
+
+These include
+
+- `artefactType` as a top level field. Preferred over `config.mediaType` for new artefacts.
+- `subject` field to be used establishing relationships between.
+- `/v2/<name>/referrers/<digest>` referrers API endpoint to query relationships based on the `subject` descriptor.
+
+I have created a [pull request for the OCI image spec repo](https://github.com/opencontainers/image-spec/pull/1100) to update its artefact usage guidance.
+
+#### What this means for ORAS?
+
+This means the ORAS artefact manifest spec will now considered to be deprecated. You can start using the OCI 1.1 image spec to store artefacts. The intention of the project has been satisfied in getting the OCI image spec to adopt some of its recommendations. You can keep using the ORAS CLI and SDK tools to interact with OCI 1.1 registries.
 
 ## ORAS Use Cases And Adopters
 - [Helm](https://v3.helm.sh/docs/topics/registries/): Store packages.
