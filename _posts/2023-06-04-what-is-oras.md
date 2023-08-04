@@ -148,7 +148,7 @@ The OCI working group have [made an announcement](https://opencontainers.org/pos
 
 These include
 
-- `artefactType` as a top level field. Preferred over `config.mediaType` for new artefacts.
+- `artifactType` as a top level field. Preferred over `config.mediaType` for new artefacts.
 - `subject` field to be used establishing relationships between.
 - `/v2/<name>/referrers/<digest>` referrers API endpoint to query relationships based on the `subject` descriptor.
 
@@ -156,7 +156,9 @@ I have created a [pull request for the OCI image spec repo](https://github.com/o
 
 #### What this means for ORAS?
 
-This means the ORAS artefact manifest spec will now considered to be deprecated. You can start using the OCI 1.1 image spec to store artefacts. The intention of the project has been satisfied in getting the OCI image spec to adopt some of its recommendations. You can keep using the ORAS CLI and SDK tools to interact with OCI 1.1 registries.
+This means the ORAS artefact manifest spec will now considered to be deprecated. You can start using the OCI 1.1 image spec to store artefacts. The intention of the project has been satisfied in getting the OCI image spec to adopt some of its (ORAS artefact spec) recommendations. 
+
+You can keep using the ORAS CLI and SDK tools to interact with OCI 1.1 registries. In fact this is the preferred way rather than writing your own logic based on the runtime spec. ORAS SDK handles everything for you.
 
 ## ORAS Use Cases And Adopters
 - [Helm](https://v3.helm.sh/docs/topics/registries/): Store packages.
