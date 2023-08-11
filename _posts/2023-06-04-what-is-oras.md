@@ -15,6 +15,27 @@ Most systems we build today are delivered as containers. Container registries an
 
 The [OCI Working Group for Reference Types](https://github.com/opencontainers/wg-reference-types) are planning changes to the OCI spec to support these scenarios. In this post we will have a look at how we got here and how projects like ORAS are driving innovation when it comes to storing artefacts and how it's redefining what a container registry is.
 
+*Note: There have been some recent updates to the OCI image spec and ORAS (August 2023) and they are covered [here](#update-04-aug-2023).*
+
+- [Intro to OCI](#intro-to-oci)
+- [Comparing Docker Image v2 schema 2 vs OCI 1.0 Image schema](#comparing-docker-image-v2-schema-2-vs-oci-10-image-schema)
+  - [Same story with the Index Manifest](#same-story-with-the-index-manifest)
+- [That's great for images, but what about other artefacts?](#thats-great-for-images-but-what-about-other-artefacts)
+- [Enter OCI v1.1 Specification](#enter-oci-v11-specification)
+  - [Not All Good News Though](#not-all-good-news-though)
+- [Pushing This Further With ORAS](#pushing-this-further-with-oras)
+- [How Does ORAS Extend The OCI 1.1 Spec?](#how-does-oras-extend-the-oci-11-spec)
+  - [ORAS Artefact Manifest](#oras-artefact-manifest)
+- [ORAS Artefact Spec Future](#oras-artefact-spec-future)
+  - [Update: 04-Aug-2023](#update-04-aug-2023)
+  - [Update: 12-Aug-2023](#update-12-aug-2023)
+    - [What this means for ORAS?](#what-this-means-for-oras)
+- [ORAS Use Cases And Adopters](#oras-use-cases-and-adopters)
+  - [Supply Chain Artefacts](#supply-chain-artefacts)
+- [Using ORAS CLI](#using-oras-cli)
+- [Closing](#closing)
+
+
 ## Intro to OCI
 
 You have no doubt heard of Docker and containers. Since [Docker donated their technology to the open source community](https://www.informationweek.com/cloud/open-container-initiative-finds-footing-in-linux-foundation), a large community of people including tech giants have come together to make containers the defacto unit of software delivery.
@@ -153,6 +174,15 @@ These include
 - `/v2/<name>/referrers/<digest>` referrers API endpoint to query relationships based on the `subject` descriptor.
 
 I have created a [pull request for the OCI image spec repo](https://github.com/opencontainers/image-spec/pull/1100) to update its artefact usage guidance.
+
+### Update: 12-Aug-2023
+
+- My changes from the [above PR](https://github.com/opencontainers/image-spec/pull/1100) have been incorporated into a new PR which can be [found here](https://github.com/opencontainers/image-spec/pull/1101).
+- The ORAS project is also updating its guidance based on that. The PR for that [is here](https://github.com/oras-project/oras-www/pull/248).
+
+This was my first time contributing to the OCI (opencontainers) project and ORAS and I enjoyed the conversation and process of PR review very much.
+
+If you see a gap in the guidance or spec, please feel free to create an issue or a PR to fix it. The folks over there are a good bunch of people to work with.
 
 #### What this means for ORAS?
 
