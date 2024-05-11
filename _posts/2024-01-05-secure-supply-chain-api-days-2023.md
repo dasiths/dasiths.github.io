@@ -42,11 +42,10 @@ From their meetup page:
 
 ## Recording & Slide deck
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/n7noS4pLb0U?si=BpFq3fVqtzDccU_C" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe class="speakerdeck-iframe" frameborder="0" src="https://speakerdeck.com/player/e8c00bf15ce94597bf89294efdb6c5e9" title="Building Trust Brick by Brick: Exploring the Landscape of Modern Secure Supply Chain Tools" allowfullscreen="true" style="border: 0px; background: padding-box padding-box rgba(0, 0, 0, 0.1); margin: 0px; padding: 0px; border-radius: 6px; box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 40px; width: 100%; height: auto; aspect-ratio: 560 / 315;" data-ratio="1.7777777777777777"></iframe>
 
 ### Short Version from API Days
-
-<iframe class="speakerdeck-iframe" frameborder="0" src="https://speakerdeck.com/player/e8c00bf15ce94597bf89294efdb6c5e9" title="Building Trust Brick by Brick: Exploring the Landscape of Modern Secure Supply Chain Tools" allowfullscreen="true" style="border: 0px; background: padding-box padding-box rgba(0, 0, 0, 0.1); margin: 0px; padding: 0px; border-radius: 6px; box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 40px; width: 100%; height: auto; aspect-ratio: 560 / 315;" data-ratio="1.7777777777777777"></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/n7noS4pLb0U?si=BpFq3fVqtzDccU_C" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ### Extended Version from K8SUG
 
