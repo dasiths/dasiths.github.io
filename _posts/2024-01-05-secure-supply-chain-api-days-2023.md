@@ -27,7 +27,7 @@ The talk abstract is as follows.
 
 ## About API Days
 
-This is the sixth time I've presented at API Days in the "platform" stream and I'm really grateful from the opportunity to share my learning with the community for such and extended period of time. I've been covering many facets of distributed systems and things like the container eco system for a while now.
+This is the sixth time I've presented at API Days in the "platform" stream and I'm really grateful from the opportunity to share my learning with the community for such and extended period of time. I've been covering many facets of distributed systems and things like the container ecosystem for a while now.
 
 This year the API days conference was held in the Pullman Melbourne hotel and had 5 parallel tracks and workshops. I believe it was the most attended API days Australia event in its short history.
 
@@ -51,4 +51,5 @@ From their meetup page:
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/pMq2ylRzYl4?si=-YPv8pScMWGhZ3uN&amp;start=2359" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
+</br></br>
 If you have any thoughts or comments please leave them here. Thanks for taking the time to read this post.
