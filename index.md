@@ -20,7 +20,7 @@ header:
 excerpt: "“We can only see a short distance ahead, but we can see plenty there that needs to be done.” ~ *Alan Turing*, [Computing machinery and intelligence](https://www.goodreads.com/book/show/17697774-computing-machinery-and-intelligence)"
 feature_row:
   - image_path: assets/images/apidays/api-days-australia-2023-teaser.png
-    alt: "API Days & K8SUF 2023"
+    alt: "API Days & K8S Meetup 2023"
     title: "API Days & K8SUF 2023"
     excerpt: "Looking at the modern software supply chain security landscape. #notation #cosign #sbom #slsa #oci1.1"
     url: "https://dasith.me/2024/01/05/secure-supply-chain-api-days-2023/"
