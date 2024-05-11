@@ -22,7 +22,7 @@ feature_row:
   - image_path: assets/images/apidays/api-days-australia-2023-teaser.png
     alt: "API Days & K8SUF 2023"
     title: "API Days & K8SUF 2023"
-    excerpt: "Looking at the modern software supply chain security landscape."
+    excerpt: "Looking at the modern software supply chain security landscape. #notation #cosign #sbom #slsa #oci1.1"
     url: "https://dasith.me/2024/01/05/secure-supply-chain-api-days-2023/"
     btn_label: "Read More"
     btn_class: "btn--primary"
