@@ -17,7 +17,7 @@ I had my team co-present the topic with me this time. My team in Microsoft [Indu
 
 With the renewed focus supply chains attacks and with the [supply chain security endorsement by the White House](https://www.whitehouse.gov/briefing-room/presidential-actions/2021/05/12/executive-order-on-improving-the-nations-cybersecurity/), every government industry and adjacent vendors are looking at making their own software supply chain more secure. Australia being a close ally of the US and with more recently with [AUKUS](https://en.wikipedia.org/wiki/AUKUS), the industry here is looking to the US for patterns and practices.
 
-It's in this landscape that my team and I were trying to bring the modern approaches and practices to customers here in Australia. We saw many open source community and the k8s ecosystem move in the direction of artefact signing and attestations and wanted to talk more about how everyone can benefit from the industry push for software supply chain security.
+It's in this landscape that my team was trying to bring the modern approaches and practices to customers here in Australia. We saw the open source community and the k8s ecosystem move in the direction of artefact signing and attestations and wanted to talk more about how everyone can benefit from the industry push for software supply chain security.
 
 In this talk we try to introduce teams to the concept of supply chain security and what you can start doing today to make your supply chain secure and how you can make the distribution and consumption of your software more secure for your consumers as well.
 
