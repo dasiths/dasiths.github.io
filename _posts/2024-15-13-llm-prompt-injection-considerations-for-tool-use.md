@@ -104,7 +104,7 @@ This instruction might confuse the LLM to ignore the value in the `user_info` va
 
 The impact of this depends on **how your down stream services are authenticated to by your LLM app**.
 
-- If they are authenticated with some sort of user impersonation (or [on behalf of](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow)) and the downstream services have Authz logic to sandbox operation to **ONLY** access logged in user.
+- If they are authenticated with some sort of user impersonation (or [on behalf of](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow)) and the downstream services have Authz logic to sandbox operations to **only execute in the scope of the current user.**
   - There is limited impact as the prompt injected request will not be able to access other user's information.
   - There is still a chance of the prompt injection to uncover information you did not want the application to surface.
 
@@ -112,11 +112,13 @@ The impact of this depends on **how your down stream services are authenticated 
   - An attacker could enumerate through various parameters and surface information of all users.
   - **Warning**: If your LLM solution uses something similar to the naive code example and your authentication approach falls under this bucket, **take actions now.**
 
+The impact of this class of prompt injection attack coupled with the service scoped authentication makes it high risk.
+
 ## How To Refactor The Code
 
-Our aim is to not rely on the LLM to "generate" the user specific parameters required for an API but rather get it through imperative programming techniques.
+Our aim is to not rely on the LLM to "generate" the critical user specific parameters required for an API but rather get it through imperative programming techniques.
 
-![Calling api with params](/assets/images/llm-calling-api-with-params.png)
+![Calling API with params](/assets/images/llm-calling-api-with-params.png)
 
 ```python
 import requests
@@ -186,7 +188,7 @@ It only prevents a certain class of attacks with regards to user enumeration. It
 
 To guard against any sort of user impersonation or enumeration attack, it is recommended that the services involved use authentication flow that carries the user context with it. (i.e. [OAuth On behalf of flow](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow)).
 
-IF this is implemented, the downstream services will always have an user identity attached to the authenticated principal. This would allow those downstream services to implement Authorisation logic to prevent user enumeration type attacks.
+If this flow is implemented, the downstream services will always have an user identity attached to the authenticated principal. This would allow those downstream services to implement Authorisation logic to prevent user enumeration type attacks (sandboxing) or limit the blast radius.
 
 The techniques shown in the code samples prevent user enumeration type attacks being propagated downstream but it also needs to be complemented by secure architecture patterns.
 
