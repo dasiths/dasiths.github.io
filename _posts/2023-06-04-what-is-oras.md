@@ -221,7 +221,7 @@ rm -rf oras_${VERSION}_*.tar.gz oras-install/
 
 Other platforms are [listed here](https://oras.land/docs/installation).
 
-You will need an compatible registry like [Zot](https://zotregistry.io/). A list of [supported registries](https://oras.land/docs/adopters) are listed here.
+You will need an compatible registry like [Zot](https://zotregistry.io/). A list of [supported registries](https://oras.land/adopters) are listed here.
 
 To run `Zot`:
 ```bash
@@ -279,6 +279,6 @@ doc/example     sha256:bcdd6799fed0fca0eaedfc1c642f3d1dd7b8e78b43986a89935d6fe21
 
 Hope this post gave you a deeper understanding of the state of artefacts in container registries and how the OCI 1.1 spec and projects like ORAS are trying to push the industry in a direction that allows for standardised registries and clients.
 
-If you have any feedback or questions, please reach out to me on twitter @dasiths or post them here.
+If you have any feedback or questions, please reach out to me on twitter [@dasiths](https://twitter.com/dasiths) or post them here.
 
 Happy coding.
