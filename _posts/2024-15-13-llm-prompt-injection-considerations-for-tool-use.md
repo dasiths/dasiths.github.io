@@ -182,7 +182,7 @@ In this updated code:
 
 It only prevents a certain class of attacks with regards to user enumeration. It does not prevent other types of prompt injection attacks and you will need a holistic approach that includes things like input validators, output guards and content filters for this.
 
-## What About Authentication And Authorisation?
+### What About Authentication And Authorisation?
 
 To guard against any sort of user impersonation or enumeration attack, it is recommended that the services involved use authentication flow that carries the user context with it. (i.e. [OAuth On behalf of flow](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow)).
 
