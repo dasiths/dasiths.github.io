@@ -1,5 +1,5 @@
 ---
-title: "LLM Prompt Injection Considerations For Tool Use"
+title: "LLM Prompt Injection Considerations With Tool Use"
 date: 2024-05-03 22:06
 comments: true
 header:
