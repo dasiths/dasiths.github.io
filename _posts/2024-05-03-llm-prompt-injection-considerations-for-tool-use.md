@@ -11,7 +11,7 @@ toc_label: "Content"
 toc_sticky: true
 ---
 
-My team at [Microsoft Industry Solutions Engineering](https://microsoft.github.io/code-with-engineering-playbook/ISE/) have recently been building heaps of LLM based solutions for customers of varying sizes across industries. There are some patterns that are emerging from these solutions and today I wanted to talk about a pattern we used at a customer to prevent a class of prompt injection attacks with regards to tool use. Some of it may seem trivial or just common sense but remember that most teams building these solutions are cross functional with data scientists being code contributors. It's important that good foundation are built with the least amount of chance to shoot yourself in the foot. 
+My team at [Microsoft Industry Solutions Engineering](https://microsoft.github.io/code-with-engineering-playbook/ISE/) have recently been building heaps of LLM based solutions for customers of varying sizes across industries. There are some patterns that are emerging from these solutions and today I wanted to talk about a pattern we used at a customer to prevent a class of prompt injection attacks with regards to tool use. Some of it may seem trivial or just common sense from purely a engineering sense but remember that most teams building these solutions are cross functional with data scientists being code contributors. The experience and lens these problems get looked at might miss some nuances if not careful. This is why It's important that good foundational patterns are built with the least amount of chance to shoot yourself in the foot. 
 
 ## Context
 
