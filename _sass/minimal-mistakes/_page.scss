@@ -579,6 +579,11 @@ body {
 
 // custom entries
 
-.entries-list {
-  max-width: 640px;
+// support main div larger than 1280px
+.archive__item-teaser {
+  max-width: 640px; // because max-width of the "main" div is 80% of the viewport width, this needs to have a lower max width.
+}
+
+.archive__item-excerpt {
+  max-width: 640px; // because max-width of the "main" div is 80% of the viewport width, this needs to have a lower max width.
 }
