@@ -11,7 +11,7 @@ toc_label: "Content"
 toc_sticky: true
 ---
 
-My team at [Microsoft Industry Solutions Engineering](https://microsoft.github.io/code-with-engineering-playbook/ISE/) have recently been building heaps of LLM based solutions for customers of varying sizes across industries. There are some patterns that are emerging from these solutions and today I wanted to talk about a pattern we used at a customer to prevent a class of prompt injection attacks with regards to tool use. Some of it may seem trivial or just common sense from purely a engineering sense but remember that most teams building these solutions are cross functional with data scientists being code contributors. The experience and lens these problems get looked at might miss some nuances if not careful. This is why It's important that good foundational patterns are built with the least amount of chance to shoot yourself in the foot. 
+My team at [Microsoft Industry Solutions Engineering](https://microsoft.github.io/code-with-engineering-playbook/ISE/) have recently been building heaps of LLM based solutions for customers of varying sizes across industries. There are some patterns that are emerging from these solutions and today I wanted to write about a pattern we used at a customer to prevent a class of prompt injection attacks with regards to tool use. Some of it may seem trivial or just common sense from purely a security sense but remember that most teams building these solutions are cross functional, not everyone on the team building solutions combining LLMs in calling APIs may be aware of the security implications or considerations. The experience and lens these problems get looked at might miss some nuances if not careful. This is why it's important that good foundational patterns are built with the least amount of chance to shoot yourself in the foot. 
 
 ## Context
 
@@ -21,13 +21,13 @@ The chances are you are going to end up with a solution like this.
 
 ![llm app architecture](/assets/images/llm-backend-architecture.png.png)
 
-1. The User authenticates with the client side app (SPA/Native). Inputs a query.
+1. The User authenticates with the client side app which can be a Single Page Application (SPA) or Native app, then inputs a query.
 2. SPA sends a query to the backend LLM app. The LLM app has the user's information and the query.
 3. The backend LLM app uses the user context and query to call the required tools (APIs) to gather the information required or perform certain actions.
 
 ### What Happens Inside The LLM App?
 
-The backend app will receive the query along with the "user context" and will have to figure out what tools to call. This means using an LLM. You can imagine the prompt will include the users past conversations, user's information, tool definitions, instruction on how to use format the inputs for the tool and finally the user's query.
+The backend app will receive the query along with the "user context" and will have to figure out what tools to call. This can often mean using an LLM, where the prompt can include the users past conversations, user's information, tool definitions, instruction on how to use format the inputs for the tool and finally the user's query.
 
 The LLM will then look at all this information and output something to indicate the use of tools and the input to those tools. The LLM effectively "generates" the inputs to the downstream APIs. This means there is a risk of these inputs being affected the user's input in an unintended fashion.
 
@@ -74,7 +74,7 @@ search_transactions(api_input)
 # ------------------------- Tool -------------------- #
 def search_transactions(transaction_search: TransactionSearchApiInput):
     # API endpoint for transaction search
-    api_url = f"https://example.com/api/users/{transaction_search.user_id}/transaction/search"
+    api_url = f"{backend}/api/users/{transaction_search.user_id}/transaction/search"
 
     # Prepare request data
     params = {
@@ -90,7 +90,7 @@ def search_transactions(transaction_search: TransactionSearchApiInput):
 
 ## What's Bad About The Above Approach?
 
-The `TransactionSearchApiInput` class is hydrated using the LLM and this class has **ALL** the params the tool takes in including the `user_id`. This means there is an opportunity for the LLM being tricked into providing an `user_id` that did not originate from the `user_info` input variable.
+The `TransactionSearchApiInput` class is hydrated using values determined by the LLM and this class has **ALL** the params the tool takes in including the `user_id`. This means there is an opportunity for the LLM being tricked into providing an `user_id` that did not originate from the `user_info` input variable.
 
 For example. The user could input the following query.
 
@@ -156,7 +156,7 @@ def search_transactions(transaction_search: TransactionSearchApiInput, user_info
     # Retrieve user_id from user_info instead of the LLM hydrated TransactionSearchApiInput
     user_id = user_info.get("user_id")
 
-    api_url = f"https://example.com/api/users/{user_id}/transaction/search"
+    api_url = f"{backend}/api/users/{user_id}/transaction/search"
     params = {
         "period_from": transaction_search.period_from,
         "period_to": transaction_search.period_to,
@@ -176,8 +176,9 @@ In this updated code:
 - The `search_transactions` function now accepts both `TransactionSearchApiInput` and User Info parameters. This means we can use imperative techniques to extract the user information from the incoming request/identity token/user database and bypass the LLM. The function signature to call the API makes this fact explicit.
 
 ### The Design Pattern
+
 - Identify the API parameters or fields that are specific to an user context and not rely on the LLM to hydrate those parameters in the input to the tool/API.
-- Always use a template to wrangle the LLM output. Even if this output is not directly user facing (used internally for tool calling). In this case we use the Pydantic model for format instructions to the LLM.
+- Always use a template to wrangle the LLM output. Even if this output is not directly user facing (used internally for tool calling). In this case we use the Pydantic model to provide both output formatting instructions to the LLM, and to parse the LLM output.
 - Design the tool call definition in a way that separates the parameters so that the "model" generated by the LLM and context specific information like the user information are separate input to the function.
 
 ### Does This Prevent (All) Prompt Injection Attacks?
@@ -186,7 +187,7 @@ It only prevents a certain class of attacks with regards to user enumeration. It
 
 ### What About Authentication And Authorisation?
 
-To guard against any sort of user impersonation or enumeration attack, it is recommended that the services involved use authentication flow that carries the user context with it. (i.e. [OAuth On behalf of flow](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow)).
+To guard against any sort of user impersonation or enumeration attack, it is recommended that the services involved use a delegation based authentication flow that carries the user context with it. (i.e. [OAuth On behalf of flow](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow)).
 
 If this flow is implemented, the downstream services will always have an user identity attached to the authenticated principal. This would allow those downstream services to implement Authorisation logic to prevent user enumeration type attacks (sandboxing) or limit the blast radius.
 
@@ -203,3 +204,5 @@ Consider your use case and think about how an attacker could use the LLM to tric
 If you have any feedback or questions, please reach out to me on twitter [@dasiths](https://twitter.com/dasiths) or post them here.
 
 Happy coding.
+
+*The feature image was generated using Bing Image Creator.*
