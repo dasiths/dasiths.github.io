@@ -19,7 +19,7 @@ This is a common scenario we encounter. There is a front-end/webapp (already bui
 
 The chances are you are going to end up with a solution like this.
 
-![llm app architecture](/assets/images/llm-backend-architecture.png.png)
+![llm app architecture](/assets/images/llm-backend-architecture.png)
 
 1. The User authenticates with the client side app which can be a Single Page Application (SPA) or Native app, then inputs a query.
 2. SPA sends a query to the backend LLM app. The LLM app has the user's information and the query.
@@ -29,7 +29,7 @@ The chances are you are going to end up with a solution like this.
 
 The backend app will receive the query along with the "user context" and will have to figure out what tools to call. This can often mean using an LLM, where the prompt can include the users past conversations, user's information, tool definitions, instruction on how to use format the inputs for the tool and finally the user's query.
 
-The LLM will then look at all this information and output something to indicate the use of tools and the input to those tools. The LLM effectively "generates" the inputs to the downstream APIs. This means there is a risk of these inputs being affected the user's input in an unintended fashion.
+The LLM will then look at all this information and output something to indicate the use of tools and the input to those tools. The LLM effectively "generates" the inputs to the downstream APIs. This means there is a risk of these inputs being affected by the user's input in an unintended fashion.
 
 With this knowledge, let's now look at how this can be abused by prompt injection.
 
@@ -102,9 +102,9 @@ This instruction might confuse the LLM to ignore the value in the `user_info` va
 
 ## What Could Go Wrong?
 
-The impact of this depends on **how your down stream services are authenticated to by your LLM app**.
+The impact of this depends on **how your downstream services are authenticated to, by your LLM app**.
 
-- If they are authenticated with some sort of user impersonation (or [on behalf of](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow)) and the downstream services have Authz logic to sandbox operations to **only execute in the scope of the current user.**
+- If they are authenticated with some sort of user impersonation (or [on behalf of](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow)) and the downstream services have Authorization (Authz) logic to sandbox operations to **only execute in the scope of the current user.**
   - There is limited impact as the prompt injected request will not be able to access other user's information.
   - There is still a chance of the prompt injection to uncover information you did not want the application to surface.
 
@@ -189,13 +189,13 @@ It only prevents a certain class of attacks with regards to user enumeration. It
 
 To guard against any sort of user impersonation or enumeration attack, it is recommended that the services involved use a delegation based authentication flow that carries the user context with it. (i.e. [OAuth On behalf of flow](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-on-behalf-of-flow)).
 
-If this flow is implemented, the downstream services will always have an user identity attached to the authenticated principal. This would allow those downstream services to implement Authorisation logic to prevent user enumeration type attacks (sandboxing) or limit the blast radius.
+If this flow is implemented, the downstream services will always have a user identity attached to the authenticated principal. This would allow those downstream services to implement Authorisation logic to prevent user enumeration type attacks (sandboxing) or limit the blast radius.
 
 The techniques shown in the code samples prevent user enumeration type attacks being propagated downstream but it also needs to be complemented by secure architecture patterns.
 
 ## Closing
 
-We looked at a specific context in which an user enumeration class of prompt injection attacks could have occurred and what design patterns you could employ to prevent it.
+We looked at a specific context in which a user enumeration class of prompt injection attacks could have occurred and what design patterns you could employ to prevent it.
 
 While the examples here looked at something to do with user enumeration, the same abstract approach could be used to counter many prompt injection attack vectors associated with tool use.
 
@@ -205,4 +205,4 @@ If you have any feedback or questions, please reach out to me on twitter [@dasit
 
 Happy coding.
 
-*The feature image was generated using Bing Image Creator.*
+*The feature image was generated using Bing Image Creator. [Terms](https://www.bing.com/new/termsofuse?FORM=GENTOS) can be found here.*
