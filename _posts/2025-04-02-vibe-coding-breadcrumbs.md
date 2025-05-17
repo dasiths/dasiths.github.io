@@ -47,7 +47,7 @@ Maintaining a dynamic, collaborative record of the development process that acts
 
 The Breadcrumb Protocol implements these themes through a simple yet powerful concept: a shared scratch pad that allows both the developer and AI to align their vision at all times. Each development task gets its own "breadcrumb" file - a single source of truth that tracks progress from requirements through implementation.
 
-> The protocol is called [`Breadcrumb Protocol`](https://github.com/dasiths/VibeCodingBreadcrumbDemo) and is hosted on GitHub.
+> This approach is called [`Breadcrumb Protocol`](https://github.com/dasiths/VibeCodingBreadcrumbDemo) and is hosted on GitHub.
 
 <a href="https://github.com/dasiths/VibeCodingBreadcrumbDemo"><img src="/assets/images/breadcrumb-protocol.png" alt="Breadcrumb Protocol" width="200"/></a>
 
@@ -55,7 +55,9 @@ The Breadcrumb Protocol implements these themes through a simple yet powerful co
 
 The Breadcrumb Protocol centres around the concept of a breadcrumb file - a shared documentation file that serves as a collaborative scratch pad between the developer and the AI agent. Rather than relying on AI to maintain perfect context awareness across multiple interactions, this approach externalizes the context so both parties can refer to and update it continuously.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/etYG-6-9Mlk?si=Pvr1IbPHGEaKjuBV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<div style="width:560px; height:315px; overflow:hidden; margin:auto;">
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/etYG-6-9Mlk?si=Pvr1IbPHGEaKjuBV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div>
 
 ![Workflow](https://github.com/dasiths/VibeCodingBreadcrumbDemo/blob/main/image.png?raw=true)
 
@@ -76,11 +78,11 @@ Let's look at how it works in practice.
    Use dotnet 9. Use this document on instructions of how to add swagger/openapi endpoint. https://devblogs.microsoft.com/dotnet/dotnet9-openapi/
    ```
 
-2. **Agent create a Breadcrumb File**:
+   The system prompt for the agent includes details about the domain knowledge, specifications and the breadcrumb protocol.
+
+2. **Agent Create a Breadcrumb File**:
 
    At the start of each task, a breadcrumb file is created in `.github/.copilot/breadcrumbs` with the format `yyyy-mm-dd-HHMM-{title}.md`.
-
-3. **Structure the Breadcrumb File**:
 
    Each breadcrumb includes mandatory sections:
    - **Requirements**: Clear list of what needs to be implemented.
@@ -92,19 +94,25 @@ Let's look at how it works in practice.
    - **Before/After Comparison**: Highlighting the improvements.
    - **References**: List of referred material like domain knowledge files and specifications.
 
-4. **Agent Follows the Workflow Rules**:
+3. **Agent Follows the Workflow Rules**:
    - Update the breadcrumb **BEFORE** making any code changes.
    - **Get explicit approval** on the plan before implementation.
    - Update the breadcrumb **AFTER completing each significant change**.
    - Keep the breadcrumb as the single source of truth for the task's context and progress.
 
-5. **Agent Creates and Follows Structured Plans**:
+4. **Agent Creates and Follows Structured Plans**:
    - Organize plans into numbered phases (e.g., "Phase 1: Setup Dependencies")
    - Break down each phase into specific tasks with numeric identifiers
    - Include a detailed checklist that maps to all phases and tasks
    - Reference domain knowledge/specs from the appropriate folders
    - Mark tasks as `- [ ]` for pending tasks and `- [x]` for completed tasks
    - Define clear success criteria for the implementation
+
+5. **User Provides Feedback**:
+   - Validate the agent generated plans are accurate.
+   - Review code changes proposed by the agent.
+   - Provide input in form of sample code or additional context.
+   - Iterate the steps.
 
 This approach transforms how developers and AI agents collaborate by creating a shared mental model that evolves with the project. The breadcrumb creates a feedback loop where each party can verify their understanding against the single source of truth, dramatically reducing misalignments and ensuring consistent implementation.
 
