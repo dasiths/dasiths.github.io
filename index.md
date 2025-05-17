@@ -20,9 +20,9 @@ header:
 excerpt: "“We can only see a short distance ahead, but we can see plenty there that needs to be done.” ~ *Alan Turing*, [Computing machinery and intelligence](https://www.goodreads.com/book/show/17697774-computing-machinery-and-intelligence)"
 feature_row:
   - image_path: assets/images/apidays/api-days-2024-speaking.JPG
-    alt: "API Days 2024"
-    title: "API Days 2024"
-    excerpt: "Practical insights for engineering teams on successfully and responsibly integrating LLMs into products."
+    alt: "API Days Australia 2024"
+    title: "API Days Australia 2024"
+    excerpt: "An engineer’s perspective on the hard-earned lessons, risks, and realities of building with LLMs."
     url: "https://dasith.me/2024/10/30/llm-lessons-api-days-2024/"
     btn_label: "Read More"
     btn_class: "btn--primary"
