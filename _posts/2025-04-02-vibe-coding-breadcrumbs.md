@@ -54,12 +54,12 @@ The Breadcrumb Protocol implements these themes through a simple yet powerful co
 ## Using the `Breadcrumb Protocol`
 
 The Breadcrumb Protocol centres around the concept of a breadcrumb file - a shared documentation file that serves as a collaborative scratch pad between the developer and the AI agent. Rather than relying on AI to maintain perfect context awareness across multiple interactions, this approach externalizes the context so both parties can refer to and update it continuously.
-
-<div style="width:560px; height:315px; overflow:hidden; margin:auto;">
+<div style="max-width: 800px; margin-left: 0;">
     <iframe width="560" height="315" src="https://www.youtube.com/embed/etYG-6-9Mlk?si=Pvr1IbPHGEaKjuBV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>
-
-![Workflow](https://github.com/dasiths/VibeCodingBreadcrumbDemo/blob/main/image.png?raw=true)
+<div style="max-width: 800px;">
+    <img src="https://github.com/dasiths/VibeCodingBreadcrumbDemo/blob/main/image.png?raw=true" alt="Workflow" style="max-width: 100%;">
+</div>
 
 See the [full prompt](https://github.com/dasiths/VibeCodingBreadcrumbDemo/blob/main/.github/copilot-instructions.md) for more details.
 
