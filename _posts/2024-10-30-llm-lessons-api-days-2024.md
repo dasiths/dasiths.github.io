@@ -1,6 +1,6 @@
 ---
 title: "Lessons from the Trenches in a LLM Frontier: An Engineer's Perspective - Apidays Australia 2024"
-date: 2025-05-18 22:06
+date: 2024-10-30 22:06
 comments: true
 header:
   teaser: /assets/images/apidays/api-days-australia-2024-teaser.png
