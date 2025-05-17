@@ -1,6 +1,6 @@
 ---
 title: "Structured workflows for coding with AI agents using the Breadcrumb Protocol"
-date: 2025-05-18 12:00
+date: 2025-04-02 12:00
 header:
   teaser: /assets/images/breadcrumb-protocol-teaser.png
 comments: true
