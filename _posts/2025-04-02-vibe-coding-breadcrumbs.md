@@ -76,7 +76,7 @@ Let's look at how it works in practice.
    Use dotnet 9. Use this document on instructions of how to add swagger/openapi endpoint. https://devblogs.microsoft.com/dotnet/dotnet9-openapi/
    ```
 
-2. **Create a Breadcrumb File**:
+2. **Agent create a Breadcrumb File**:
 
    At the start of each task, a breadcrumb file is created in `.github/.copilot/breadcrumbs` with the format `yyyy-mm-dd-HHMM-{title}.md`.
 
@@ -92,13 +92,13 @@ Let's look at how it works in practice.
    - **Before/After Comparison**: Highlighting the improvements.
    - **References**: List of referred material like domain knowledge files and specifications.
 
-4. **Follow the Workflow Rules**:
+4. **Agent Follows the Workflow Rules**:
    - Update the breadcrumb **BEFORE** making any code changes.
    - **Get explicit approval** on the plan before implementation.
    - Update the breadcrumb **AFTER completing each significant change**.
    - Keep the breadcrumb as the single source of truth for the task's context and progress.
 
-5. **Create Structured Plans**:
+5. **Agent Creates and Follows Structured Plans**:
    - Organize plans into numbered phases (e.g., "Phase 1: Setup Dependencies")
    - Break down each phase into specific tasks with numeric identifiers
    - Include a detailed checklist that maps to all phases and tasks
