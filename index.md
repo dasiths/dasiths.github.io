@@ -23,7 +23,7 @@ feature_row:
     alt: "DDD Melbourne 2026"
     title: "DDD Melbourne 2026"
     excerpt: "Throw away the vibes. Why context engineering, not prompting, is what makes AI coding agents reliable on real codebases."
-    url: "https://dasith.me/2026/06/11/throw-away-the-vibes-context-engineering-ddd-melbourne-2026/"
+    url: "https://dasith.me/2026/06/10/throw-away-the-vibes-context-engineering-ddd-melbourne-2026/"
     btn_label: "Read More"
     btn_class: "btn--primary"
   - image_path: assets/images/apidays/api-days-2024-speaking.JPG
