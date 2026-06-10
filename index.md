@@ -19,6 +19,13 @@ header:
   caption: "Location: [**Gellibrand River, Princetown**](https://www.visitgreatoceanroad.org.au/towns-and-villages/princetown/)"
 excerpt: "“We can only see a short distance ahead, but we can see plenty there that needs to be done.” ~ *Alan Turing*, [Computing machinery and intelligence](https://www.goodreads.com/book/show/17697774-computing-machinery-and-intelligence)"
 feature_row:
+  - image_path: assets/images/dddmelb2026.png
+    alt: "DDD Melbourne 2026"
+    title: "DDD Melbourne 2026"
+    excerpt: "Throw away the vibes. Why context engineering, not prompting, is what makes AI coding agents reliable on real codebases."
+    url: "https://dasith.me/2026/06/11/throw-away-the-vibes-context-engineering-ddd-melbourne-2026/"
+    btn_label: "Read More"
+    btn_class: "btn--primary"
   - image_path: assets/images/apidays/api-days-2024-speaking.JPG
     alt: "API Days Australia 2024"
     title: "API Days Australia 2024"
