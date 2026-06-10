@@ -17,3 +17,20 @@ search: false
     font-size: 0.8em;
   }
 }
+
+// Mermaid diagrams: center, allow wide diagrams to scroll, and drop the
+// code-block chrome while the source waits to be rendered into SVG.
+.mermaid {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 1.5em 0;
+  text-align: center;
+  overflow-x: auto;
+
+  // Hide the raw source until Mermaid swaps in the rendered SVG.
+  &:not([data-processed="true"]) {
+    color: transparent;
+    font-size: 0;
+  }
+}

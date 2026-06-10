@@ -71,6 +71,11 @@ algolia:
 google:
   search_engine_id       : 003458347618814896259:vub2_tywktk # YOUR_SEARCH_ENGINE_ID
   instant_search         : true # false (default), true
+
+# Custom scripts loaded after the theme's footer scripts
+after_footer_scripts:
+  - /assets/js/mermaid-init.js # renders ```mermaid fenced code blocks as diagrams
+
 # SEO Related
 google_site_verification : 5Fb-UZxtHNEsTwTGjm2rp1kDo0_cKplvYlMXwBdIsiM
 bing_site_verification   :
