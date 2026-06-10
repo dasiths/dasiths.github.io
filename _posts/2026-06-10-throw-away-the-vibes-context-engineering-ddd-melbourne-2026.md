@@ -1,6 +1,6 @@
 ---
 title: "Throw Away The Vibes: Context Engineering Is All You Need - DDD Melbourne 2026"
-date: 2026-06-11 22:06
+date: 2026-06-10 22:06
 comments: true
 header:
   teaser: /assets/images/dddmelb2026.png
