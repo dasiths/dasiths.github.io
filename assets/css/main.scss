@@ -7,3 +7,13 @@ search: false
 
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
 @import "minimal-mistakes"; // main partials
+
+/* Custom overrides */
+// Reduce the default post/page body text size (theme default is 1em).
+.page__content {
+  p,
+  li,
+  dl {
+    font-size: 0.8em;
+  }
+}
