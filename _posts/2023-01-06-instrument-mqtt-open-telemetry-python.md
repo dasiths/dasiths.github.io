@@ -5,7 +5,7 @@ comments: true
 header:
   teaser: /assets/images/otel_diagram.png
 categories: [OpenTelemetry, Distributed Tracing, MQTT, Python]
-tags: [opentelemetry, distributed-tracing, python, mqtt]
+tags: [distributed tracing, MQTT, observability, opentelemetry, otel collector, paho, python]
 toc: true
 toc_label: "Content"
 toc_sticky: true

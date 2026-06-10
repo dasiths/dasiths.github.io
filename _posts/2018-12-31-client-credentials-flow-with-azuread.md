@@ -4,8 +4,8 @@ date: 2018-12-31 23:02
 header:
   teaser: /assets/images/active-directory-protocols-oauth-client-credentials-grant-flow.jpg
 comments: true
-categories: [azure ad, oauth, asp.net core, testing]
-tags: [azure ad, oauth, asp.net core, webapi]
+categories: [Azure AD, OAuth, ASP.NET Core, Security]
+tags: [asp.net core, authentication, authorization, azure ad, client credentials, JWT, OAuth, web api]
 toc: true
 toc_label: "Content"
 toc_sticky: true

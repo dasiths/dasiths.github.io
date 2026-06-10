@@ -4,8 +4,8 @@ date: 2025-04-02 12:00
 header:
   teaser: /assets/images/breadcrumb-protocol-teaser.png
 comments: true
-categories: [software development, AI, agents, vice coding]
-tags: [github copilot, agents, vibe coding]
+categories: [Software Engineering, AI, Agents, Vibe Coding]
+tags: [agents, AI, context management, documentation, github copilot, LLM, vibe coding]
 toc: true
 toc_label: "Content"
 toc_sticky: true

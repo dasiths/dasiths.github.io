@@ -4,8 +4,8 @@ date: 2018-12-30 23:02
 header:
   teaser: /assets/images/connect-20333_640.jpg
 comments: true
-categories: [asp.net core, testing]
-tags: [asp.net core, webapi, testing, mocking]
+categories: [ASP.NET Core, Testing]
+tags: [asp.net core, integration testing, mocking, testing, web api, web application factory, xunit]
 toc: true
 toc_label: "Content"
 toc_sticky: true

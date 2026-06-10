@@ -5,8 +5,8 @@ header:
   teaser: /assets/images/assassin-3690300_960_720-e1538485050283.jpg
   image: /assets/images/assassin-3690300_960_720-e1538485050283.jpg
 comments: true
-categories: [NimbleConfig, Open Source]
-tags: [NimbleConfig, Open Source, ConfigInjector]
+categories: [.NET, Open Source, NimbleConfig]
+tags: [.net, .net core, config injector, configuration, dependency injection, nimbleconfig, nuget, open source]
 toc: true
 toc_label: "Content"
 toc_sticky: true

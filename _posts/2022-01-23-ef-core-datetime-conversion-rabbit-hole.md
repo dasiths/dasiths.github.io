@@ -3,7 +3,7 @@ title: "Going down the rabbit hole of EF Core and converting strings to dates"
 date: 2022-01-23 22:06
 comments: true
 categories: [.NET, EF Core, SQL Server]
-tags: [.net, efcore, sql server]
+tags: [.net, datetime, ef core, LINQ, sql server, value converters]
 toc: true
 toc_label: "Content"
 toc_sticky: true

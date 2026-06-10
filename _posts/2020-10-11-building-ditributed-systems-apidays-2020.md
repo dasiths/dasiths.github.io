@@ -5,7 +5,7 @@ comments: true
 header:
   teaser: /assets/images/apidays/teaser-2020.jpg
 categories: [Conference, Microservices, Distributed Systems]
-tags: [apidays, microservices, distributed systems, public speaking]
+tags: [apidays, dapr, distributed systems, kubernetes, microservices, public speaking, service mesh]
 toc: true
 toc_label: "Content"
 toc_sticky: true

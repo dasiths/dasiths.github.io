@@ -2,8 +2,8 @@
 title: "Using Azure Functions HttpTrigger As Web API"
 date: 2018-01-20 18:39
 comments: true
-categories: [serverless, web api]
-tags: [azure functions, serverless, webapi]
+categories: [Serverless, Web API, .NET]
+tags: [.net, authentication, azure functions, CORS, JWT, middleware, serverless, web api]
 header:
   teaser: /assets/images/azure_functions_featured_image.png
   image: /assets/images/azure_functions_featured_image.png

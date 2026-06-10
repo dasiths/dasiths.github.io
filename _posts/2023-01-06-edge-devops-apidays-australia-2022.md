@@ -5,7 +5,7 @@ comments: true
 header:
   teaser: /assets/images/apidays/teaser-2022.png
 categories: [Conference, Edge, DevOps, Distributed Systems]
-tags: [apidays, devops, edge, distributed systems, public speaking]
+tags: [apidays, devops, distributed systems, edge, gitops, kubernetes, public speaking]
 toc: true
 toc_label: "Content"
 toc_sticky: true

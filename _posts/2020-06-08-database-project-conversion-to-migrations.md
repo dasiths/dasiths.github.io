@@ -4,8 +4,8 @@ date: 2020-06-08 12:00
 header:
   teaser: /assets/images/database-project-dbup.png
 comments: true
-categories: [sql, database, visual studio, .net]
-tags: [database, migrations, .net, visual studio, sql]
+categories: [SQL Server, Database, Visual Studio, .NET]
+tags: [.net, azure devops, CI/CD, database, dbup, migrations, sql server, visual studio]
 toc: true
 toc_label: "Content"
 toc_sticky: true

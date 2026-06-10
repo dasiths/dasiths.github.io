@@ -4,8 +4,8 @@ date: 2024-10-30 22:06
 comments: true
 header:
   teaser: /assets/images/apidays/api-days-australia-2024-teaser.png
-categories: [Conference, LLM, AI, Software Engineering, Generative AI]
-tags: [apidays, LLM, AI, public speaking, engineering, MLOps, responsible AI]
+categories: [Conference, LLM, AI, Software Engineering]
+tags: [AI, apidays, content safety, LLM, MLOps, public speaking, responsible AI, security, software engineering]
 toc: true
 toc_label: "Content"
 toc_sticky: true

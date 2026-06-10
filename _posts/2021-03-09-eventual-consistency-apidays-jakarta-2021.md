@@ -5,7 +5,7 @@ comments: true
 header:
   teaser: /assets/images/apidays/api-days-jakarta-talk.jpg
 categories: [Conference, Microservices, Distributed Systems]
-tags: [apidays, microservices, distributed systems, public speaking]
+tags: [apidays, CAP theorem, distributed systems, eventual consistency, microservices, public speaking]
 toc: true
 toc_label: "Content"
 toc_sticky: true

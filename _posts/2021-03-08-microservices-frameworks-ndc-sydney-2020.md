@@ -5,7 +5,7 @@ comments: true
 header:
   teaser: /assets/images/ndc-sydney-talk.jpg
 categories: [Conference, Microservices, Distributed Systems]
-tags: [ndc, microservices, distributed systems, public speaking]
+tags: [distributed systems, domain driven design, microservices, ndc, observability, public speaking]
 toc: true
 toc_label: "Content"
 toc_sticky: true

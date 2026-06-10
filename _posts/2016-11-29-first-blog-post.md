@@ -2,8 +2,8 @@
 title: "Where My Journey Began"
 date: 2016-11-29 13:45
 comments: true
-categories: [Early Days]
-tags: []
+categories: [Early Days, Personal]
+tags: [personal, blogging, career]
 header:
   teaser: /assets/images/kandy-photos11.jpg
   image: /assets/images/kandy-photos11.jpg

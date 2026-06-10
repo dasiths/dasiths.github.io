@@ -4,8 +4,8 @@ date: 2024-05-03 22:06
 comments: true
 header:
   teaser: /assets/images/prompt-injection-considerations-with-tool-use.png
-categories: [LLM, Prompt Injection, Security]
-tags: [llm, large-language-models, gpt, prompt, injection, security]
+categories: [LLM, AI, Prompt Injection, Security]
+tags: [AI, GPT, langchain, LLM, prompt injection, python, security, tool use]
 toc: true
 toc_label: "Content"
 toc_sticky: true

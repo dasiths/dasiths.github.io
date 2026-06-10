@@ -2,8 +2,8 @@
 title: "What Does Durable Azure Functions Solve?"
 date: 2018-04-24 13:36
 comments: true
-categories: [serverless]
-tags: [.net, azure functions, serverless]
+categories: [Serverless]
+tags: [.net, azure functions, durable functions, event sourcing, orchestration, serverless]
 header:
   teaser: /assets/images/azure_functions_featured_image.png
   image: /assets/images/azure_functions_featured_image.png

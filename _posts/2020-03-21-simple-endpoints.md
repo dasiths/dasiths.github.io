@@ -4,8 +4,8 @@ date: 2020-03-21 12:00
 header:
   teaser: /assets/images/simple-endpoints-teaser.jpg
 comments: true
-categories: [.net, aspnet core]
-tags: [.net, aspnet core, controller, endpoint, pattern]
+categories: [.NET, ASP.NET Core, Open Source]
+tags: [.net, asp.net core, controller, design patterns, endpoint, nuget, open source, web api]
 toc: true
 toc_label: "Content"
 toc_sticky: true

@@ -4,8 +4,8 @@ date: 2019-04-27 12:00
 header:
   teaser: /assets/images/key-74534_960_720.jpg
 comments: true
-categories: [.net, azure ad, multi-tenant]
-tags: [.net, azure ad, multi-tenant, aspnet core, angular]
+categories: [.NET, ASP.NET Core, Azure AD, Multi-Tenant]
+tags: [.net, angular, asp.net core, authentication, azure ad, JWT, multi-tenant, OAuth]
 toc: true
 toc_label: "Content"
 toc_sticky: true

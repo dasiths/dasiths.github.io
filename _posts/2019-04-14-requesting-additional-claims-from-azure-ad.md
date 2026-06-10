@@ -4,8 +4,8 @@ date: 2019-04-14 12:00
 header:
   teaser: /assets/images/azure_ad_additional_claim.png
 comments: true
-categories: [.net, azure ad, oauth, openidconnect]
-tags: [.net, azure ad, oauth, openidconnect]
+categories: [.NET, Azure AD, OAuth, OpenID Connect]
+tags: [.net, authentication, azure ad, claims, JWT, OAuth, OIDC]
 toc: true
 toc_label: "Content"
 toc_sticky: true

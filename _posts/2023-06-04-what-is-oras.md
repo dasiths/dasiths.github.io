@@ -5,7 +5,7 @@ comments: true
 header:
   teaser: /assets/images/oras_page_header.png
 categories: [Containers, Kubernetes, OCI, Secure Supply Chain]
-tags: [containers, docker, oci, k8s, kubernetes, secure-supply-chain]
+tags: [artifacts, containers, docker, helm, kubernetes, OCI, oras, SBOM, secure supply chain]
 toc: true
 toc_label: "Content"
 toc_sticky: true

@@ -4,8 +4,8 @@ date: 2019-08-13 22:06
 comments: true
 header:
   teaser: /assets/images/dddmelb2019main.jpg
-categories: [Conference, Authentication]
-tags: [dddmelbourne, authentication, security, oauth, openidconnect, public speaking]
+categories: [Conference, Authentication, Security]
+tags: [dddmelbourne, authentication, JWT, OAuth, OIDC, public speaking, security]
 toc: true
 toc_label: "Content"
 toc_sticky: true

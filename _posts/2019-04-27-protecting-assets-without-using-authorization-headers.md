@@ -4,8 +4,8 @@ date: 2019-04-29 12:00
 header:
   teaser: /assets/images/photo-1518206075495-4e901709d372.jpg
 comments: true
-categories: [.net, aspnet core, security]
-tags: [.net, aspnet core, security, tokens]
+categories: [.NET, ASP.NET Core, Security]
+tags: [.net, angular, asp.net core, authorization, security, tokens]
 toc: true
 toc_label: "Content"
 toc_sticky: true

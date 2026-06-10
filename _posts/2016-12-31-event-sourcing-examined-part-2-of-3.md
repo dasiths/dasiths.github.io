@@ -2,8 +2,8 @@
 title: "Event Sourcing Examined Part 2 Of 3"
 date: 2016-12-31 03:40
 comments: true
-categories: [Event Sourcing]
-tags: [.net, aggregates, bounded context, cqrs, Domain Driven Design, neventlite]
+categories: [Event Sourcing, CQRS]
+tags: [.net, aggregates, bounded context, CQRS, domain driven design, neventlite, snapshots]
 header:
   teaser: /assets/images/cqrs1.png
 ---

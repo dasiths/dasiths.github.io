@@ -4,8 +4,8 @@ date: 2021-03-09 22:06
 comments: true
 header:
   teaser: /assets/images/rc-4309881_640.jpg
-categories: [Design Patterns, Object Oriented Programming]
-tags: [design-patterns, software, object-oriented-programming]
+categories: [Design Patterns, Object Oriented Programming, .NET]
+tags: [.net, automapper, dependency injection, design patterns, object capability model, object oriented programming]
 toc: true
 toc_label: "Content"
 toc_sticky: true

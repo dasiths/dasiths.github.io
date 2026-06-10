@@ -4,8 +4,8 @@ date: 2019-09-07 22:06
 comments: true
 header:
   teaser: /assets/images/apidays/logo.jpg
-categories: [Conference, Microservices]
-tags: [apidays, microservices, public speaking]
+categories: [Conference, Microservices, Distributed Systems]
+tags: [apidays, distributed systems, domain driven design, eventual consistency, microservices, public speaking]
 toc: true
 toc_label: "Content"
 toc_sticky: true

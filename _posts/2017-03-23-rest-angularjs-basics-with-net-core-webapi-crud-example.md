@@ -2,8 +2,8 @@
 title: "REST + AngularJS Basics With .Net Core WebAPI CRUD Example"
 date: 2017-03-23 14:28
 comments: true
-categories: [Angular, Web API]
-tags: [.net, angularjs, netcore, rest, webapi]
+categories: [Angular, ASP.NET Core, Web API]
+tags: [.net, .net core, angularjs, asp.net core, CORS, CRUD, REST, web api]
 header:
   teaser: /assets/images/angularwebapi.png
 ---

@@ -4,8 +4,8 @@ date: 2019-01-07 23:02
 header:
   teaser: /assets/images/bath_1517727_640.jpg
 comments: true
-categories: [.net, open source, mediator]
-tags: [.net, open source, mediator, domain driven design]
+categories: [.NET, Open Source, Mediator, Design Patterns]
+tags: [.net, dependency injection, design patterns, domain driven design, mediator, nuget, open source]
 toc: true
 toc_label: "Content"
 toc_sticky: true

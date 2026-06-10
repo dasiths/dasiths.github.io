@@ -2,8 +2,8 @@
 title: "A Reply To Waleed Aly's Article On Sri Lankan Easter Sunday Terrorist Attack"
 date: 2019-04-26 12:00
 comments: true
-categories: []
-tags: []
+categories: [Personal]
+tags: [current events, opinion, personal, politics, sri lanka]
 toc: true
 toc_label: "Content"
 toc_sticky: true

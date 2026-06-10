@@ -4,8 +4,8 @@ date: 2024-01-05 22:06
 comments: true
 header:
   teaser: /assets/images/apidays/api-days-australia-2023-teaser.png
-categories: [Conference, Secure Software Supply Chain, Security, Container]
-tags: [apidays, devops, security, supply chain, ssc, containers, oci, public speaking]
+categories: [Conference, Secure Supply Chain, Security, Containers]
+tags: [apidays, containers, devops, kubernetes, OCI, public speaking, SBOM, secure supply chain, security]
 toc: true
 toc_label: "Content"
 toc_sticky: true

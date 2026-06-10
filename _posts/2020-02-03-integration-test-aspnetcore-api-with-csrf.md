@@ -4,8 +4,8 @@ date: 2020-02-03 12:00
 header:
   teaser: /assets/images/photo-1532678312818-7c8cfdfe5491.jpg
 comments: true
-categories: [.net, aspnet core, testing]
-tags: [.net, aspnet core, testing, tokens, csrf]
+categories: [.NET, ASP.NET Core, Testing]
+tags: [.net, asp.net core, CSRF, integration testing, security, testing, tokens]
 toc: true
 toc_label: "Content"
 toc_sticky: true

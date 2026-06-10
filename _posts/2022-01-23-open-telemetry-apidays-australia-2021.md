@@ -5,7 +5,7 @@ comments: true
 header:
   teaser: /assets/images/apidays/api-days-australia-teaser.png
 categories: [Conference, Microservices, Distributed Systems, OpenTelemetry]
-tags: [apidays, microservices, distributed systems, tracing, open telemetry, public speaking]
+tags: [apidays, distributed systems, distributed tracing, microservices, observability, opentelemetry, public speaking]
 toc: true
 toc_label: "Content"
 toc_sticky: true
