@@ -182,6 +182,7 @@ exclude:
   - CHANGELOG
   - config
   - Gemfile
+  - Gemfile.github-pages.bak
   - Gruntfile.js
   - gulpfile.js
   - LICENSE
