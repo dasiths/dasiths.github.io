@@ -36,7 +36,7 @@ Here are the people in our story. There are only a few, and you already understa
 - **The ID office.** Whoever issued Sam his ID card in the first place, the one that vouches "this is Sam." Sam can't just print his own; a trusted issuer gave it to him, and that's what makes his signature checkable by anyone. *(In AAuth, this is the **Agent Provider**.)*
 - **Mr. Patel.** He runs the corner shop. Mom has shopped there for years, so the shop knows her and runs a tab for her. He decides whether to let a purchase go on that tab. He does *not* know Sam well, and he's not going to charge Mom's account just because a kid says "my mom sent me." *(In AAuth, Mr. Patel is the **Resource**.)*
 - **Dad.** Sam's dad, who's at work across town. Mr. Patel knows Dad and trusts him. If the shop is ever unsure about a purchase, Mr. Patel can ring Dad at the office, and Dad can check with Mom directly ("hey, did you send Sam for this?") and confirm it on the spot. Dad is the trusted person who can speak to whether Mom really wants this, right now, in the moment. *(In AAuth, Dad is the **Person Server**.)*
-- **Head office.** Mr. Patel's shop is part of a chain, and head office sets the rules Mr. Patel has to follow, no matter what a customer (or their mom) wants. It speaks for the shop's side. The first time the family deals with the chain, head office may ask Mom to verify herself and link Dad as the family's trusted contact, a one-time setup; after that it simply trusts Dad's calls. *(In AAuth, head office is the **Access Server**, and that one-time setup is how it comes to trust the Person Server.)*
+- **The accounts office.** Mr. Patel's shop is part of a chain, and purchases on a family account are cleared through the chain's accounts office, which enforces the chain's rules no matter what a customer (or their mom) wants. It speaks for the shop's side. The first time the family deals with the chain, the accounts office may ask Mom to verify herself and link Dad as the family's trusted contact, a one-time setup; after that it simply works with Dad. *(In AAuth, the accounts office is the **Access Server**, and that one-time setup is how it comes to trust the Person Server.)*
 
 That's it. A mom, her kid, a shopkeeper, a trusted dad, and a rulebook.
 
@@ -110,9 +110,11 @@ It's worth being clear about who has the relationship here. *Mom* has the accoun
 
 One more wrinkle before we leave the bread aisle.
 
-Mr. Patel's shop is part of a chain, and head office has rules. Say one of them is: "Don't put tobacco on a family account for a kid, even if a parent okays it." So now there are *two* gates, not one. Mom has to approve, *and* the shop's own rulebook has to allow it.
+Mr. Patel's shop is part of a chain, and the chain's accounts office has rules. Say one of them is: "Don't put tobacco on a family account for a kid, even if a parent okays it." So now there are *two* gates, not one. Mom has to approve, *and* the chain's own rulebook has to allow it.
 
-This matters more than it looks. Mom's authority does **not** overrule the shop. If head office says no, it's no, even with a signed, verified, totally legitimate okay from Mom. The person's permission sits *underneath* the shop's own policy, not above it. (In AAuth, the shop's rulebook lives in the **Access Server**. Again, the name's not the point. The point is: the place you're acting on doesn't give up its own rules just because you brought permission.)
+This matters more than it looks. Mom's authority does **not** overrule the shop. If the accounts office says no, it's no, even with a signed, verified, totally legitimate okay from Mom. The person's permission sits *underneath* the shop's own policy, not above it. (In AAuth, the shop's rulebook lives in the **Access Server**. Again, the name's not the point. The point is: the place you're acting on doesn't give up its own rules just because you brought permission.)
+
+So who actually clears it with the accounts office? Not Patel, and not Mom directly. Patel forwards the charge for clearing, and Dad, as the family's account authority, is the one who settles it with the accounts office: Dad confirms Mom's okay, the accounts office checks the chain's rulebook, and the cleared result comes back so Patel can hand over the bread. That back-and-forth between Dad and the accounts office is the extra hop in the diagram below. (When there's no separate accounts office, Dad just gives the okay himself, the simpler shape in the cake diagram.)
 
 ---
 
@@ -247,7 +249,7 @@ We've been telling this in kitchen-and-corner-shop language on purpose. Here's t
 | The ID office | **Agent Provider (AP)** | Issues the agent its identity and signing key, so its signature is checkable by anyone. |
 | Mr. Patel / the shop | **Resource** | The thing being acted on (an API, a service). Verifies the agent and enforces its own rules. |
 | Dad on the phone | **Person Server (PS)** | A trusted party that represents the Person, confirms consent, and holds the mission. |
-| Head office | **Access Server (AS)** | The resource's own policy engine. Has the final say, even over the Person's okay. |
+| The accounts office | **Access Server (AS)** | The resource's own policy engine. Has the final say, even over the Person's okay. |
 | Sam's little brother | **Sub-agent** | A helper the agent spins up for part of the job, still under the Person's authority. |
 
 **The concepts:**
@@ -263,7 +265,7 @@ We've been telling this in kitchen-and-corner-shop language on purpose. Here's t
 
 A single, specific request. Notice the shape that makes AAuth different from a phone call: the shop does **not** ring Dad. It hands Sam a note to get approved, Sam takes that note to Dad, and Sam brings the approval back. The agent carries every token between the parties.
 
-This is the full four-party flow, with head office (the Access Server) applying the shop's own policy. Simpler shops skip the AS, or run it in-house; the spec lets the PS and AS collapse into one.
+This is the full four-party flow, with the accounts office (the Access Server) applying the chain's own policy. Simpler shops skip the AS, or run it in-house; the spec lets the PS and AS collapse into one.
 
 ```mermaid
 sequenceDiagram
@@ -271,7 +273,7 @@ sequenceDiagram
     participant Sam as Sam (Agent)
     participant Patel as Mr. Patel (Resource)
     participant Dad as Dad (Person Server)
-    participant HO as Head office (Access Server)
+    participant HO as Accounts office (Access Server)
 
     Sam->>Patel: Signed request for bread (agent token)
     Note over Patel: Verify signature against ID card
@@ -280,7 +282,7 @@ sequenceDiagram
     Dad->>Mom: Sam wants bread on your account, ok?
     Mom-->>Dad: Yes, that's fine
     Dad->>HO: Federate: resource token (PS vouches, consent given)
-    Note over HO: Apply shop policy
+    Note over HO: Apply chain policy
     HO-->>Dad: auth token
     Dad-->>Sam: auth token
     Sam->>Patel: Signed request for bread + auth token
@@ -292,7 +294,7 @@ sequenceDiagram
 
 An open-ended ask. First the mission is approved once. After that, every purchase rides on the same mission, and the PS judges each requested scope against the mission's stated intent: things that fit are approved silently, anything that doesn't goes back to Mom.
 
-(To keep the focus on the mission, this diagram shows the three-party shape, where Dad's side issues the approval directly and there's no separate head office. Adding head office back just inserts the same federation step you saw with the bread.)
+(To keep the focus on the mission, this diagram shows the three-party shape, where Dad's side issues the approval directly and there's no separate accounts office. Adding the accounts office back just inserts the same clearing step you saw with the bread.)
 
 ```mermaid
 sequenceDiagram
@@ -338,7 +340,7 @@ Everything in this story maps onto a real protocol being built for exactly this,
 | Sam signs, doesn't just say, his name | [Agent identity](https://explorer.aauth.dev/signing/compare) | A name is a claim; you need proof only the real agent can produce |
 | Sam carries Mom's authority, not his own | [Acting on behalf of someone](https://explorer.aauth.dev/access/compare) | The agent has no standing alone, so everything traces back to the person |
 | The trusted phone call to Dad | [A party that vouches for the person](https://explorer.aauth.dev/access/ps-asserted) | People who don't know each other can't delegate without someone trusted to confirm the person's consent |
-| Head office's rulebook | [The resource's own policy](https://explorer.aauth.dev/access/federated) | Permission from the person never overrides the shop's own rules |
+| The accounts office's rulebook | [The resource's own policy](https://explorer.aauth.dev/access/federated) | Permission from the person never overrides the shop's own rules |
 | "Buy the cake ingredients" | [A mission](https://explorer.aauth.dev/missions/compare) | The job is discovered as it's done, so you can't list it up front |
 | The note from last weekend | [Stale authority](https://explorer.aauth.dev/missions/lifecycle) | Permission outlives the goal it was for |
 | "Sam, stop!" | [Revoking vs. actually stopping](https://explorer.aauth.dev/missions/completion) | Withdrawing authority doesn't recall work already in flight |
