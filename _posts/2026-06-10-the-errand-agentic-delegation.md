@@ -32,10 +32,11 @@ That world turns out to be the perfect place to understand a very modern problem
 Here are the people in our story. There are only a few, and you already understand all of them from real life.
 
 - **Mom.** She's the one in charge. She decides what's allowed, and the bills come to her. When something goes wrong, it's her problem. Everyone else is acting *for* her. *(In AAuth, Mom is the **Person**.)*
-- **Sam.** Mom's kid. Sam is the one who actually goes out and does things: walks to the shop, asks for the goods, carries them home. Here's the twist that matters. Sam doesn't carry cash. Mom has an account at the shop, and Sam buys on it. So Sam has no money and no authority of his own. Everything he does, he does on Mom's say-so, and it lands on Mom's tab. *(In AAuth, Sam is the **Agent**.)*
+- **Sam.** Mom's kid. Sam is the one who actually goes out and does things: walks to the shop, asks for the goods, carries them home. Here's the twist that matters. Sam doesn't carry cash. Mom has an account at the shop, and Sam buys on it. So Sam has no money and no authority of his own. Everything he does, he does on Mom's say-so, and it lands on Mom's tab. (There's also a simpler case where an agent acts purely as itself, like a kid spending his own pocket money, where a shop just needs to know who he is. This post follows the more interesting case, where Sam acts for Mom.) *(In AAuth, Sam is the **Agent**.)*
+- **The ID office.** Whoever issued Sam his ID card in the first place, the one that vouches "this is Sam." Sam can't just print his own; a trusted issuer gave it to him, and that's what makes his signature checkable by anyone. *(In AAuth, this is the **Agent Provider**.)*
 - **Mr. Patel.** He runs the corner shop. Mom has shopped there for years, so the shop knows her and runs a tab for her. He decides whether to let a purchase go on that tab. He does *not* know Sam well, and he's not going to charge Mom's account just because a kid says "my mom sent me." *(In AAuth, Mr. Patel is the **Resource**.)*
 - **Dad.** Sam's dad, who's at work across town. Mr. Patel knows Dad and trusts him. If the shop is ever unsure about a purchase, Mr. Patel can ring Dad at the office, and Dad can check with Mom directly ("hey, did you send Sam for this?") and confirm it on the spot. Dad is the trusted person who can speak to whether Mom really wants this, right now, in the moment. *(In AAuth, Dad is the **Person Server**.)*
-- **Head office.** Mr. Patel's shop is part of a chain. Head office holds the account relationship with Mom and sets rules that Mr. Patel has to follow, no matter what a customer (or their mom) wants. *(In AAuth, head office is the **Access Server**.)*
+- **Head office.** Mr. Patel's shop is part of a chain, and head office sets the rules Mr. Patel has to follow, no matter what a customer (or their mom) wants. It speaks for the shop's side. The first time the family deals with the chain, head office may ask Mom to verify herself and link Dad as the family's trusted contact, a one-time setup; after that it simply trusts Dad's calls. *(In AAuth, head office is the **Access Server**, and that one-time setup is how it comes to trust the Person Server.)*
 
 That's it. A mom, her kid, a shopkeeper, a trusted dad, and a rulebook.
 
@@ -75,7 +76,7 @@ The first problem: anyone can walk into the shop and say "Mom sent me, put it on
 
 Saying your name is just a *claim*. It is only a statement. Some other kid could walk in, say he's Sam, and walk off with goods charged to Mom's tab. A name proves nothing on its own. And remember, because it's all on credit, a convincing fake doesn't just grab one loaf and run. He can keep charging Mom's account until somebody catches on.
 
-What Sam needs is some way to prove he's actually *him*, something an impostor can't fake just by overhearing the errand. Think of it like this: Sam signs his name on the receipt, and Mr. Patel checks that signature against the one on Sam's ID card. Saying "I'm Sam" is free; *producing Sam's signature and having it match the card* is not. The ID card is the reference everyone can check against, and only the real Sam can produce a matching signature on the spot.
+What Sam needs is some way to prove he's actually *him*, something an impostor can't fake just by overhearing the errand. Think of it like this: Sam signs his name on the receipt, and Mr. Patel checks that signature against the one on Sam's ID card, the card issued by a trusted ID office, not something Sam printed himself. Saying "I'm Sam" is free; *producing Sam's signature and having it match the card* is not. The ID card is the reference everyone can check against, and only the real Sam can produce a matching signature on the spot.
 
 (The real version is even stronger than a handwritten signature, which a determined forger could trace. The software equivalent can't be copied even by someone who has watched Sam sign a hundred times: anyone can *check* a signature, but only the real Sam can *produce* one. That idea matters because the rest builds on it.)
 
@@ -103,6 +104,8 @@ Now Mr. Patel can serve Sam with confidence, without having to track Mom down hi
 
 That trusted middle person is the missing piece that lets people who don't know each other well delegate safely. Dad's whole job here is to represent the family to the shop and answer for what Mom wants. (In AAuth, this trusted middle party is the **Person Server**. But the name doesn't matter. What matters is the idea: a trusted party that can vouch for the person and confirm their consent in real time.)
 
+It's worth being clear about who has the relationship here. *Mom* has the account, and that's perfectly normal; a person having a standing relationship with a shop is expected. What's notable is *Sam*. He has nothing of his own: no account, no prior sign-up with Patel. He gets served on the strength of his ID card (from an issuer Patel can recognize) and Dad vouching for him. That's the part that carries over to software. The person can absolutely have an account, but AAuth doesn't make the *agent* pre-register with every shop before its first visit. A brand-new agent can be served on its very first call, because the trust rides on its issuer and its Person Server, not on a sign-up step.
+
 ### The shop has its own rules, too
 
 One more wrinkle before we leave the bread aisle.
@@ -117,7 +120,7 @@ So far, so good. We've actually solved a real problem here. Sam can be trusted t
 
 - He can prove he's really Sam.
 - He can prove he's carrying Mom's authority, not acting on his own.
-- The shop can check all of it by phoning Dad, who confirms Mom's wishes, and it already has an account relationship with Mom to fall back on.
+- The shop can check all of it by phoning Dad, who confirms Mom's wishes, and Mom's account stands behind the purchase.
 - And the shop still gets to enforce its own rules on top.
 
 If errands were always this tidy, we'd be done. The trouble is, real jobs are almost never a single, specific, written-down thing.
@@ -206,7 +209,7 @@ Look at any single item and you can't object. Each one is defensible. The receip
 
 But step back and look at the whole cart, and something's off. Mom asked for *a cake*, and Sam is quietly throwing *a whole party* on her account, one she never approved. The drift doesn't live in any one purchase. It lives in the *pattern*. And if all you ever do is check each item as it's scanned, you'll never catch it, because the problem isn't in the items. It's in the trajectory.
 
-This is the failure that's hardest to guard against, because checking every individual action, which is the thing we're good at, simply doesn't see it.
+This is the failure that's hardest to guard against, because checking every individual action, which is the thing we're good at, simply doesn't see it. Worse, no single shop can see it either: each shop only sees its own till. The one party that could notice is whoever sees *all* of Sam's purchases together, across every shop, and remembers what the errand was actually for.
 
 ---
 
@@ -224,10 +227,10 @@ The best tool we have so far is to give the open-ended job some *shape*. Instead
 
 But here's the honest part: a mission does not solve every boundary problem. Here's what AAuth actually does at each hard edge, and where the edge still bites:
 
-- **The finished job (the stale note).** AAuth gives a mission an ending: the agent can mark it complete, and the person can terminate it, after which the trusted party refuses anything further. Tokens are short-lived too, and every renewal lets the shop weigh in again. What's *not* nailed down yet is the finer lifecycle, like telling "done" apart from "paused for review." That's left to a future companion spec.
+- **The finished job (the stale note).** AAuth gives a mission an ending: the agent can mark it complete, and the person can terminate it, after which the trusted party refuses anything further. Tokens are short-lived too, and every renewal lets the shop weigh in again. Notably, a mission has just two states, active or terminated, with no "paused" in between. That's a deliberate choice, not an omission: since the agent can only check back by polling, a long pause is effectively the same as ending the mission and starting a fresh one later, which also keeps the old mission's log intact for audit. What *is* still being worked out is the richer lifecycle around that, things like revocation flows and administrative controls, which are left to a future companion spec.
 - **Calling it off vs. actually stopping ("Sam, stop!").** AAuth lets the person revoke tokens and terminate the mission, so no *new* approvals are handed out. What it can't promise is that work already in motion halts the instant you say stop; that depends on how short-lived the tokens are and how eagerly each shop re-checks. Withdrawing authority lives in the protocol; guaranteeing the hands stop moving is a deployment concern.
 - **Hand-offs (the little brother, the back-order).** This one AAuth answers squarely: every delegation is recorded as a chain leading back to the person, so the final party can see exactly who acted for whom. The part still being worked out is *containment*, proving each hop stayed inside the original job rather than just tracing that it happened.
-- **Drift (the wandering cart).** This one the protocol deliberately doesn't try to solve. Watching an agent's overall trajectory over time is a job for the system built on top of AAuth, not for the authorization protocol underneath it.
+- **Drift (the wandering cart).** The protocol doesn't define a trajectory-analysis algorithm, but it isn't blind to drift either. A mission isn't tied to one shop; it spans every resource the agent touches, and every request under it flows through the Person Server, which keeps a running mission log of everything the agent has done. So the PS is the one party that sees the *whole* shopping trip across all the shops at once, and it's positioned to judge whether the pattern still fits the original intent, not just whether each item is individually fine. AAuth concentrates that context in one place; deciding what counts as wandering is left to the PS and whoever it asks, a human or an AI reviewer.
 
 So the mission layer is important in practice. It gives you a place to *attach* governance, audit, and a kill switch, not a promise that every edge is sealed. The useful systems are the ones that name these edges out loud and keep working on them.
 
@@ -241,6 +244,7 @@ We've been telling this in kitchen-and-corner-shop language on purpose. Here's t
 |---|---|---|
 | Mom | **Person** | The human in charge. Authority starts here; the bills (and the blame) land here. |
 | Sam | **Agent** | The software that goes and does things. Has no authority of its own. |
+| The ID office | **Agent Provider (AP)** | Issues the agent its identity and signing key, so its signature is checkable by anyone. |
 | Mr. Patel / the shop | **Resource** | The thing being acted on (an API, a service). Verifies the agent and enforces its own rules. |
 | Dad on the phone | **Person Server (PS)** | A trusted party that represents the Person, confirms consent, and holds the mission. |
 | Head office | **Access Server (AS)** | The resource's own policy engine. Has the final say, even over the Person's okay. |
