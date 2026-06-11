@@ -13,6 +13,8 @@ toc_sticky: true
 
 *A story about what it really takes to send someone to do a job for you, and why that turns out to be a genuinely hard problem we're now being forced to solve because of AI agents.*
 
+**Prefer to click through it?** There's an [interactive presentation of this post](https://dasith.me/presentations/errand/) that walks through the same story slide by slide.
+
 AI agents are software that doesn't just answer questions, it goes off and *does things* for you: books the flight, files the expense, orders the groceries, emails the client. The moment software starts acting on your behalf in the real world, spending your money and touching your accounts, an important question comes up: how does everyone involved know the agent is really acting for you, only doing what you allowed, and nothing more?
 
 **AAuth** is a protocol built to answer exactly that. It gives an agent its own provable identity, a way to carry your authority without giving it broad access to everything you own, a trusted party that can confirm your consent in the moment, and a way to wrap an open-ended job in an approved "mission" that can be checked and called off. You can read more about it at [aauth.dev](https://aauth.dev/).
