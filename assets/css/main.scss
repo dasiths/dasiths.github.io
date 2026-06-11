@@ -18,6 +18,34 @@ search: false
   }
 }
 
+// Two-column post list on larger screens so wide layouts don't leave the
+// right-hand side empty. Smaller screens keep the single-column stack.
+.entries-list {
+  @include breakpoint($large) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 2.5em;
+
+    .list__item {
+      margin-bottom: 1.5em;
+    }
+  }
+
+  // Add a small gap between the teaser image and the excerpt below it.
+  .archive__item-teaser {
+    margin-bottom: 1em;
+    background-color: #000; // black filler shown beside images that don't fill
+    aspect-ratio: 16 / 9; // height tracks the column width
+    max-height: 400px; // but never taller than this
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain; // scale without cropping; letterbox the rest
+    }
+  }
+}
+
 // Mermaid diagrams: center, allow wide diagrams to scroll, and drop the
 // code-block chrome while the source waits to be rendered into SVG.
 .mermaid {
