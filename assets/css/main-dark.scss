@@ -1,0 +1,11 @@
+---
+# Dark theme stylesheet. Compiles the Minimal Mistakes "dark" skin plus the
+# shared custom overrides so it stays in sync with the light stylesheet.
+search: false
+---
+
+@charset "utf-8";
+
+@import "minimal-mistakes/skins/dark"; // dark skin
+@import "minimal-mistakes"; // main partials
+@import "custom"; // shared custom overrides

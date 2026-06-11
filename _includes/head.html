@@ -14,7 +14,24 @@
 </script>
 
 <!-- For all browsers -->
-<link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+<script>
+  // Apply the saved theme (or the system preference as default) before the
+  // page paints, and load only the matching stylesheet so there is no flash.
+  (function () {
+    var lightHref = "{{ '/assets/css/main.css' | relative_url }}";
+    var darkHref = "{{ '/assets/css/main-dark.css' | relative_url }}";
+    var stored = null;
+    try { stored = localStorage.getItem("theme"); } catch (e) {}
+    var theme = stored
+      || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", theme);
+    document.write(
+      '<link rel="stylesheet" id="theme-stylesheet" href="'
+      + (theme === "dark" ? darkHref : lightHref) + '">'
+    );
+  })();
+</script>
+<noscript><link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}"></noscript>
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
 

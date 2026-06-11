@@ -13,6 +13,13 @@
   var MERMAID_SRC =
     "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
 
+  // Pick the Mermaid theme that matches the current page theme.
+  function currentTheme() {
+    return document.documentElement.getAttribute("data-theme") === "dark"
+      ? "dark"
+      : "default";
+  }
+
   function findMermaidBlocks() {
     var blocks = [];
     document.querySelectorAll(".language-mermaid").forEach(function (el) {
@@ -37,16 +44,37 @@
     import(MERMAID_SRC)
       .then(function (mod) {
         var mermaid = mod.default;
-        mermaid.initialize({ startOnLoad: false });
 
+        // Swap each code block for a <pre class="mermaid">, keeping the raw
+        // source in a data attribute so the diagram can be re-rendered later
+        // (e.g. when the dark-mode toggle changes the theme).
         blocks.forEach(function (block) {
           var pre = document.createElement("pre");
           pre.className = "mermaid";
           pre.textContent = block.source;
+          pre.setAttribute("data-mermaid-src", block.source);
           block.wrapper.replaceWith(pre);
         });
 
-        return mermaid.run();
+        function render() {
+          mermaid.initialize({ startOnLoad: false, theme: currentTheme() });
+          return mermaid.run();
+        }
+
+        // Expose a re-render hook for the theme toggle. Resets each diagram
+        // back to its source before asking Mermaid to render again.
+        window.rerenderMermaid = function () {
+          document.querySelectorAll("pre.mermaid").forEach(function (pre) {
+            var src = pre.getAttribute("data-mermaid-src");
+            if (src) {
+              pre.removeAttribute("data-processed");
+              pre.textContent = src;
+            }
+          });
+          render();
+        };
+
+        return render();
       })
       .catch(function (err) {
         console.error("Mermaid failed to load or render:", err);

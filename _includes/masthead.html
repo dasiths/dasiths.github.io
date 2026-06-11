@@ -24,6 +24,10 @@
           <i class="fas fa-search"></i>
         </button>
         {% endif %}
+        <button class="theme-toggle" type="button" title="Toggle dark mode">
+          <span class="visually-hidden">Toggle dark mode</span>
+          <i class="fas fa-moon" aria-hidden="true"></i>
+        </button>
         <button class="greedy-nav__toggle hidden" type="button">
           <span class="visually-hidden">{{ site.data.ui-text[site.locale].menu_label | default: "Toggle menu" }}</span>
           <div class="navicon"></div>
@@ -33,3 +37,34 @@
     </div>
   </div>
 </div>
+
+<script>
+  // Wire up the dark-mode toggle: swap the active stylesheet, update the icon,
+  // and remember the choice in localStorage.
+  (function () {
+    var button = document.querySelector(".theme-toggle");
+    if (!button) return;
+
+    var lightHref = "{{ '/assets/css/main.css' | relative_url }}";
+    var darkHref = "{{ '/assets/css/main-dark.css' | relative_url }}";
+    var icon = button.querySelector("i");
+
+    function apply(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      var link = document.getElementById("theme-stylesheet");
+      if (link) link.href = theme === "dark" ? darkHref : lightHref;
+      if (icon) icon.className = theme === "dark" ? "fas fa-sun" : "fas fa-moon";
+      // Recolor any Mermaid diagrams to match the new theme.
+      if (typeof window.rerenderMermaid === "function") window.rerenderMermaid();
+    }
+
+    // Reflect the theme chosen by the early head script.
+    apply(document.documentElement.getAttribute("data-theme") || "light");
+
+    button.addEventListener("click", function () {
+      var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      try { localStorage.setItem("theme", next); } catch (e) {}
+      apply(next);
+    });
+  })();
+</script>
