@@ -930,6 +930,292 @@
     border-radius: 50%;
     background: var(--amber);
   }
+
+  /* ────────── Street scene (setup slide) ────────── */
+  .street { align-items: end; }
+  .streetscene {
+    position: relative;
+    width: min(440px, 92%);
+    height: clamp(240px, 36vh, 340px);
+    animation: shopRise 1s var(--ease) both;
+    animation-delay: .2s;
+  }
+  /* terrace of buildings sitting on the pavement */
+  .terrace {
+    position: absolute;
+    left: 0; right: 0; bottom: 30px;
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+  }
+  .bldg {
+    flex: 1;
+    border: 2px solid var(--ink-bg);
+    border-bottom: 0;
+    border-radius: 6px 6px 0 0;
+    position: relative;
+    background:
+      radial-gradient(color-mix(in srgb, var(--amber) 50%, #fff) 32%, transparent 34%) 0 0 / 18px 24px,
+      linear-gradient(180deg, var(--panel-2), var(--panel));
+    background-blend-mode: normal;
+  }
+  .bldg.b1 { height: 120px; }
+  .bldg.b3 { height: 96px; }
+  .bldg::after {
+    content: '';
+    position: absolute;
+    inset: 14px 12px auto 12px;
+    height: 22px;
+    border: 1.5px solid color-mix(in srgb, var(--azure) 55%, transparent);
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--azure) 16%, #eef6f5);
+  }
+  /* the corner shop — taller, awning + glowing window */
+  .cshop {
+    flex: 1.3;
+    height: 158px;
+    border: 2px solid var(--ink-bg);
+    border-bottom: 0;
+    border-radius: 6px 6px 0 0;
+    background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .cshop .csign {
+    background: var(--ink-bg);
+    color: #f4ead6;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: .12em;
+    text-align: center;
+    padding: 5px 0 4px;
+    border-radius: 4px 4px 0 0;
+    margin: -1px -1px 0;
+  }
+  .cshop .cawn {
+    height: 16px;
+    background: var(--awning);
+    position: relative;
+  }
+  .cshop .cawn::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -9px;
+    height: 10px;
+    background: var(--awning);
+    -webkit-mask: radial-gradient(circle 7px at 7px -2px, transparent 7px, #000 7.5px) repeat-x;
+    mask: radial-gradient(circle 7px at 7px -2px, transparent 7px, #000 7.5px) repeat-x;
+    -webkit-mask-size: 14px 10px; mask-size: 14px 10px;
+  }
+  .cshop .cwin {
+    margin: 18px 14px 0;
+    flex: 1;
+    border: 2px solid var(--ink-bg);
+    border-radius: 4px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--amber) 30%, #fff7e3), color-mix(in srgb, var(--amber) 10%, #fffdf6));
+    box-shadow: 0 0 16px color-mix(in srgb, var(--amber) 35%, transparent);
+    display: grid; place-items: center;
+  }
+  .cshop .cwin::before {
+    content: 'OPEN';
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 9px;
+    letter-spacing: .14em;
+    color: var(--rust);
+  }
+  /* pavement */
+  .pavement {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 30px;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--stone) 26%, var(--panel-2)), color-mix(in srgb, var(--stone) 14%, var(--panel-2)));
+    border-top: 2px solid var(--ink-bg);
+  }
+  .pavement::before {
+    content: '';
+    position: absolute;
+    top: 13px; left: 0; right: 0;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--stone) 55%, transparent) 0 16px, transparent 16px 30px);
+  }
+  /* lamppost */
+  .lamp {
+    position: absolute;
+    left: 14px; bottom: 30px;
+    width: 4px; height: 132px;
+    background: var(--ink-bg);
+    border-radius: 2px;
+  }
+  .lamp::before {
+    content: '';
+    position: absolute;
+    top: -8px; left: -7px;
+    width: 18px; height: 12px;
+    border-radius: 7px 7px 3px 3px;
+    background: var(--amber);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--amber) 70%, transparent);
+  }
+  /* the kid, mid-stride toward the shop */
+  .kid {
+    position: absolute;
+    bottom: 30px; left: 30%;
+    width: 14px; height: 30px;
+    animation: walk 3.4s var(--ease) infinite alternate;
+  }
+  .kid .head { width: 10px; height: 10px; border-radius: 50%; background: var(--rust); margin: 0 auto; }
+  .kid .body { width: 14px; height: 16px; background: var(--azure); border-radius: 5px 5px 3px 3px; margin-top: 1px; }
+  @keyframes walk { from { left: 26%; } to { left: 46%; } }
+
+  /* ────────── Mini shop scenes for content slides ────────── */
+  .scene.compact { height: clamp(210px, 32vh, 320px); }
+  body.read .scene.compact { height: clamp(240px, 34vh, 340px); }
+
+  /* Cash register / till (shop rules) */
+  .till { position: relative; width: min(248px, 82%); animation: shopRise 1s var(--ease) both; animation-delay: .15s; }
+  .till .display {
+    background: var(--ink-bg); border: 2px solid var(--ink-bg);
+    border-radius: 9px 9px 0 0; padding: 9px 12px 8px; text-align: center;
+  }
+  .till .display b { font-family: var(--receipt); font-size: 21px; letter-spacing: .14em; color: var(--rust); display: block; line-height: 1; }
+  .till .display small { font-family: var(--receipt); font-size: 13px; color: var(--term-green); letter-spacing: .12em; }
+  .till .keysblock {
+    background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    border: 2px solid var(--ink-bg); border-top: 0; border-radius: 0 0 12px 12px;
+    padding: 14px; box-shadow: 0 16px 30px rgba(40,30,15,.18);
+  }
+  .till .keys2 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+  .till .keys2 span { aspect-ratio: 1; border-radius: 5px; background: color-mix(in srgb, var(--stone) 20%, #fff); border: 1.5px solid color-mix(in srgb, var(--stone) 45%, transparent); }
+  .till .keys2 span.hot { background: color-mix(in srgb, var(--rust) 24%, #fff); border-color: var(--rust); }
+  .till .drawer { margin-top: 12px; height: 15px; border: 1.5px solid var(--ink-bg); border-radius: 4px; background: color-mix(in srgb, var(--stone) 14%, var(--panel)); position: relative; }
+  .till .drawer::after { content: ''; position: absolute; top: 5px; left: 50%; transform: translateX(-50%); width: 36px; height: 4px; border-radius: 2px; background: var(--ink-bg); }
+  .till .slip {
+    position: absolute; top: -36px; right: 22px; width: 56px; height: 48px;
+    background: var(--term-bg); border: 1.5px solid var(--line); border-bottom: 0; border-radius: 4px 4px 0 0;
+    transform: rotate(2.5deg);
+    background-image: repeating-linear-gradient(transparent 0 6px, color-mix(in srgb, var(--stone) 32%, transparent) 6px 7px);
+  }
+
+  /* Aged, curling receipt with stamp (stale note) */
+  .oldreceipt {
+    position: relative; width: min(208px, 70%); padding: 20px 18px 28px;
+    background: linear-gradient(180deg, #f1e4be, #e8d6a6);
+    border-radius: 4px; transform: rotate(-3deg);
+    box-shadow: 0 18px 30px rgba(40,30,15,.22);
+    animation: shopRise 1s var(--ease) both; animation-delay: .15s;
+  }
+  .oldreceipt .ln { height: 7px; margin: 7px 0; background: repeating-linear-gradient(90deg, #9a8a64 0 3px, transparent 3px 6px); opacity: .55; }
+  .oldreceipt .ln.s { width: 58%; }
+  .oldreceipt .ln.t { width: 78%; }
+  .oldreceipt .stamp {
+    position: absolute; top: 46%; left: 50%; transform: translate(-50%, -50%) rotate(-13deg);
+    border: 3px solid var(--rust); color: var(--rust);
+    font-family: var(--display); font-weight: 800; font-size: 17px; letter-spacing: .12em;
+    padding: 4px 12px; border-radius: 6px; opacity: .82;
+  }
+  .oldreceipt .pin { position: absolute; top: -7px; left: 50%; transform: translateX(-50%); width: 13px; height: 13px; border-radius: 50%; background: var(--rust); box-shadow: 0 2px 4px rgba(0,0,0,.3); }
+  .oldreceipt::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 16px; background: linear-gradient(180deg, transparent, rgba(40,30,15,.14)); border-radius: 0 0 45% 45%; }
+
+  /* Two figures, authority flowing through (sub-agent) */
+  .figures { position: relative; width: min(280px, 88%); height: 150px; animation: shopRise 1s var(--ease) both; animation-delay: .15s; }
+  .figures .fig { position: absolute; bottom: 0; }
+  .figures .fig .head { border-radius: 50%; margin: 0 auto; }
+  .figures .big { left: 10%; }
+  .figures .big .head { width: 28px; height: 28px; background: var(--azure); }
+  .figures .big .body { width: 34px; height: 48px; background: color-mix(in srgb, var(--azure) 72%, #fff); border-radius: 9px 9px 5px 5px; margin-top: 2px; }
+  .figures .small { right: 14%; }
+  .figures .small .head { width: 19px; height: 19px; background: var(--rust); }
+  .figures .small .body { width: 24px; height: 34px; background: color-mix(in srgb, var(--rust) 68%, #fff); border-radius: 6px 6px 4px 4px; margin-top: 2px; }
+  .figures .link { position: absolute; bottom: 38px; left: 27%; right: 30%; border-top: 2.5px dashed var(--green); }
+  .figures .link::after { content: 'authority'; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-family: var(--mono); font-size: 8px; letter-spacing: .14em; text-transform: uppercase; color: var(--green); white-space: nowrap; }
+
+  /* Overflowing shopping trolley (the wandering cart) */
+  .trolley { position: relative; width: min(248px, 86%); height: 184px; animation: shopRise 1s var(--ease) both; animation-delay: .15s; }
+  .trolley .basket {
+    position: absolute; bottom: 36px; left: 28px; right: 16px; height: 78px;
+    border: 2.5px solid var(--ink-bg); border-top: 0; transform: skewX(-9deg);
+    background:
+      repeating-linear-gradient(90deg, transparent 0 13px, color-mix(in srgb, var(--ink-bg) 28%, transparent) 13px 15px),
+      repeating-linear-gradient(0deg, transparent 0 13px, color-mix(in srgb, var(--ink-bg) 28%, transparent) 13px 15px);
+  }
+  .trolley .handle { position: absolute; top: 24px; right: 6px; width: 24px; height: 66px; border: 2.5px solid var(--ink-bg); border-left: 0; border-radius: 0 18px 18px 0; }
+  .trolley .wheel { position: absolute; bottom: 14px; width: 16px; height: 16px; border-radius: 50%; background: var(--ink-bg); }
+  .trolley .wheel.l { left: 48px; }
+  .trolley .wheel.r { right: 38px; }
+  .trolley .item { position: absolute; border-radius: 3px; }
+  .trolley .it1 { bottom: 102px; left: 44px; width: 22px; height: 30px; background: var(--amber); transform: rotate(-8deg); }
+  .trolley .it2 { bottom: 110px; left: 80px; width: 15px; height: 40px; background: var(--green); transform: rotate(6deg); }
+  .trolley .it3 { bottom: 110px; left: 120px; width: 24px; height: 24px; border-radius: 50%; background: var(--rust); }
+  .trolley .it3::after { content: ''; position: absolute; bottom: -13px; left: 50%; width: 1.5px; height: 13px; background: var(--ink-bg); }
+  .trolley .it4 { bottom: 100px; right: 26px; width: 30px; height: 15px; background: var(--azure); transform: rotate(-5deg); }
+
+  /* ────────── New scenes (question / middle / stop) ────────── */
+  /* Crossroads signpost (s-question) */
+  .signpost { position: relative; width: min(220px, 82%); height: clamp(196px, 30vh, 290px); margin: 0 auto; animation: shopRise 1s var(--ease) both; animation-delay: .15s; }
+  .signpost .post { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: 11px; height: 96%; background: linear-gradient(90deg, #9c7b4e, #c19a62, #9c7b4e); border: 1.5px solid var(--ink-bg); border-radius: 3px; }
+  .signpost .post::after { content: ''; position: absolute; left: -18px; bottom: -5px; width: 46px; height: 9px; border-radius: 50%; background: color-mix(in srgb, var(--stone) 30%, transparent); }
+  .signpost .arm { position: absolute; left: 50%; font-family: var(--display); font-weight: 800; font-size: 12px; letter-spacing: .06em; color: #fff; border: 2px solid var(--ink-bg); padding: 7px 14px; white-space: nowrap; box-shadow: 0 4px 10px rgba(40,30,15,.2); }
+  .signpost .a1 { top: 4%; transform: translateX(-100%); background: var(--rust); clip-path: polygon(14% 0, 100% 0, 100% 100%, 14% 100%, 0 50%); padding-left: 18px; }
+  .signpost .a2 { top: 31%; transform: translateX(0); background: var(--azure); clip-path: polygon(0 0, 86% 0, 100% 50%, 86% 100%, 0 100%); padding-right: 18px; transform-origin: left center; animation: swing 3.6s ease-in-out infinite; }
+  .signpost .a3 { top: 58%; transform: translateX(-100%); background: var(--green); clip-path: polygon(14% 0, 100% 0, 100% 100%, 14% 100%, 0 50%); padding-left: 18px; }
+  @keyframes swing { 0%, 100% { transform: translateX(0) rotate(-2.5deg); } 50% { transform: translateX(0) rotate(2.5deg); } }
+
+  /* Shelf with verdict badges (s-middle) */
+  .shelf { position: relative; width: min(280px, 92%); height: clamp(186px, 28vh, 270px); display: flex; align-items: flex-end; justify-content: center; gap: 16px; padding-bottom: 16px; margin: 0 auto; animation: shopRise 1s var(--ease) both; animation-delay: .15s; }
+  .shelf .plank { position: absolute; left: 0; right: 0; bottom: 10px; height: 12px; background: linear-gradient(180deg, #c19a62, #9c7b4e); border: 2px solid var(--ink-bg); border-radius: 3px; box-shadow: 0 9px 16px rgba(40,30,15,.16); }
+  .shelf .good { position: relative; width: 56px; height: 70px; border: 2px solid var(--ink-bg); border-radius: 6px 6px 3px 3px; background: linear-gradient(180deg, var(--panel), var(--panel-2)); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 7px; z-index: 1; }
+  .shelf .g1 { background: linear-gradient(180deg, color-mix(in srgb, var(--amber) 22%, #fff), var(--panel)); }
+  .shelf .g2 { height: 86px; background: linear-gradient(180deg, color-mix(in srgb, var(--stone) 22%, #fff), var(--panel)); }
+  .shelf .g3 { background: linear-gradient(180deg, color-mix(in srgb, var(--rust) 16%, #fff), var(--panel)); }
+  .shelf .lbl { font-family: var(--mono); font-size: 8px; font-weight: 700; letter-spacing: .08em; color: var(--muted); }
+  .shelf .badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 14px; font-weight: 800; color: #fff; border: 2px solid var(--ink-bg); }
+  .shelf .badge.ok { background: var(--green); }
+  .shelf .badge.no { background: var(--rust); }
+  .shelf .badge.q { background: var(--amber); animation: qpulse 1.6s ease-in-out infinite; }
+  @keyframes qpulse {
+    0%, 100% { transform: translateX(-50%) scale(1); box-shadow: 0 0 0 0 color-mix(in srgb, var(--amber) 55%, transparent); }
+    50% { transform: translateX(-50%) scale(1.16); box-shadow: 0 0 0 8px color-mix(in srgb, var(--amber) 0%, transparent); }
+  }
+
+  /* STOP sign + still-printing till (s-stop) */
+  .stopscene { position: relative; width: min(250px, 88%); height: clamp(196px, 30vh, 290px); margin: 0 auto; animation: shopRise 1s var(--ease) both; animation-delay: .15s; }
+  .stopscene .ctr { position: absolute; left: 0; right: 0; bottom: 18px; height: 46px; background: linear-gradient(180deg, #c19a62, #9c7b4e); border: 2px solid var(--ink-bg); border-radius: 4px; box-shadow: 0 10px 18px rgba(40,30,15,.16); }
+  .stopscene .stopsign { position: absolute; left: 12%; bottom: 60px; width: 78px; height: 78px; background: var(--rust); border: 3px solid #fff; outline: 2px solid var(--ink-bg); clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%); display: grid; place-items: center; box-shadow: 0 8px 18px rgba(40,30,15,.22); animation: stoppulse 1.4s ease-in-out infinite; }
+  .stopscene .stopsign span { font-family: var(--display); font-weight: 800; font-size: 17px; letter-spacing: .05em; color: #fff; }
+  @keyframes stoppulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+  .stopscene .till2 { position: absolute; right: 13%; bottom: 60px; width: 56px; height: 44px; background: var(--ink-bg); border-radius: 7px 7px 0 0; }
+  .stopscene .till2::after { content: ''; position: absolute; bottom: 5px; left: 9px; right: 9px; height: 5px; border-radius: 2px; background: var(--term-green); }
+  .stopscene .till2 .feedclip { position: absolute; top: -52px; left: 10px; width: 36px; height: 52px; overflow: hidden; }
+  .stopscene .till2-receipt { position: absolute; left: 0; width: 36px; height: 52px; background: var(--term-bg); border: 1px solid var(--line); background-image: repeating-linear-gradient(transparent 0 5px, color-mix(in srgb, var(--stone) 30%, transparent) 5px 6px); animation: feed 2.4s linear infinite; }
+  @keyframes feed { 0% { transform: translateY(-52px); } 100% { transform: translateY(0); } }
+
+  /* ────────── Subtle motion on the existing scenes ────────── */
+  .shop-open { animation: openglow 2.2s ease-in-out infinite; }
+  @keyframes openglow {
+    0%, 100% { box-shadow: 0 0 14px color-mix(in srgb, var(--rust) 40%, transparent); }
+    50% { box-shadow: 0 0 24px color-mix(in srgb, var(--rust) 75%, transparent); }
+  }
+  .shop-price { animation: pricewobble 4s ease-in-out infinite; }
+  @keyframes pricewobble { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(-3deg); } }
+  .lamp::before { animation: flicker 6s steps(1) infinite; }
+  @keyframes flicker { 0%, 92%, 100% { opacity: 1; } 93% { opacity: .45; } 95% { opacity: 1; } 97% { opacity: .6; } }
+  .till .display b { animation: nosale 1.3s steps(1) infinite; }
+  @keyframes nosale { 0%, 58% { opacity: 1; } 59%, 100% { opacity: .22; } }
+  .oldreceipt .stamp { animation: stamppulse 2.2s ease-in-out infinite; }
+  @keyframes stamppulse {
+    0%, 100% { transform: translate(-50%, -50%) rotate(-13deg) scale(1); opacity: .82; }
+    50% { transform: translate(-50%, -50%) rotate(-13deg) scale(1.09); opacity: 1; }
+  }
+  .figures .link::before { content: ''; position: absolute; top: -4px; left: 0; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 7px color-mix(in srgb, var(--green) 60%, transparent); animation: flow 2.6s ease-in-out infinite; }
+  @keyframes flow { 0% { left: 0%; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { left: 94%; opacity: 0; } }
+  .figures .small { animation: bob 2.4s ease-in-out infinite; }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  .trolley .it3 { transform-origin: bottom center; animation: teeter 2.8s ease-in-out infinite; }
+  @keyframes teeter { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(9deg); } }
+
   .keys { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 34px; }
   .keys .k {
     font-family: var(--mono);
@@ -1155,24 +1441,43 @@
 </section>
 
 <!-- ═══════════════════════ SLIDE · SETUP ═══════════════════════ -->
-<section class="slide" id="s-setup" data-title="A summer afternoon in the '90s" style="--c: var(--amber)">
-  <div class="inner">
-    <p class="kicker rv"><span class="snum"></span>Picture it</p>
-    <h1 class="rv" style="--d:.06s">A summer afternoon in <em>the 1990s.</em></h1>
-    <p class="lede rv" style="--d:.12s">No smartphones, no apps, no tap-to-pay. If you needed milk, you
-      sent one of the kids to the corner shop — and the shopkeeper put it <strong>"on the tab"</strong>
-      because your family had an account there.</p>
-    <div class="statement" data-step="1" style="max-width: 22em; margin-top: 28px; font-size: clamp(24px, 3.4vw, 42px);">
-      Trust ran on <b>faces, reputations,</b> and the landline phone on the kitchen wall.
+<section class="slide" id="s-setup" data-title="Sending a kid to the shop" style="--c: var(--amber)">
+  <div class="inner titlegrid">
+    <div>
+      <p class="kicker rv"><span class="snum"></span>Picture it</p>
+      <h1 class="rv" style="--d:.06s">Sending a kid to <em>the shop.</em></h1>
+      <p class="lede rv" style="--d:.12s">No smartphones, no apps, no tap-to-pay. You need milk, so you
+        send one of the kids to the corner shop — and the shopkeeper puts it <strong>"on the tab"</strong>
+        because Mom has an account there.</p>
+      <div class="statement" data-step="1" style="max-width: 20em; margin-top: 26px; font-size: clamp(22px, 3.2vw, 38px);">
+        That's <b>delegation</b>: you stay home, someone else acts in your name, and the bill still
+        lands on <b>you.</b>
+      </div>
+      <p class="lede" data-step="2" style="margin-top: 24px;">Swap the kid for software and the shop for an
+        API, and you've got the exact problem AI agents face today: <strong>how to safely let something
+        act on your behalf.</strong></p>
     </div>
-    <p class="lede" data-step="2" style="margin-top: 26px;">That world turns out to be the perfect place
-      to understand a very modern problem: <strong>how to safely let something else act on your
-      behalf.</strong></p>
+    <div class="scene street" aria-hidden="true">
+      <div class="streetscene">
+        <div class="lamp"></div>
+        <div class="terrace">
+          <div class="bldg b1"></div>
+          <div class="cshop">
+            <div class="csign">PATEL'S</div>
+            <div class="cawn"></div>
+            <div class="cwin"></div>
+          </div>
+          <div class="bldg b3"></div>
+        </div>
+        <div class="kid"><div class="head"></div><div class="body"></div></div>
+        <div class="pavement"></div>
+      </div>
+    </div>
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
       <p>AI agents are software that doesn't just answer questions — it goes off and <b>does things</b> for you: books the flight, files the expense, orders the groceries. The moment software starts spending your money and touching your accounts, an important question appears.</p>
-      <p>How does everyone involved know the agent is <b>really acting for you</b>, only doing what you allowed, and nothing more? To build intuition for it, we'll go back to a 1990s corner shop.</p>
+      <p>How does everyone involved know the agent is <b>really acting for you</b>, only doing what you allowed, and nothing more? Sending a kid to the corner shop is the same shape of problem — minus the tokens and signatures — so that's where we'll build the intuition.</p>
     </aside>
   </div>
 </section>
@@ -1200,12 +1505,13 @@
       </div>
       <div class="card" data-step="2">
         <h3>Mr. Patel</h3>
-        <p>Runs the shop and the family tab. He knows Mom — but he doesn't know Sam well.</p>
+        <p>Runs the shop and Mom's tab. He knows Mom — but he doesn't know Sam well.</p>
         <span class="who">AAuth · Resource</span>
       </div>
       <div class="card" data-step="3">
         <h3>Dad</h3>
-        <p>At work across town. Patel trusts him. He can check with Mom and <b>confirm consent in the moment</b>.</p>
+        <p>The authority <b>Mom designated</b> to speak for the account. The shop turns to him to confirm
+          a purchase — he checks with Mom and <b>confirms consent in the moment</b>.</p>
         <span class="who">AAuth · Person Server</span>
       </div>
       <div class="card" data-step="3">
@@ -1227,12 +1533,24 @@
 <section class="slide" id="s-question" data-title="The central question" style="--c: var(--rust)">
   <div class="inner">
     <p class="kicker rv"><span class="snum"></span>What we're trying to learn</p>
-    <p class="statement rv" style="--d:.06s">How do you safely send <b>someone else</b> to do a job for you?</p>
-    <p class="lede" data-step="1" style="margin-top: 30px;">It sounds easy — we do it all the time. But slow
-      down and look at what actually has to be true for it to work, and <strong>not go wrong</strong>,
-      and it gets surprisingly deep.</p>
-    <p class="quote" data-step="2">An agent is just Sam — except Sam is software, the shop is some
-      website's API, and Mom is <b>you.</b><span class="attr">old problem · newly urgent</span></p>
+    <div class="cols" style="margin-top: 6px; align-items: center;">
+      <div>
+        <p class="statement rv" style="--d:.06s">How do you safely send <b>someone else</b> to do a job for you?</p>
+        <p class="lede" data-step="1" style="margin-top: 26px;">It sounds easy — we do it all the time. But slow
+          down and look at what actually has to be true for it to work, and <strong>not go wrong</strong>,
+          and it gets surprisingly deep.</p>
+        <p class="quote" data-step="2">An agent is just Sam — except Sam is software, the shop is some
+          website's API, and Mom is <b>you.</b><span class="attr">old problem · newly urgent</span></p>
+      </div>
+      <div class="scene compact" aria-hidden="true">
+        <div class="signpost">
+          <span class="arm a1">YOU</span>
+          <span class="arm a2">AGENT</span>
+          <span class="arm a3">SHOP</span>
+          <div class="post"></div>
+        </div>
+      </div>
+    </div>
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
@@ -1275,7 +1593,7 @@
       <div>
         <p class="quote" data-step="1">Not <b>"what's your name."</b> Prove it.<span class="attr">identity, step one</span></p>
         <ul class="bullets" data-step="2" style="margin-top: 20px;">
-          <li>Sam <b>signs</b> the receipt; Patel checks it against the signature on Sam's <b>ID card</b>.</li>
+          <li>When Sam makes his request he <b>signs it on the spot</b>; Patel checks it against the signature on Sam's <b>ID card</b>.</li>
           <li>The card came from a trusted ID office — not something Sam printed himself.</li>
           <li>The real version is unforgeable: anyone can <b>check</b> a signature, only the real Sam can <b>produce</b> one.</li>
         </ul>
@@ -1334,39 +1652,41 @@
 </section>
 
 <!-- ═══════════════════════ SLIDE · THE CHECK ═══════════════════════ -->
-<section class="slide" id="s-check" data-title="The trusted phone call" style="--c: var(--green)">
+<section class="slide" id="s-check" data-title="How the shop checks" style="--c: var(--green)">
   <div class="inner">
     <p class="kicker rv"><span class="snum"></span>How the shop actually checks</p>
-    <h1 class="rv" style="--d:.06s">Patel picks up <em>the phone.</em></h1>
-    <p class="lede rv" style="--d:.12s">He can't tell a real note from a fake one. So he rings Sam's dad —
-      whom he already trusts. Dad checks with Mom, then comes back: <strong>"Yes, that's Sam. Yes, his
-      mom sent him. Yes, a loaf of bread is fine."</strong></p>
+    <h1 class="rv" style="--d:.06s">Let the shop <em>drive.</em></h1>
+    <p class="lede rv" style="--d:.12s">Patel can't tell a real note from a fake one — so he trusts
+      <strong>nothing Sam brought with him</strong>. Instead Patel writes his <strong>own slip</strong> —
+      "one loaf, Mom's account, $3" — and hands it to Sam: "bring this back signed by the authority Mom
+      designated."</p>
     <div class="grid-3" style="margin-top: 24px;">
       <div class="card" data-step="1">
-        <span class="glyph">☎</span>
-        <h3>A trusted middle</h3>
-        <p>Dad lets people who <b>don't know each other well</b> delegate safely. He represents the
-          family and answers for what Mom wants.</p>
+        <span class="glyph">✎</span>
+        <h3>The shop writes the request</h3>
+        <p>Patel wrote it himself, so it <b>can't be a forgery or a stale reuse</b> — and it names
+          <b>this exact purchase</b>.</p>
       </div>
       <div class="card" data-step="2">
-        <span class="glyph">⚡</span>
-        <h3>Consent in the moment</h3>
-        <p>Not a stale note — a <b>real-time confirmation</b> that Mom is behind this specific
-          purchase, right now.</p>
+        <span class="glyph">✍</span>
+        <h3>Dad signs it</h3>
+        <p>Sam carries the slip to Dad, who checks with Mom and signs <b>"Approved."</b> A real-time okay
+          from the party Patel trusts to speak for the account.</p>
       </div>
       <div class="card" data-step="3">
-        <span class="glyph">✦</span>
-        <h3>No pre-registration</h3>
-        <p>Sam never signed up with Patel. He's served on his <b>issuer + Dad vouching</b> — a
-          brand-new agent works on its first call.</p>
+        <span class="glyph">⇄</span>
+        <h3>The kid shuttles both ways</h3>
+        <p>Patel never phones Dad; Dad never phones Patel. <b>Sam carries</b> the unsigned request out
+          and the signed approval back.</p>
       </div>
     </div>
-    <div class="thread" data-step="4"><p><b>AAuth · Person Server</b> the trusted party that vouches for the
-      person and confirms consent in real time.</p></div>
+    <div class="thread" data-step="4"><p><b>AAuth · resource token → auth token</b> the shop states the
+      request; the Person Server confirms the person is behind it; the agent carries the paperwork both ways.</p></div>
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
-      <p>The name "Person Server" doesn't matter. What matters is the idea: a trusted party that can vouch for the person and confirm their consent in real time. Mom can absolutely have an account with the shop — that's normal. What's notable is that <b>Sam</b> has nothing of his own and still gets served, because trust rides on his issuer and his Person Server, not a sign-up step.</p>
+      <p>The approach runs the <b>opposite</b> way from the scribbled note. Patel's unsigned slip is the <b>resource token</b> — the shop stating exactly what's asked and saying "go get this approved." Dad's signed version is the <b>auth token</b>. Dad is the <b>Person Server</b>: a trusted party that vouches for the person and confirms consent in real time. The names don't matter; what matters is the shape — the shop states the request, a trusted party confirms the person is behind it, and the agent carries the paperwork both ways.</p>
+      <p>What's notable is that <b>Sam</b> has nothing of his own — no account, no sign-up with Patel — and still gets served, because trust rides on his issuer and his Person Server, not a sign-up step. A brand-new agent works on its first call.</p>
     </aside>
   </div>
 </section>
@@ -1377,16 +1697,34 @@
     <p class="kicker rv"><span class="snum"></span>The shop has its own rules</p>
     <h1 class="rv" style="--d:.06s">Mom's okay does <em>not</em> overrule the shop.</h1>
     <p class="lede rv" style="--d:.12s">The chain's accounts office has rules — say, "no tobacco on a
-      family account for a kid, even if a parent okays it." Now there are <strong>two gates</strong>: Mom
+      parent's account for a kid, even if a parent okays it." Now there are <strong>two gates</strong>: Mom
       has to approve, <i>and</i> the rulebook has to allow it.</p>
-    <p class="quote" data-step="1">If the accounts office says no, it's no — even with a signed, verified,
-      totally legitimate okay from Mom. The person's permission sits <b>underneath</b> the shop's
-      policy, not above it.<span class="attr">AAuth · Access Server</span></p>
-    <ul class="bullets" data-step="2" style="margin-top: 22px;">
-      <li>Patel forwards the charge for clearing; <b>Dad settles it</b> with the accounts office.</li>
-      <li>Dad confirms Mom's okay, the office checks the rulebook, the cleared result comes back.</li>
-      <li>No separate office? Dad just gives the okay himself — the simpler shape.</li>
-    </ul>
+    <div class="cols" style="margin-top: 22px;">
+      <div>
+        <p class="quote" data-step="1">If the accounts office says no, it's no — even with a signed, verified,
+          totally legitimate okay from Mom. The person's permission sits <b>underneath</b> the shop's
+          policy, not above it.<span class="attr">AAuth · Access Server</span></p>
+        <ul class="bullets" data-step="2" style="margin-top: 20px;">
+          <li>Patel forwards the charge for clearing; <b>Dad settles it</b> with the accounts office.</li>
+          <li>Dad confirms Mom's okay, the office checks the rulebook, the cleared result comes back.</li>
+          <li>No separate office? Dad just gives the okay himself — the simpler shape.</li>
+        </ul>
+      </div>
+      <div class="scene compact" aria-hidden="true">
+        <div class="till">
+          <div class="slip"></div>
+          <div class="display"><b>NO SALE</b><small>policy: tobacco × kid</small></div>
+          <div class="keysblock">
+            <div class="keys2">
+              <span></span><span></span><span></span><span class="hot"></span>
+              <span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span class="hot"></span>
+            </div>
+            <div class="drawer"></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
@@ -1460,7 +1798,7 @@
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
-      <p>We've actually solved a real problem here. Sam can be trusted to fetch a specific thing on Mom's account: prove he's Sam, prove he carries Mom's authority, let the shop check via Dad, and the shop still enforces its own rules. Now consider a broader request.</p>
+      <p>We've actually solved a real problem here. Sam can be trusted to fetch a specific thing on Mom's account: prove he's Sam, prove he carries Mom's authority, let the shop check via Dad's signed approval, and the shop still enforces its own rules. Now consider a broader request.</p>
     </aside>
   </div>
 </section>
@@ -1493,13 +1831,25 @@
     <p class="lede rv" style="--d:.12s">Easy at the extremes. But the job was handed over in <strong>words,
       not a checklist</strong> — so "is this inside the cake?" becomes a judgment call, made by the kid
       with the account who maybe wouldn't mind some leftover chocolate.</p>
-    <div class="pains">
-      <div class="pain" data-step="1"><q>The fancy imported chocolate — "to make it nicer"?</q><span class="cure">judgment call</span></div>
-      <div class="pain" data-step="1"><q>A second batch — "in case the first cake flops"?</q><span class="cure">judgment call</span></div>
-      <div class="pain" data-step="2"><q>Sprinkles, candles, a card, a balloon — "the cake" or not?</q><span class="cure">judgment call</span></div>
+    <div class="cols" style="margin-top: 22px;">
+      <div>
+        <div class="pains" style="grid-template-columns: 1fr; margin-top: 0;">
+          <div class="pain" data-step="1"><q>The fancy imported chocolate — "to make it nicer"?</q><span class="cure">judgment call</span></div>
+          <div class="pain" data-step="1"><q>A second batch — "in case the first cake flops"?</q><span class="cure">judgment call</span></div>
+          <div class="pain" data-step="2"><q>Sprinkles, candles, a card, a balloon — "the cake" or not?</q><span class="cure">judgment call</span></div>
+        </div>
+        <p class="quote" data-step="3">A narrow job is easy to check. A broad, fuzzy goal is easy to
+          <b>state</b> — and genuinely hard to <b>fence in.</b></p>
+      </div>
+      <div class="scene compact" aria-hidden="true">
+        <div class="shelf">
+          <div class="good g1"><span class="badge ok">✓</span><span class="lbl">FLOUR</span></div>
+          <div class="good g2"><span class="badge no">✕</span><span class="lbl">PS5</span></div>
+          <div class="good g3"><span class="badge q">?</span><span class="lbl">CHOC</span></div>
+          <div class="plank"></div>
+        </div>
+      </div>
     </div>
-    <p class="quote" data-step="3">A narrow job is easy to check. A broad, fuzzy goal is easy to
-      <b>state</b> — and genuinely hard to <b>fence in.</b></p>
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
@@ -1516,13 +1866,29 @@
     <p class="lede rv" style="--d:.12s">Last weekend Sam bought picnic supplies — all justified. This
       weekend the picnic is over, but he still has the note: <strong>"buy the picnic stuff."</strong>
       The account is still open. Patel would still honor it.</p>
-    <p class="quote" data-step="1">Same kid. Same note. Same shop. Same everything — except the job is
-      <b>already finished.</b><span class="attr">stale authority</span></p>
-    <ul class="bullets" data-step="2" style="margin-top: 22px;">
-      <li>We think of permission as <b>what</b> you can do and <b>who</b> said so.</li>
-      <li>There's a third thing hiding underneath: <b>is the goal even still alive?</b></li>
-      <li>A piece of paper has no sense of "done" — it says "buy the picnic stuff" forever.</li>
-    </ul>
+    <div class="cols" style="margin-top: 22px;">
+      <div>
+        <p class="quote" data-step="1">Same kid. Same note. Same shop. Same everything — except the job is
+          <b>already finished.</b><span class="attr">stale authority</span></p>
+        <ul class="bullets" data-step="2" style="margin-top: 20px;">
+          <li>We think of permission as <b>what</b> you can do and <b>who</b> said so.</li>
+          <li>There's a third thing hiding underneath: <b>is the goal even still alive?</b></li>
+          <li>A piece of paper has no sense of "done" — it says "buy the picnic stuff" forever.</li>
+        </ul>
+      </div>
+      <div class="scene compact" aria-hidden="true">
+        <div class="oldreceipt">
+          <div class="pin"></div>
+          <div class="ln t"></div>
+          <div class="ln"></div>
+          <div class="ln s"></div>
+          <div class="ln"></div>
+          <div class="ln t"></div>
+          <div class="ln s"></div>
+          <span class="stamp">LAST WK</span>
+        </div>
+      </div>
+    </div>
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
@@ -1539,21 +1905,32 @@
     <p class="lede rv" style="--d:.12s">Mom changes her mind — the party's cancelled. She calls the shop to
       call it off. But Sam is already at the counter, and the cashier is already ringing it onto Mom's
       account.</p>
-    <div class="duo">
-      <div class="half" data-step="1">
-        <span class="num">Withdraw permission</span>
-        <h3>"No more."</h3>
-        <p>Mom can revoke all she wants. No <b>new</b> approvals get handed out from this moment on.</p>
+    <div class="cols" style="margin-top: 22px;">
+      <div>
+        <div class="duo" style="grid-template-columns: 1fr; margin-top: 0;">
+          <div class="half" data-step="1">
+            <span class="num">Withdraw permission</span>
+            <h3>"No more."</h3>
+            <p>Mom can revoke all she wants. No <b>new</b> approvals get handed out from this moment on.</p>
+          </div>
+          <div class="half" data-step="2">
+            <span class="num">Stop what's in flight</span>
+            <h3>Already moving.</h3>
+            <p>If the action is already rung up, "no more" <b>doesn't reach back and undo it.</b> There's
+              always a window between "I changed my mind" and "everything stopped."</p>
+          </div>
+        </div>
+        <p class="quote" data-step="3">For a loaf of bread, who cares. For an agent moving <b>real money</b> or
+          sending <b>real messages</b>, that little window is everything.</p>
       </div>
-      <div class="half" data-step="2">
-        <span class="num">Stop what's in flight</span>
-        <h3>Already moving.</h3>
-        <p>If the action is already rung up, "no more" <b>doesn't reach back and undo it.</b> There's
-          always a window between "I changed my mind" and "everything stopped."</p>
+      <div class="scene compact" aria-hidden="true">
+        <div class="stopscene">
+          <div class="stopsign"><span>STOP</span></div>
+          <div class="till2"><div class="feedclip"><div class="till2-receipt"></div></div></div>
+          <div class="ctr"></div>
+        </div>
       </div>
     </div>
-    <p class="quote" data-step="3">For a loaf of bread, who cares. For an agent moving <b>real money</b> or
-      sending <b>real messages</b>, that little window is everything.</p>
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
@@ -1570,12 +1947,23 @@
     <p class="lede rv" style="--d:.12s">There's a lot to carry, so Sam brings his little brother to fetch
       the milk. The brother is his own person but has <strong>no authority of his own</strong> — Sam
       clears the purchase so it goes on Mom's account.</p>
-    <ul class="bullets rv" style="--d:.18s; margin-top: 20px;">
-      <li>The helper has its <b>own identity</b> — it can be audited and switched off on its own.</li>
-      <li>But it <b>can't get authorization by itself</b>: the parent agent obtains it on the helper's behalf.</li>
-      <li>Mom's okay flows <i>through</i> Sam, <i>to</i> his brother — <b>without getting bigger</b> along the way.</li>
-      <li>Someone stays responsible, and the shop can see the helper really acts for Sam, who acts for Mom.</li>
-    </ul>
+    <div class="cols" style="margin-top: 20px;">
+      <div>
+        <ul class="bullets" data-step="1">
+          <li>The helper has its <b>own identity</b> — it can be audited and switched off on its own.</li>
+          <li>But it <b>can't get authorization by itself</b>: the parent agent obtains it on the helper's behalf.</li>
+          <li>Mom's okay flows <i>through</i> Sam, <i>to</i> his brother — <b>without getting bigger</b> along the way.</li>
+          <li>Someone stays responsible, and the shop can see the helper really acts for Sam, who acts for Mom.</li>
+        </ul>
+      </div>
+      <div class="scene compact" aria-hidden="true">
+        <div class="figures">
+          <div class="link"></div>
+          <div class="fig big"><div class="head"></div><div class="body"></div></div>
+          <div class="fig small"><div class="head"></div><div class="body"></div></div>
+        </div>
+      </div>
+    </div>
     <div class="thread rv" style="--d:.26s"><p><b>AAuth · Sub-agent</b> its own identity for audit; its
       authority still rides on the person, obtained by the parent.</p></div>
 
@@ -1635,13 +2023,29 @@
     <p class="lede rv" style="--d:.12s">A cake stand "for the cake." Candles "for the cake." A banner. A
       card. Party hats. A tablecloth. <strong>Look at any single item and you can't object.</strong>
       Each one is defensible. The receipt looks reasonable.</p>
-    <p class="quote" data-step="1">Step back and look at the whole cart: Mom asked for <b>a cake</b>, and
-      Sam is quietly throwing <b>a whole party</b> on her account — one she never approved.</p>
-    <ul class="bullets" data-step="2" style="margin-top: 22px;">
-      <li>Checking each item as it's scanned — the thing we're good at — <b>simply doesn't see it.</b></li>
-      <li>No single shop can see it either: each shop only sees <b>its own till.</b></li>
-      <li>The one party that could notice sees <b>all of Sam's purchases together</b>, and remembers the goal.</li>
-    </ul>
+    <div class="cols" style="margin-top: 22px;">
+      <div>
+        <p class="quote" data-step="1">Step back and look at the whole cart: Mom asked for <b>a cake</b>, and
+          Sam is quietly throwing <b>a whole party</b> on her account — one she never approved.</p>
+        <ul class="bullets" data-step="2" style="margin-top: 20px;">
+          <li>Checking each item as it's scanned — the thing we're good at — <b>simply doesn't see it.</b></li>
+          <li>No single shop can see it either: each shop only sees <b>its own till.</b></li>
+          <li>The one party that could notice sees <b>all of Sam's purchases together</b>, and remembers the goal.</li>
+        </ul>
+      </div>
+      <div class="scene compact" aria-hidden="true">
+        <div class="trolley">
+          <span class="item it1"></span>
+          <span class="item it2"></span>
+          <span class="item it3"></span>
+          <span class="item it4"></span>
+          <div class="handle"></div>
+          <div class="basket"></div>
+          <div class="wheel l"></div>
+          <div class="wheel r"></div>
+        </div>
+      </div>
+    </div>
     <div class="thread" data-step="3"><p><b>AAuth · the Person Server</b> spans every shop and keeps a
       running mission log — positioned to judge whether the <i>pattern</i> still fits.</p></div>
 
@@ -1738,7 +2142,7 @@
         <tr><td>Sam</td><td><b>Agent</b></td><td>The software that goes and does things. No authority of its own.</td></tr>
         <tr><td>The ID office</td><td><b>Agent Provider</b></td><td>Issues the agent its identity and signing key.</td></tr>
         <tr><td>Mr. Patel / the shop</td><td><b>Resource</b></td><td>The thing being acted on. Verifies the agent and enforces its rules.</td></tr>
-        <tr><td>Dad on the phone</td><td><b>Person Server</b></td><td>Represents the person, confirms consent, holds the mission.</td></tr>
+        <tr><td>Dad</td><td><b>Person Server</b></td><td>Represents the person, confirms consent, holds the mission.</td></tr>
         <tr><td>The accounts office</td><td><b>Access Server</b></td><td>The resource's policy engine. Final say, even over the person.</td></tr>
         <tr><td>The little brother</td><td><b>Sub-agent</b></td><td>A helper, still under the person's authority.</td></tr>
       </tbody>
