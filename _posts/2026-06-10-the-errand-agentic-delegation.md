@@ -292,6 +292,8 @@ sequenceDiagram
 
 An open-ended ask. First the mission is approved once. After that, every purchase rides on the same mission, and the PS judges each requested scope against the mission's stated intent: things that fit are approved silently, anything that doesn't goes back to Mom.
 
+(To keep the focus on the mission, this diagram shows the three-party shape, where Dad's side issues the approval directly and there's no separate head office. Adding head office back just inserts the same federation step you saw with the bread.)
+
 ```mermaid
 sequenceDiagram
     actor Mom as Mom (Person)
