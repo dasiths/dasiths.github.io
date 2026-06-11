@@ -1,0 +1,1683 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Errand — Agentic Delegation, Explained</title>
+<meta name="description" content="What sending a kid to the corner shop teaches us about agentic delegation and the AAuth protocol.">
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  THE ERRAND — A SLIDE DECK
+  ═══════════════════════════════════════════════════════════════════════════
+
+  Companion to the blog post:
+    /_posts/2026-06-10-the-errand-agentic-delegation.md
+  Self-contained — no build step, no external JS. Hosted at
+  /presentations/errand/ on dasith.me (a static file Jekyll copies verbatim,
+  since it carries no YAML front matter).
+
+  TWO MODES (toggle: "P" key, the topbar button, or ?mode=present / ?mode=read)
+  · READ mode (default) — single scrolling page, talk-track notes inline.
+  · PRESENT mode        — one slide at a time; ←/→ or Space to move. N = notes,
+                          M = menu, F = fullscreen.
+
+  HOW TO EDIT
+  · Each slide is one <section class="slide" id="s-..." data-title="Menu label">.
+  · class="rv" fades up on activation (add style="--d:.15s" to stagger).
+  · data-step="1" sets reveal order within a slide in present mode.
+  · Slide accent: style="--c: var(--azure)" (amber/azure/green/stone/rust).
+  · Dark slides: class="slide dark".
+
+  The deck engine (CSS + the <script> at the bottom) is adapted from the
+  MIT-licensed presentation framework published by AI-Substrate
+  (github.com/AI-Substrate/harness-engineering). Content here is original.
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Instrument+Serif:ital@0;1&family=Martian+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ════════════════════════ TOKENS ════════════════════════ */
+  :root {
+    --bg: #f8f5ee;
+    --panel: #fffdf7;
+    --panel-2: #f4f0e6;
+    --ink-bg: #1d2126;
+    --ink-bg-2: #23282f;
+    --text: #20242b;
+    --muted: #5c646e;
+    --faint: #9aa1ab;
+    --line: #e3ddd0;
+    --amber: #b8760f;
+    --azure: #2a66c9;
+    --green: #0e8f5a;
+    --stone: #67707b;
+    --rust: #c2452d;
+    --term-bg: #1b1f24;
+    --term-text: #d7dce2;
+    --term-green: #4ec98a;
+    --term-faint: #6b7280;
+    --mono: "Martian Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+    --serif: "Instrument Serif", Georgia, "Times New Roman", serif;
+    --ease: cubic-bezier(.16, 1, .3, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--display);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  ::selection { background: color-mix(in srgb, var(--amber) 30%, transparent); }
+
+  /* ════════════════════════ CHROME ════════════════════════ */
+  .topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 18px;
+    pointer-events: none;
+  }
+  .topbar > * { pointer-events: auto; }
+  .wordmark {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .wordmark b { color: var(--green); font-weight: 700; }
+  .topbar .spacer { flex: 1; pointer-events: none; }
+  .tbtn {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: color-mix(in srgb, var(--panel) 82%, transparent);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 7px 14px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: color .25s, border-color .25s, background .25s;
+  }
+  .tbtn:hover { color: var(--green); border-color: color-mix(in srgb, var(--green) 50%, transparent); }
+  .tbtn.on { color: var(--green); border-color: var(--green); background: color-mix(in srgb, var(--green) 8%, var(--panel)); }
+  .tbtn kbd {
+    font-family: inherit;
+    font-size: 8.5px;
+    color: var(--faint);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 4px;
+    margin-left: 7px;
+  }
+
+  .progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--amber), var(--green));
+    z-index: 95;
+    transition: width .35s var(--ease);
+  }
+
+  /* present-mode nav cluster */
+  .navc {
+    position: fixed;
+    bottom: 22px; right: 22px;
+    z-index: 90;
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+  body.present .navc { display: flex; }
+  body.read .navc { display: flex; }
+  body.read .navc .count { display: none; }
+  body.read .nbtn { width: 38px; height: 38px; font-size: 14px; }
+  .navc .count {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .14em;
+    color: var(--faint);
+    margin-right: 4px;
+  }
+  .navc .count b { color: var(--text); font-weight: 700; }
+  .nbtn {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--panel) 88%, transparent);
+    backdrop-filter: blur(8px);
+    color: var(--text);
+    font-size: 17px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: border-color .25s, color .25s, transform .15s;
+  }
+  .nbtn:hover { border-color: var(--green); color: var(--green); }
+  .nbtn:active { transform: scale(.92); }
+  .nbtn:disabled { opacity: .3; cursor: default; }
+
+  .hint {
+    position: fixed;
+    bottom: 26px; left: 26px;
+    z-index: 90;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--faint);
+    display: none;
+  }
+  body.present .hint { display: block; }
+  @media (max-width: 760px) { .hint { display: none !important; } }
+
+  /* menu overlay */
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(14px);
+    display: none;
+    overflow-y: auto;
+    padding: 90px 24px 60px;
+  }
+  .menu.open { display: block; }
+  .menu ol {
+    max-width: 680px;
+    margin: 0 auto;
+    list-style: none;
+    counter-reset: m;
+  }
+  .menu li { counter-increment: m; }
+  .menu a {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: clamp(16px, 2vw, 21px);
+    font-weight: 550;
+    letter-spacing: -.01em;
+    transition: background .2s, color .2s;
+  }
+  .menu a::before {
+    content: counter(m, decimal-leading-zero);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--faint);
+  }
+  .menu a:hover { background: color-mix(in srgb, var(--green) 7%, transparent); color: var(--green); }
+  .menu a.here { color: var(--green); }
+  .menu a.here::after { content: '●'; font-size: 8px; color: var(--green); margin-left: auto; }
+
+  /* notes panel (present mode) */
+  .npanel {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: min(400px, 88vw);
+    z-index: 100;
+    background: var(--panel);
+    border-left: 1px solid var(--line);
+    box-shadow: -18px 0 50px rgba(48,40,25,.08);
+    transform: translateX(102%);
+    transition: transform .4s var(--ease);
+    display: flex;
+    flex-direction: column;
+  }
+  body.present.notes-open .npanel { transform: none; }
+  .npanel header {
+    padding: 18px 22px 14px;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--green);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .npanel header span { color: var(--faint); font-weight: 400; }
+  .npanel .nbody {
+    padding: 20px 24px 40px;
+    overflow-y: auto;
+    font-size: 14.5px;
+    color: var(--muted);
+    font-weight: 380;
+  }
+  .npanel .nbody p { margin-bottom: 14px; }
+  .npanel .nbody b { color: var(--text); font-weight: 650; }
+  body.present.notes-open .deckwrap { margin-right: min(400px, 88vw); }
+
+  /* ════════════════════════ SLIDE LAYOUT — both modes ════════════════════════ */
+  .deckwrap { transition: margin-right .4s var(--ease); }
+
+  .slide { position: relative; }
+  .slide .inner {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 clamp(22px, 5vw, 64px);
+    width: 100%;
+  }
+
+  /* PRESENT: one viewport-fitted slide at a time */
+  body.present { overflow: hidden; height: 100dvh; }
+  body.present .deckwrap { height: 100dvh; position: relative; }
+  body.present .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(14px) scale(.985);
+    transition: opacity .5s var(--ease), transform .5s var(--ease), visibility 0s .5s;
+    overflow-y: auto;
+    padding: 76px 0 70px;
+  }
+  body.present .slide .inner { margin: auto; }
+  body.present .slide.active {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition: opacity .5s var(--ease), transform .5s var(--ease), visibility 0s 0s;
+    z-index: 2;
+  }
+  body.present .talk { display: none; }
+
+  /* READ: stacked scrolling document */
+  body.read .slide {
+    min-height: 58vh;
+    display: flex;
+    align-items: center;
+    padding: clamp(64px, 10vh, 120px) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  body.read .slide:last-child { border-bottom: 0; }
+  body.read .npanel { display: none; }
+
+  /* per-slide ambient glow */
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: 8%; right: -12%;
+    width: 50vw; height: 70%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--c, var(--stone)) 7%, transparent), transparent 70%);
+    pointer-events: none;
+  }
+  .slide:nth-child(even)::before { right: auto; left: -12%; }
+
+  /* dark slides */
+  .slide.dark { background: var(--ink-bg); color: #efe9da; }
+  .slide.dark::before { background: radial-gradient(closest-side, color-mix(in srgb, var(--c, var(--green)) 14%, transparent), transparent 70%); }
+  body.read .slide.dark { border-bottom-color: #2c323a; }
+
+  /* ════════════════════════ REVEAL SYSTEM ════════════════════════ */
+  .rv, [data-step] {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity .65s var(--ease), transform .65s var(--ease);
+    transition-delay: var(--d, 0s);
+  }
+  .rv.in, [data-step].in {
+    opacity: 1;
+    transform: none;
+  }
+  body.present [data-step] { transform: translateY(26px) scale(.99); transition-delay: 0s; }
+  body.present [data-step].in { transform: none; }
+
+  /* ════════════════════════ COMPONENTS ════════════════════════ */
+  .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .26em;
+    text-transform: uppercase;
+    color: var(--c, var(--stone));
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .kicker::before { content: ''; width: 26px; height: 1.5px; background: var(--c, var(--stone)); }
+  .kicker .snum { color: var(--faint); font-weight: 400; letter-spacing: .14em; }
+
+  .slide h1 {
+    font-size: clamp(34px, 5vw, 66px);
+    font-weight: 750;
+    line-height: 1.04;
+    letter-spacing: -.028em;
+    margin: 14px 0 16px;
+    max-width: 16em;
+    font-variation-settings: "opsz" 96;
+  }
+  .slide h1 em {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--c, var(--green));
+    letter-spacing: 0;
+  }
+  .slide.dark h1 { color: #f4efe2; }
+
+  .lede {
+    font-size: clamp(15.5px, 1.7vw, 19px);
+    color: var(--muted);
+    max-width: 38em;
+    font-weight: 380;
+    margin-bottom: 10px;
+  }
+  .lede strong { color: var(--text); font-weight: 620; }
+  .slide.dark .lede { color: #b9c0c9; }
+  .slide.dark .lede strong { color: #efe9da; }
+
+  .bullets { list-style: none; margin-top: 18px; max-width: 46em; }
+  .bullets li {
+    position: relative;
+    padding: 7px 0 7px 26px;
+    font-size: clamp(14.5px, 1.5vw, 17px);
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .bullets li::before {
+    content: '▸';
+    position: absolute;
+    left: 2px;
+    color: var(--c, var(--green));
+    font-size: 13px;
+  }
+  .bullets li b, .bullets li strong { color: var(--text); font-weight: 650; }
+  .bullets li code, .lede code, .card code {
+    font-family: var(--mono);
+    font-size: .82em;
+    background: color-mix(in srgb, var(--c, var(--green)) 8%, white);
+    border: 1px solid color-mix(in srgb, var(--c, var(--green)) 22%, transparent);
+    border-radius: 5px;
+    padding: 1px 6px;
+    color: var(--c, var(--green));
+  }
+  .bullets .sub { display: block; font-size: .88em; color: var(--faint); margin-top: 3px; }
+
+  .cols { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(24px, 4vw, 56px); align-items: start; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    padding: 22px 24px;
+    box-shadow: 0 2px 10px rgba(48,40,25,.05);
+    transition: transform .3s, border-color .3s, box-shadow .3s;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--c, var(--green)) 45%, transparent);
+    box-shadow: 0 14px 36px rgba(48,40,25,.11);
+  }
+  .card .glyph { font-size: 20px; color: var(--c, var(--green)); display: block; margin-bottom: 10px; }
+  .card h3 { font-size: 16.5px; font-weight: 700; letter-spacing: -.012em; margin-bottom: 7px; }
+  .card h3 em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--c, var(--green)); }
+  .card p { font-size: 13.5px; color: var(--muted); line-height: 1.62; font-weight: 380; }
+  .card p b { color: var(--text); font-weight: 620; }
+  .card .who {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--c, var(--green));
+    display: block;
+    margin-top: 12px;
+  }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 20px; }
+  .chip {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    border: 1px solid color-mix(in srgb, var(--c, var(--stone)) 40%, transparent);
+    color: var(--c, var(--stone));
+    background: color-mix(in srgb, var(--c, var(--stone)) 6%, white);
+    border-radius: 999px;
+    padding: 6px 13px;
+  }
+
+  .statement {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(28px, 4.6vw, 58px);
+    line-height: 1.22;
+    letter-spacing: -.01em;
+    max-width: 18em;
+    color: var(--text);
+  }
+  .statement b { color: var(--c, var(--green)); font-weight: 400; }
+  .slide.dark .statement { color: #f4efe2; }
+
+  .quote {
+    border-left: 2.5px solid var(--c, var(--green));
+    padding: 4px 0 4px 22px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(17px, 2vw, 23px);
+    color: var(--text);
+    max-width: 30em;
+    margin-top: 26px;
+  }
+  .quote b { color: var(--c, var(--green)); font-weight: 400; }
+  .quote .attr {
+    display: block;
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 9.5px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin-top: 8px;
+  }
+
+  /* duo — numbered half cards */
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 26px; }
+  .duo .half {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    padding: 24px 26px;
+  }
+  .duo .num {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--c, var(--rust));
+    display: block;
+    margin-bottom: 10px;
+  }
+  .duo h3 { font-size: clamp(17px, 1.9vw, 22px); font-weight: 720; letter-spacing: -.018em; margin-bottom: 8px; }
+  .duo p { font-size: 14px; color: var(--muted); font-weight: 380; line-height: 1.65; }
+  .duo p b { color: var(--text); font-weight: 620; }
+
+  /* terminal */
+  .term {
+    background: var(--term-bg);
+    border-radius: 14px;
+    box-shadow: 0 24px 60px rgba(29,33,38,.28);
+    overflow: hidden;
+    font-family: var(--mono);
+    font-size: clamp(11px, 1.15vw, 13px);
+  }
+  .term-bar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 11px 15px;
+    background: #14171b;
+  }
+  .term-bar i { width: 11px; height: 11px; border-radius: 50%; display: block; }
+  .term-bar i:nth-child(1) { background: #f25f57; }
+  .term-bar i:nth-child(2) { background: #fbbe2e; }
+  .term-bar i:nth-child(3) { background: #58c843; }
+  .term-bar em {
+    margin-left: auto;
+    font-style: normal;
+    font-size: 9.5px;
+    letter-spacing: .14em;
+    color: var(--term-faint);
+  }
+  .term-body { padding: 18px 20px 20px; display: grid; gap: 9px; }
+  .t-bad {
+    color: var(--term-faint);
+    text-decoration: line-through;
+    text-decoration-color: color-mix(in srgb, var(--rust) 70%, transparent);
+    font-size: .92em;
+  }
+  .t-row { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: baseline; }
+  .t-cmd { color: var(--term-text); font-weight: 600; }
+  .t-cmd::before { content: '$ '; color: var(--term-green); font-weight: 700; }
+  .t-ok { color: var(--term-green); font-size: .92em; }
+  .t-dim { color: var(--term-faint); font-size: .92em; }
+  .t-out { color: var(--term-text); opacity: .92; white-space: pre-wrap; font-size: .95em; line-height: 1.7; }
+  .t-out b { color: var(--term-green); font-weight: 700; }
+  .t-cursor {
+    display: inline-block;
+    width: 8px; height: 15px;
+    background: var(--term-green);
+    vertical-align: text-bottom;
+    margin-left: 6px;
+    animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* abc lettered cards */
+  .abc { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 28px; }
+  .abc .aff {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    padding: 24px;
+    transition: transform .3s, border-color .3s;
+  }
+  .abc .aff:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--green) 50%, transparent); }
+  .abc .letter {
+    width: 32px; height: 32px;
+    display: grid;
+    place-items: center;
+    border: 1.5px solid color-mix(in srgb, var(--green) 55%, transparent);
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--green) 7%, white);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 14px;
+  }
+  .abc h3 { font-size: 17px; font-weight: 720; letter-spacing: -.015em; margin-bottom: 7px; }
+  .abc h3 em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--green); }
+  .abc p { font-size: 13.5px; color: var(--muted); line-height: 1.62; font-weight: 380; }
+  .abc p b { color: var(--text); font-weight: 620; }
+
+  /* pain cards */
+  .pains { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; margin-top: 26px; }
+  .pain {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    padding: 18px 19px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .pain q {
+    quotes: '“' '”';
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(14px, 1.45vw, 17px);
+    line-height: 1.42;
+    color: var(--text);
+  }
+  .pain .cure {
+    font-family: var(--mono);
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-top: auto;
+  }
+  .pain .cure::before { content: '→ '; color: var(--faint); }
+
+  /* mapping table */
+  .maptbl { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: clamp(12.5px, 1.3vw, 15px); }
+  .maptbl th, .maptbl td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .maptbl thead th {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+  .maptbl tbody td { color: var(--muted); font-weight: 380; }
+  .maptbl tbody td:first-child { color: var(--text); font-weight: 560; }
+  .maptbl tbody td b { color: var(--green); font-family: var(--mono); font-size: .82em; font-weight: 700; letter-spacing: .04em; }
+
+  /* stats */
+  .stats { display: flex; gap: clamp(20px, 4vw, 56px); flex-wrap: wrap; margin: 26px 0 6px; }
+  .stat .big {
+    font-size: clamp(38px, 5vw, 64px);
+    font-weight: 780;
+    letter-spacing: -.04em;
+    line-height: 1;
+    color: var(--text);
+  }
+  .stat .big em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--c, var(--green)); }
+  .stat .cap {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin-top: 8px;
+    max-width: 22em;
+  }
+
+  /* loop pills */
+  .loop { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-top: 26px; }
+  .loop .step {
+    font-family: var(--mono);
+    font-size: clamp(9px, 1vw, 11px);
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 9px 15px;
+    background: rgba(255,255,255,.7);
+    transition: color .3s, border-color .3s;
+  }
+  .loop .step:hover { color: var(--green); border-color: color-mix(in srgb, var(--green) 55%, transparent); }
+  .loop .larr { color: var(--faint); font-family: var(--mono); font-size: 11px; }
+
+  /* thread stitch */
+  .thread {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-top: clamp(26px, 4vh, 44px);
+    max-width: 52em;
+  }
+  .thread::before {
+    content: '─ ─ ─▶';
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .12em;
+    color: var(--green);
+    white-space: nowrap;
+    flex: none;
+  }
+  .thread p { font-size: 13.5px; color: var(--muted); font-weight: 400; }
+  .thread p b {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-right: 6px;
+  }
+  .slide.dark .thread p { color: #b9c0c9; }
+
+  /* talk track (read mode only) */
+  .talk {
+    margin-top: clamp(30px, 5vh, 48px);
+    border-top: 1px dashed var(--line);
+    padding-top: 22px;
+    max-width: 52em;
+  }
+  .talk .ttag {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--amber);
+    display: block;
+    margin-bottom: 12px;
+  }
+  .talk p { font-size: 14.5px; color: var(--muted); font-weight: 380; line-height: 1.75; margin-bottom: 12px; }
+  .talk p b { color: var(--text); font-weight: 650; }
+  .slide.dark .talk { border-top-color: #2c323a; }
+  .slide.dark .talk p { color: #aeb6bf; }
+  .slide.dark .talk p b { color: #efe9da; }
+
+  /* ════════════════════════ TITLE SLIDE ════════════════════════ */
+  .titlegrid { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(20px, 4vw, 60px); align-items: center; }
+  .titleslide h1 {
+    font-size: clamp(44px, 7vw, 92px);
+    max-width: none;
+    line-height: .98;
+  }
+  .titleslide h1 .dot { color: var(--green); }
+  .titleslide .sub {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(19px, 2.4vw, 28px);
+    color: var(--muted);
+    margin-top: 14px;
+    max-width: 22em;
+  }
+  .scene { position: relative; height: clamp(280px, 38vh, 460px); display: grid; place-items: center; }
+  .stack3d {
+    position: relative;
+    width: min(330px, 64vw);
+    height: 230px;
+    transform: rotateX(54deg) rotateZ(-42deg);
+    transform-style: preserve-3d;
+  }
+  .p3 {
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    border: 1.5px solid color-mix(in srgb, var(--pc) 60%, transparent);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--pc) 14%, var(--panel)), color-mix(in srgb, var(--pc) 5%, var(--panel)));
+    box-shadow: 0 18px 50px color-mix(in srgb, var(--pc) 22%, transparent);
+    transform: translateZ(calc(var(--i) * 64px));
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 14px 16px;
+    animation: assemble 1s var(--ease) both;
+    animation-delay: calc(.25s + var(--i) * .18s);
+  }
+  @keyframes assemble {
+    from { opacity: 0; transform: translateZ(calc(var(--i) * 64px + 130px)); }
+    to { opacity: 1; transform: translateZ(calc(var(--i) * 64px)); }
+  }
+  .p3 i {
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--pc);
+  }
+  .p3 span {
+    font-family: var(--mono);
+    font-size: clamp(8.5px, .95vw, 11px);
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--pc);
+  }
+  .stack-shadow {
+    position: absolute;
+    inset: -8px;
+    border-radius: 24px;
+    background: rgba(48,40,25,.16);
+    filter: blur(26px);
+    transform: translateZ(-50px);
+  }
+  .keys { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 34px; }
+  .keys .k {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel);
+    padding: 7px 12px;
+  }
+  .keys .k b { color: var(--green); font-weight: 700; }
+  a.k { text-decoration: none; transition: color .25s, border-color .25s; }
+  a.k:hover { color: var(--green) !important; border-color: var(--green) !important; }
+
+  /* CTA */
+  .cta {
+    margin-top: 44px;
+    max-width: 44em;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--green);
+    border-radius: 12px;
+    background: var(--panel);
+    padding: 20px 24px 18px;
+  }
+  .cta .ctag {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--green);
+    display: block;
+    margin-bottom: 10px;
+  }
+  .cta p { font-size: 14px; color: var(--muted); font-weight: 380; margin-bottom: 12px; }
+  .cta a { color: var(--green); }
+  .slide.dark .cta { background: var(--ink-bg-2); border-color: #2c323a; border-left-color: var(--green); }
+  .slide.dark .cta p { color: #b9c0c9; }
+
+  /* ════════════════════════ RESPONSIVE ════════════════════════ */
+  @media (max-width: 980px) {
+    .cols, .titlegrid, .grid-3, .abc, .pains { grid-template-columns: 1fr; }
+    .pains { grid-template-columns: 1fr 1fr; }
+    .titlegrid .scene { order: -1; height: clamp(240px, 34vh, 320px); }
+  }
+  @media (max-width: 640px) {
+    .grid-2, .duo, .pains { grid-template-columns: 1fr; }
+    body.present .slide { padding: 64px 0 86px; }
+    .maptbl thead { display: none; }
+    .maptbl, .maptbl tbody, .maptbl tr, .maptbl td { display: block; width: 100%; }
+    .maptbl tr { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; padding: 6px 10px; }
+    .maptbl td { border: 0; padding: 4px 4px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .rv, [data-step] { opacity: 1; transform: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* ════════════════════════ PRINT ════════════════════════ */
+  @media print {
+    .topbar, .navc, .hint, .progress, .menu, .npanel { display: none !important; }
+    body.present .slide { position: static; visibility: visible; opacity: 1; transform: none; }
+    .slide { page-break-after: always; border: 0; }
+    .rv, [data-step] { opacity: 1 !important; transform: none !important; }
+    .talk { display: block !important; }
+  }
+</style>
+</head>
+<body class="read">
+
+<div class="progress" id="progress"></div>
+
+<header class="topbar">
+  <a class="wordmark" href="#s-title">The <b>Errand</b> · A Deck</a>
+  <span class="spacer"></span>
+  <button class="tbtn" id="btn-mode">Present <kbd>P</kbd></button>
+  <button class="tbtn" id="btn-notes" hidden>Notes <kbd>N</kbd></button>
+  <button class="tbtn" id="btn-menu">Menu <kbd>M</kbd></button>
+  <button class="tbtn" id="btn-full" hidden>Full <kbd>F</kbd></button>
+</header>
+
+<nav class="menu" id="menu" aria-label="Slide menu"><ol id="menu-list"></ol></nav>
+
+<aside class="npanel" aria-label="Speaker notes">
+  <header>Notes <span id="np-count"></span></header>
+  <div class="nbody" id="np-body"></div>
+</aside>
+
+<div class="navc">
+  <span class="count" id="counter"></span>
+  <button class="nbtn" id="btn-prev" aria-label="Previous">←</button>
+  <button class="nbtn" id="btn-next" aria-label="Next">→</button>
+</div>
+<span class="hint">← → navigate · N notes · M menu · P read mode</span>
+
+<main class="deckwrap" id="deck">
+
+<!-- ═══════════════════════ SLIDE · TITLE ═══════════════════════ -->
+<section class="slide titleslide" id="s-title" data-title="Title" style="--c: var(--green)">
+  <div class="inner titlegrid">
+    <div>
+      <p class="kicker rv"><span class="snum"></span>Agentic delegation, explained</p>
+      <h1 class="rv" style="--d:.06s">The Errand<span class="dot">.</span></h1>
+      <p class="sub rv" style="--d:.14s">What sending a kid to the corner shop teaches us about
+        letting AI agents act on our behalf — and why that turns out to be a genuinely hard problem.</p>
+      <div class="keys rv" style="--d:.24s">
+        <span class="k"><b>scroll</b> to read — notes included</span>
+        <span class="k"><b>P</b> to present</span>
+        <span class="k"><b>M</b> contents</span>
+        <a class="k" href="https://aauth.dev/"><b>↗</b> aauth.dev</a>
+      </div>
+    </div>
+    <div class="scene" aria-hidden="true">
+      <div class="stack3d">
+        <div class="stack-shadow"></div>
+        <div class="p3" style="--i:0; --pc: var(--stone)"><i>01</i><span>PROVE IDENTITY</span></div>
+        <div class="p3" style="--i:1; --pc: var(--green)"><i>02</i><span>CARRY AUTHORITY</span></div>
+        <div class="p3" style="--i:2; --pc: var(--azure)"><i>03</i><span>CONFIRM CONSENT</span></div>
+        <div class="p3" style="--i:3; --pc: var(--amber)"><i>04</i><span>SHAPE THE JOB</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · SETUP ═══════════════════════ -->
+<section class="slide" id="s-setup" data-title="A summer afternoon in the '90s" style="--c: var(--amber)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Picture it</p>
+    <h1 class="rv" style="--d:.06s">A summer afternoon in <em>the 1990s.</em></h1>
+    <p class="lede rv" style="--d:.12s">No smartphones, no apps, no tap-to-pay. If you needed milk, you
+      sent one of the kids to the corner shop — and the shopkeeper put it <strong>"on the tab"</strong>
+      because your family had an account there.</p>
+    <div class="statement" data-step="1" style="max-width: 22em; margin-top: 28px; font-size: clamp(24px, 3.4vw, 42px);">
+      Trust ran on <b>faces, reputations,</b> and the landline phone on the kitchen wall.
+    </div>
+    <p class="lede" data-step="2" style="margin-top: 26px;">That world turns out to be the perfect place
+      to understand a very modern problem: <strong>how to safely let something else act on your
+      behalf.</strong></p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>AI agents are software that doesn't just answer questions — it goes off and <b>does things</b> for you: books the flight, files the expense, orders the groceries. The moment software starts spending your money and touching your accounts, an important question appears.</p>
+      <p>How does everyone involved know the agent is <b>really acting for you</b>, only doing what you allowed, and nothing more? To build intuition for it, we'll go back to a 1990s corner shop.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · THE CAST ═══════════════════════ -->
+<section class="slide" id="s-cast" data-title="Meet the cast" style="--c: var(--azure)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Meet the cast</p>
+    <h1 class="rv" style="--d:.06s">Six people you <em>already</em> understand.</h1>
+    <div class="grid-3" style="margin-top: 22px;">
+      <div class="card" data-step="1">
+        <h3>Mom</h3>
+        <p>The one in charge. She decides what's allowed, and <b>the bills come to her</b>. Everyone else acts <i>for</i> her.</p>
+        <span class="who">AAuth · Person</span>
+      </div>
+      <div class="card" data-step="1">
+        <h3>Sam</h3>
+        <p>Mom's kid. He carries <b>no cash</b> — he buys on Mom's tab. No money, no authority of his own.</p>
+        <span class="who">AAuth · Agent</span>
+      </div>
+      <div class="card" data-step="2">
+        <h3>The ID office</h3>
+        <p>Issued Sam's ID card. He can't print his own — a trusted issuer vouches "this is Sam."</p>
+        <span class="who">AAuth · Agent Provider</span>
+      </div>
+      <div class="card" data-step="2">
+        <h3>Mr. Patel</h3>
+        <p>Runs the shop and the family tab. He knows Mom — but he doesn't know Sam well.</p>
+        <span class="who">AAuth · Resource</span>
+      </div>
+      <div class="card" data-step="3">
+        <h3>Dad</h3>
+        <p>At work across town. Patel trusts him. He can check with Mom and <b>confirm consent in the moment</b>.</p>
+        <span class="who">AAuth · Person Server</span>
+      </div>
+      <div class="card" data-step="3">
+        <h3>The accounts office</h3>
+        <p>The chain's rulebook. Clears purchases and <b>enforces policy</b> no matter what Mom wants.</p>
+        <span class="who">AAuth · Access Server</span>
+      </div>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Here's the twist that matters: Sam buys on credit, not cash. The shop is trusting <b>Mom's account</b>, not a fistful of dollars. A thief with stolen cash steals it once and that's the end. A fake "Sam" who can charge Mom's tab can keep spending until someone notices.</p>
+      <p>So getting identity right matters far more here. The only thing protecting Mom is the shop correctly checking who Sam is, and that Mom really authorized this.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · THE QUESTION ═══════════════════════ -->
+<section class="slide" id="s-question" data-title="The central question" style="--c: var(--rust)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>What we're trying to learn</p>
+    <p class="statement rv" style="--d:.06s">How do you safely send <b>someone else</b> to do a job for you?</p>
+    <p class="lede" data-step="1" style="margin-top: 30px;">It sounds easy — we do it all the time. But slow
+      down and look at what actually has to be true for it to work, and <strong>not go wrong</strong>,
+      and it gets surprisingly deep.</p>
+    <p class="quote" data-step="2">An agent is just Sam — except Sam is software, the shop is some
+      website's API, and Mom is <b>you.</b><span class="attr">old problem · newly urgent</span></p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>We're suddenly forced to answer this carefully because we've started building AI agents: programs that go off and do things for us. The problem isn't brand new — we solved a version of it in that '90s corner shop — and it isn't unsolvable. It just used to stay in the background, and agents made it visible.</p>
+      <p>We'll follow one family running one errand: start tiny — <b>buy a loaf of bread</b> — and build to something open-ended — <b>buy the ingredients for a birthday cake</b>.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · PART ONE DIVIDER ═══════════════════════ -->
+<section class="slide dark" id="s-part1" data-title="Part one · the bread" style="--c: var(--green)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Part one</p>
+    <h1 class="rv" style="--d:.06s">"Go buy a loaf of <em>bread.</em>"</h1>
+    <p class="lede rv" style="--d:.12s">A single, specific thing, on the account. Sounds straightforward —
+      until you have to <strong>build the trust from scratch</strong>, which is exactly what software
+      forces you to do. So let's handle each piece by hand.</p>
+    <ul class="bullets rv" style="--d:.18s">
+      <li>Sam must convince Mr. Patel he <b>is who he says he is</b>.</li>
+      <li>Sam must convince him that <b>Mom actually sent him</b>.</li>
+      <li>Mr. Patel must be willing to put it on Mom's tab — <b>trusting both</b>.</li>
+    </ul>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>With real kids and shopkeepers, all of this happens automatically and we never think about it. With software, you handle every piece by hand. So we'll take them one at a time: identity, authority, and the check.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · WHO ARE YOU ═══════════════════════ -->
+<section class="slide" id="s-identity" data-title="Who are you, really?" style="--c: var(--azure)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Prove it</p>
+    <h1 class="rv" style="--d:.06s">Saying your name is just <em>a claim.</em></h1>
+    <p class="lede rv" style="--d:.12s">Anyone can walk in and say "Mom sent me, put it on her account."
+      A name proves nothing. Some other kid could say he's Sam and walk off with goods on Mom's tab —
+      and keep charging until someone catches on.</p>
+    <div class="cols" style="margin-top: 24px;">
+      <div>
+        <p class="quote" data-step="1">Not <b>"what's your name."</b> Prove it.<span class="attr">identity, step one</span></p>
+        <ul class="bullets" data-step="2" style="margin-top: 20px;">
+          <li>Sam <b>signs</b> the receipt; Patel checks it against the signature on Sam's <b>ID card</b>.</li>
+          <li>The card came from a trusted ID office — not something Sam printed himself.</li>
+          <li>The real version is unforgeable: anyone can <b>check</b> a signature, only the real Sam can <b>produce</b> one.</li>
+        </ul>
+      </div>
+      <div class="term" data-step="1">
+        <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><em>the counter</em></div>
+        <div class="term-body">
+          <div class="t-bad">"I'm Sam, honest." — free to say</div>
+          <div class="t-row"><span class="t-cmd" data-type>sign(request) → signature</span></div>
+          <div class="t-row"><span class="t-cmd" data-type>verify(signature, id_card)</span><span class="t-ok">✓ matches issuer</span></div>
+          <div class="t-dim"># a name is a claim; a signature is proof</div>
+          <div><span style="color: var(--term-green); font-weight: 700;">$</span><span class="t-cursor"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Because it's all on credit, a convincing fake doesn't grab one loaf and run — he can keep charging Mom's account. What Sam needs is a way to prove he's actually him that an impostor can't fake just by overhearing the errand.</p>
+      <p>The software equivalent can't be copied even by someone who watched Sam sign a hundred times. That idea — anyone can check, only the real one can produce — is what the rest builds on.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · SAYS WHO ═══════════════════════ -->
+<section class="slide" id="s-authority" data-title="Says who?" style="--c: var(--rust)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Says who?</p>
+    <h1 class="rv" style="--d:.06s">Knowing it's Sam isn't <em>enough.</em></h1>
+    <p class="lede rv" style="--d:.12s">Suppose Patel is totally convinced this is Sam. It still isn't
+      enough, because <strong>Sam is a kid.</strong> Identity tells you <i>who's standing there</i> — not
+      whether he's <i>allowed to do this</i>.</p>
+    <div class="duo">
+      <div class="half" data-step="1">
+        <span class="num">The real question</span>
+        <h3>Is Mom behind this?</h3>
+        <p>What matters is that <b>Mom authorized this, and Sam is carrying her authority</b>. He isn't
+          acting as himself — he's acting <i>on behalf of</i> Mom.</p>
+      </div>
+      <div class="half" data-step="2">
+        <span class="num">Why a note fails</span>
+        <h3>A scrap of paper is weak.</h3>
+        <p>Handwriting can be forged or copied. Worse, Sam could <b>reuse it next week</b> for something
+          Mom never agreed to. A note proves she said something <i>once</i> — not that she means it
+          <i>now</i>.</p>
+      </div>
+    </div>
+    <div class="thread" data-step="3"><p><b>The shift</b> identity answers "who"; authority answers
+      "allowed to, right now" — and that needs something stronger than paper.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>The first instinct is a note pinned to Sam: "Sam can buy bread on our account, Mom." Better than nothing, but weak. The thing that actually matters isn't Sam's identity at all — it's that the authority traces back to Mom, and that it's still live.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · THE CHECK ═══════════════════════ -->
+<section class="slide" id="s-check" data-title="The trusted phone call" style="--c: var(--green)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>How the shop actually checks</p>
+    <h1 class="rv" style="--d:.06s">Patel picks up <em>the phone.</em></h1>
+    <p class="lede rv" style="--d:.12s">He can't tell a real note from a fake one. So he rings Sam's dad —
+      whom he already trusts. Dad checks with Mom, then comes back: <strong>"Yes, that's Sam. Yes, his
+      mom sent him. Yes, a loaf of bread is fine."</strong></p>
+    <div class="grid-3" style="margin-top: 24px;">
+      <div class="card" data-step="1">
+        <span class="glyph">☎</span>
+        <h3>A trusted middle</h3>
+        <p>Dad lets people who <b>don't know each other well</b> delegate safely. He represents the
+          family and answers for what Mom wants.</p>
+      </div>
+      <div class="card" data-step="2">
+        <span class="glyph">⚡</span>
+        <h3>Consent in the moment</h3>
+        <p>Not a stale note — a <b>real-time confirmation</b> that Mom is behind this specific
+          purchase, right now.</p>
+      </div>
+      <div class="card" data-step="3">
+        <span class="glyph">✦</span>
+        <h3>No pre-registration</h3>
+        <p>Sam never signed up with Patel. He's served on his <b>issuer + Dad vouching</b> — a
+          brand-new agent works on its first call.</p>
+      </div>
+    </div>
+    <div class="thread" data-step="4"><p><b>AAuth · Person Server</b> the trusted party that vouches for the
+      person and confirms consent in real time.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>The name "Person Server" doesn't matter. What matters is the idea: a trusted party that can vouch for the person and confirm their consent in real time. Mom can absolutely have an account with the shop — that's normal. What's notable is that <b>Sam</b> has nothing of his own and still gets served, because trust rides on his issuer and his Person Server, not a sign-up step.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · SHOP RULES ═══════════════════════ -->
+<section class="slide" id="s-rules" data-title="The shop's own rules" style="--c: var(--stone)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>The shop has its own rules</p>
+    <h1 class="rv" style="--d:.06s">Mom's okay does <em>not</em> overrule the shop.</h1>
+    <p class="lede rv" style="--d:.12s">The chain's accounts office has rules — say, "no tobacco on a
+      family account for a kid, even if a parent okays it." Now there are <strong>two gates</strong>: Mom
+      has to approve, <i>and</i> the rulebook has to allow it.</p>
+    <p class="quote" data-step="1">If the accounts office says no, it's no — even with a signed, verified,
+      totally legitimate okay from Mom. The person's permission sits <b>underneath</b> the shop's
+      policy, not above it.<span class="attr">AAuth · Access Server</span></p>
+    <ul class="bullets" data-step="2" style="margin-top: 22px;">
+      <li>Patel forwards the charge for clearing; <b>Dad settles it</b> with the accounts office.</li>
+      <li>Dad confirms Mom's okay, the office checks the rulebook, the cleared result comes back.</li>
+      <li>No separate office? Dad just gives the okay himself — the simpler shape.</li>
+    </ul>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This matters more than it looks. The place you're acting on never gives up its own rules just because you brought permission. In AAuth the shop's rulebook lives in the Access Server — but again, the name's not the point.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · BREAD RECAP ═══════════════════════ -->
+<section class="slide" id="s-bread-recap" data-title="Specific job: solved" style="--c: var(--green)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>So far, so good</p>
+    <h1 class="rv" style="--d:.06s">A specific errand — <em>basically cracked.</em></h1>
+    <div class="abc">
+      <div class="aff" data-step="1">
+        <span class="letter">1</span>
+        <h3>Prove <em>who you are</em></h3>
+        <p>Sign your name — <b>don't just say it</b>. The signature matches the ID card from a trusted issuer.</p>
+      </div>
+      <div class="aff" data-step="2">
+        <span class="letter">2</span>
+        <h3>Prove you're <em>acting for someone</em></h3>
+        <p>Carry their authority, <b>don't borrow your own</b>. Everything traces back to Mom.</p>
+      </div>
+      <div class="aff" data-step="3">
+        <span class="letter">3</span>
+        <h3>Let the other side <em>check it</em></h3>
+        <p>Through a trusted party that vouches for the person — <b>plus the resource's own rules</b> on top.</p>
+      </div>
+    </div>
+    <p class="lede" data-step="4" style="margin-top: 26px;">If errands were always this tidy, we'd be done.
+      The trouble is, <strong>real jobs are almost never a single, written-down thing.</strong></p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>We've actually solved a real problem here. Sam can be trusted to fetch a specific thing on Mom's account: prove he's Sam, prove he carries Mom's authority, let the shop check via Dad, and the shop still enforces its own rules. Now consider a broader request.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · PART TWO DIVIDER ═══════════════════════ -->
+<section class="slide dark" id="s-part2" data-title="Part two · the cake" style="--c: var(--amber)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Part two</p>
+    <h1 class="rv" style="--d:.06s">"Buy the ingredients for <em>the cake.</em>"</h1>
+    <p class="lede rv" style="--d:.12s">No list. Sam has to <strong>figure out</strong> what "the
+      ingredients" even means — flour, eggs, sugar… out of vanilla… no cake tin, better grab one. Each
+      is a decision he makes <i>as he goes</i>, charged to Mom's account.</p>
+    <div class="statement" data-step="1" style="margin-top: 30px;">
+      Nobody could write the permission list up front, because <b>the job invents itself as it
+      happens.</b>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>That difference is why AI agents are harder to authorize. A normal program is a kid with an exact list: buy this, buy that, come home. An agent is a kid told "buy what you need for the cake" who has to work the rest out alone. The first kind we've basically figured out. The second is where the real work is now.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · MESSY MIDDLE ═══════════════════════ -->
+<section class="slide" id="s-middle" data-title="What's inside the job?" style="--c: var(--rust)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>The messy middle</p>
+    <h1 class="rv" style="--d:.06s">Flour, yes. A PlayStation, no. <em>And then…</em></h1>
+    <p class="lede rv" style="--d:.12s">Easy at the extremes. But the job was handed over in <strong>words,
+      not a checklist</strong> — so "is this inside the cake?" becomes a judgment call, made by the kid
+      with the account who maybe wouldn't mind some leftover chocolate.</p>
+    <div class="pains">
+      <div class="pain" data-step="1"><q>The fancy imported chocolate — "to make it nicer"?</q><span class="cure">judgment call</span></div>
+      <div class="pain" data-step="1"><q>A second batch — "in case the first cake flops"?</q><span class="cure">judgment call</span></div>
+      <div class="pain" data-step="2"><q>Sprinkles, candles, a card, a balloon — "the cake" or not?</q><span class="cure">judgment call</span></div>
+    </div>
+    <p class="quote" data-step="3">A narrow job is easy to check. A broad, fuzzy goal is easy to
+      <b>state</b> — and genuinely hard to <b>fence in.</b></p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Sam can talk himself into almost anything being "for the cake." The one making that judgment is the agent — motivated to make the job succeed, and not perfectly neutral about the edges.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · STALE NOTE ═══════════════════════ -->
+<section class="slide" id="s-stale" data-title="The stale note" style="--c: var(--amber)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>The note from last weekend</p>
+    <h1 class="rv" style="--d:.06s">The permission didn't expire. The <em>reason</em> did.</h1>
+    <p class="lede rv" style="--d:.12s">Last weekend Sam bought picnic supplies — all justified. This
+      weekend the picnic is over, but he still has the note: <strong>"buy the picnic stuff."</strong>
+      The account is still open. Patel would still honor it.</p>
+    <p class="quote" data-step="1">Same kid. Same note. Same shop. Same everything — except the job is
+      <b>already finished.</b><span class="attr">stale authority</span></p>
+    <ul class="bullets" data-step="2" style="margin-top: 22px;">
+      <li>We think of permission as <b>what</b> you can do and <b>who</b> said so.</li>
+      <li>There's a third thing hiding underneath: <b>is the goal even still alive?</b></li>
+      <li>A piece of paper has no sense of "done" — it says "buy the picnic stuff" forever.</li>
+    </ul>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This trips up even careful systems. An agent can be perfectly authorized, perfectly identified, perfectly legitimate — and still be acting on a job that ended last Tuesday. AAuth's answer is to give a mission an <b>ending</b>: the agent can mark it complete, the person can terminate it, and tokens are short-lived so the shop keeps getting to weigh in.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · SAM STOP ═══════════════════════ -->
+<section class="slide" id="s-stop" data-title="Sam, stop!" style="--c: var(--rust)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>"Sam, stop!"</p>
+    <h1 class="rv" style="--d:.06s">Revoking and <em>actually stopping</em> are different acts.</h1>
+    <p class="lede rv" style="--d:.12s">Mom changes her mind — the party's cancelled. She calls the shop to
+      call it off. But Sam is already at the counter, and the cashier is already ringing it onto Mom's
+      account.</p>
+    <div class="duo">
+      <div class="half" data-step="1">
+        <span class="num">Withdraw permission</span>
+        <h3>"No more."</h3>
+        <p>Mom can revoke all she wants. No <b>new</b> approvals get handed out from this moment on.</p>
+      </div>
+      <div class="half" data-step="2">
+        <span class="num">Stop what's in flight</span>
+        <h3>Already moving.</h3>
+        <p>If the action is already rung up, "no more" <b>doesn't reach back and undo it.</b> There's
+          always a window between "I changed my mind" and "everything stopped."</p>
+      </div>
+    </div>
+    <p class="quote" data-step="3">For a loaf of bread, who cares. For an agent moving <b>real money</b> or
+      sending <b>real messages</b>, that little window is everything.</p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>AAuth lets the person revoke tokens and terminate the mission, so no new approvals are issued. What it can't promise is that work already in motion halts the instant you say stop — that depends on how short-lived the tokens are and how eagerly each shop re-checks. Withdrawing authority lives in the protocol; guaranteeing the hands stop moving is a deployment concern.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · LITTLE BROTHER ═══════════════════════ -->
+<section class="slide" id="s-subagent" data-title="The little brother" style="--c: var(--azure)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Sam sends his little brother</p>
+    <h1 class="rv" style="--d:.06s">Authority has to flow <em>through</em> Sam — not grow.</h1>
+    <p class="lede rv" style="--d:.12s">There's a lot to carry, so Sam brings his little brother to fetch
+      the milk. The brother is his own person but has <strong>no authority of his own</strong> — Sam
+      clears the purchase so it goes on Mom's account.</p>
+    <ul class="bullets rv" style="--d:.18s; margin-top: 20px;">
+      <li>The helper has its <b>own identity</b> — it can be audited and switched off on its own.</li>
+      <li>But it <b>can't get authorization by itself</b>: the parent agent obtains it on the helper's behalf.</li>
+      <li>Mom's okay flows <i>through</i> Sam, <i>to</i> his brother — <b>without getting bigger</b> along the way.</li>
+      <li>Someone stays responsible, and the shop can see the helper really acts for Sam, who acts for Mom.</li>
+    </ul>
+    <div class="thread rv" style="--d:.26s"><p><b>AAuth · Sub-agent</b> its own identity for audit; its
+      authority still rides on the person, obtained by the parent.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Reasonable to delegate — but think about what just happened to Mom's authority. It was meant for Sam. Does it stretch to the brother? Only by flowing through Sam, unchanged, with someone still answerable for the helper's actions.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · BACK-ORDER ═══════════════════════ -->
+<section class="slide" id="s-chaining" data-title="The back-order" style="--c: var(--green)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Patel back-orders from his distributor</p>
+    <h1 class="rv" style="--d:.06s">The shop becomes <em>an agent itself.</em></h1>
+    <p class="lede rv" style="--d:.12s">Sam needs a vanilla the shop doesn't stock. Patel offers to
+      back-order it from his supplier, delivered to Sam's house Tuesday. A minute ago Patel was the
+      <i>shop checking Sam</i> — now he's a <strong>customer placing an order</strong> on behalf of the
+      errand.</p>
+    <div class="cols" style="margin-top: 22px;">
+      <div>
+        <p class="quote" data-step="1">"Mr. Patel's shop ordered it" is true but incomplete. The honest
+          answer is a <b>chain</b>: Mom → Sam → the shop → the distributor.</p>
+        <ul class="bullets" data-step="2" style="margin-top: 20px;">
+          <li>If anything goes wrong, you want to <b>walk the chain back</b>, hop by hop.</li>
+          <li>Each link should be <b>checkable, not just trusted</b>.</li>
+          <li>The final delivery carries the <b>full story</b>, all the way back to Mom.</li>
+        </ul>
+      </div>
+      <div class="term" data-step="1">
+        <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><em>the delegation chain</em></div>
+        <div class="term-body">
+          <div class="t-out">Mom        <b>(Person)</b>
+  └─ Sam          (Agent)
+      └─ Patel's shop   (Resource → Agent)
+          └─ Distributor  (Resource)</div>
+          <div class="t-dim"># each hop recorded · the whole path stays visible</div>
+          <div><span style="color: var(--term-green); font-weight: 700;">$</span><span class="t-cursor"></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="thread" data-step="3"><p><b>AAuth · Call chaining</b> one party legitimately acting as an
+      agent toward the next, with every hop recorded.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>It's easy for each party to know only the neighbor they dealt with. It's much more valuable for the final delivery to carry the full story of who acted for whom. AAuth answers this squarely — every delegation is recorded as a chain back to the person. What's still being worked out is <b>containment</b>: proving each hop stayed inside the original job, not just that it happened.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · DRIFT ═══════════════════════ -->
+<section class="slide" id="s-drift" data-title="The wandering cart" style="--c: var(--rust)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>The cart that quietly wandered off</p>
+    <h1 class="rv" style="--d:.06s">The drift lives in the <em>pattern</em> — not the items.</h1>
+    <p class="lede rv" style="--d:.12s">A cake stand "for the cake." Candles "for the cake." A banner. A
+      card. Party hats. A tablecloth. <strong>Look at any single item and you can't object.</strong>
+      Each one is defensible. The receipt looks reasonable.</p>
+    <p class="quote" data-step="1">Step back and look at the whole cart: Mom asked for <b>a cake</b>, and
+      Sam is quietly throwing <b>a whole party</b> on her account — one she never approved.</p>
+    <ul class="bullets" data-step="2" style="margin-top: 22px;">
+      <li>Checking each item as it's scanned — the thing we're good at — <b>simply doesn't see it.</b></li>
+      <li>No single shop can see it either: each shop only sees <b>its own till.</b></li>
+      <li>The one party that could notice sees <b>all of Sam's purchases together</b>, and remembers the goal.</li>
+    </ul>
+    <div class="thread" data-step="3"><p><b>AAuth · the Person Server</b> spans every shop and keeps a
+      running mission log — positioned to judge whether the <i>pattern</i> still fits.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This is the hardest case, because nothing looks wrong in isolation. AAuth doesn't define a trajectory-analysis algorithm — but it isn't blind to drift. A mission spans every resource the agent touches, and every request flows through the Person Server, so the PS sees the whole shopping trip at once. Deciding what counts as wandering is left to the PS and whoever it asks — a human or an AI reviewer.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · MISSIONS ═══════════════════════ -->
+<section class="slide" id="s-mission" data-title="What the cake teaches" style="--c: var(--green)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>So what does the cake teach us?</p>
+    <h1 class="rv" style="--d:.06s">Give the open-ended job <em>some shape.</em></h1>
+    <p class="lede rv" style="--d:.12s">Instead of a vague "buy what you need," you <strong>write down the
+      intent</strong>, hand it to the trusted party, and let them check each request against it, keep a
+      log, and call the whole thing off if needed. In AAuth this is a <strong>mission.</strong></p>
+    <div class="grid-2" style="margin-top: 22px;">
+      <div class="card" data-step="1">
+        <h3>What a mission gives you</h3>
+        <p>A place to <b>attach governance, audit, and a kill switch</b>. An ending the agent can mark
+          complete and the person can terminate. Short-lived tokens that re-check on renewal.</p>
+      </div>
+      <div class="card" data-step="2" style="--c: var(--rust)">
+        <h3>What it doesn't promise</h3>
+        <p>Not every boundary is sealed. <b>Containment</b> across hops and <b>instant</b> stop-on-revoke
+          are still being worked out. The useful systems <b>name these edges out loud.</b></p>
+      </div>
+    </div>
+    <p class="quote" data-step="3">The mission layer is important in practice — not a promise that every
+      edge is sealed, but <b>a place to stand</b> while we work on them.</p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Sending someone to do a specific thing? Basically cracked — prove identity, carry authority, let the other side check it. Sending someone to do an open-ended thing they figure out as they go, across time, handed off, full of judgment calls — that's the agent problem. It isn't unsolvable, but a good part of it is still being worked out, and agents made it urgent.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · MAPPING ═══════════════════════ -->
+<section class="slide" id="s-mapping" data-title="The story, in AAuth terms" style="--c: var(--azure)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>The same story, real names attached</p>
+    <h1 class="rv" style="--d:.06s">From kitchen to <em>protocol.</em></h1>
+    <table class="maptbl rv" style="--d:.12s">
+      <thead><tr><th>In the story</th><th>In AAuth</th><th>What they do</th></tr></thead>
+      <tbody>
+        <tr><td>Mom</td><td><b>Person</b></td><td>The human in charge. Authority starts here; the bills land here.</td></tr>
+        <tr><td>Sam</td><td><b>Agent</b></td><td>The software that goes and does things. No authority of its own.</td></tr>
+        <tr><td>The ID office</td><td><b>Agent Provider</b></td><td>Issues the agent its identity and signing key.</td></tr>
+        <tr><td>Mr. Patel / the shop</td><td><b>Resource</b></td><td>The thing being acted on. Verifies the agent and enforces its rules.</td></tr>
+        <tr><td>Dad on the phone</td><td><b>Person Server</b></td><td>Represents the person, confirms consent, holds the mission.</td></tr>
+        <tr><td>The accounts office</td><td><b>Access Server</b></td><td>The resource's policy engine. Final say, even over the person.</td></tr>
+        <tr><td>The little brother</td><td><b>Sub-agent</b></td><td>A helper, still under the person's authority.</td></tr>
+      </tbody>
+    </table>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>The key mechanics: every request is <b>signed</b>; the agent carries the person's authority through <b>tokens</b> and never acts as itself; when the shop needs proof it hands the agent a <b>resource token</b> ("get this approved"), the agent takes it to the PS, which returns an <b>auth token</b> ("approved"). The shop never phones the PS — the agent shuttles the paperwork between them.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · CLOSE ═══════════════════════ -->
+<section class="slide dark" id="s-close" data-title="Where to go from here" style="--c: var(--green)">
+  <div class="inner" style="text-align: center;">
+    <p class="kicker rv" style="justify-content: center;"><span class="snum"></span>Where to go from here</p>
+    <div class="statement rv" style="--d:.1s; margin: 30px auto 0; max-width: 18em;">
+      The bread shows the simple case. The cake shows <b>why agentic delegation is harder.</b>
+    </div>
+    <div class="loop rv" style="--d:.22s; justify-content: center; margin-top: 40px;">
+      <span class="step" style="background: transparent; color: #b9c0c9; border-color: #3a414b;">Prove identity</span><span class="larr">→</span>
+      <span class="step" style="background: transparent; color: #b9c0c9; border-color: #3a414b;">Carry authority</span><span class="larr">→</span>
+      <span class="step" style="background: transparent; color: #b9c0c9; border-color: #3a414b;">Confirm consent</span><span class="larr">→</span>
+      <span class="step" style="background: transparent; color: #b9c0c9; border-color: #3a414b;">Shape the job (mission)</span>
+    </div>
+    <div class="cta rv" style="--d:.28s; margin: 48px auto 0; text-align: left;">
+      <span class="ctag">Explore it for real</span>
+      <p><b>AAuth</b> is the protocol behind this story — provable agent identity, on-behalf-of authority,
+        real-time consent, and missions. Step through each flow interactively, or read the full spec.</p>
+      <div class="keys" style="margin-top: 4px;">
+        <a class="k" href="https://aauth.dev/" style="background: transparent; border-color: #3a414b; color: #9aa1ab;">↗ aauth.dev — the protocol</a>
+        <a class="k" href="https://explorer.aauth.dev/" style="background: transparent; border-color: #3a414b; color: #9aa1ab;">↗ explorer.aauth.dev — interactive walkthrough</a>
+        <a class="k" href="https://github.com/aauth-dev/dotnet-samples" style="background: transparent; border-color: #3a414b; color: #9aa1ab;">↗ .NET SDK &amp; samples</a>
+      </div>
+    </div>
+    <div class="keys rv" style="--d:.36s; justify-content: center; margin-top: 34px;">
+      <a class="k" href="/2026/06/10/the-errand-agentic-delegation.html" style="background: transparent; border-color: #3a414b; color: #9aa1ab;">← read the full blog post</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+(() => {
+  'use strict';
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const slides = $$('.slide');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let cur = 0;
+  let mode = 'read';
+
+  /* ── auto slide numbers in kickers ── */
+  slides.forEach((s, i) => {
+    const n = $('.kicker .snum', s);
+    if (n) n.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0') + ' · ';
+  });
+
+  /* ── menu (built from data-title) ── */
+  const menu = $('#menu'), menuList = $('#menu-list');
+  slides.forEach((s, i) => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = '#' + s.id;
+    a.textContent = s.dataset.title || s.id;
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeMenu();
+      go(i);
+    });
+    li.appendChild(a);
+    menuList.appendChild(li);
+  });
+  const openMenu = () => { menu.classList.add('open'); markMenu(); };
+  const closeMenu = () => menu.classList.remove('open');
+  const toggleMenu = () => menu.classList.contains('open') ? closeMenu() : openMenu();
+  const markMenu = () => $$('a', menuList).forEach((a, i) => a.classList.toggle('here', i === cur));
+
+  /* ── data-step elements in reveal order ── */
+  slides.forEach((s) => {
+    s._steps = $$('[data-step]', s)
+      .sort((a, b) => (parseFloat(a.dataset.step) || 0) - (parseFloat(b.dataset.step) || 0));
+  });
+  const clearDelays = (root = document) => $$('[data-step]', root).forEach((el) => { el.style.transitionDelay = ''; });
+
+  /* ── terminal typing ── */
+  $$('[data-type]').forEach((el) => { el.dataset.full = el.textContent; });
+  let typeRun = 0;
+  async function typeSlide(s) {
+    const token = ++typeRun;
+    const els = $$('[data-type]', s);
+    if (!els.length) return;
+    if (reduced) { els.forEach((el) => { el.textContent = el.dataset.full; }); return; }
+    els.forEach((el) => { el.textContent = ''; });
+    for (const el of els) {
+      for (let i = 0; i <= el.dataset.full.length; i++) {
+        if (token !== typeRun) return;
+        el.textContent = el.dataset.full.slice(0, i);
+        await new Promise((r) => setTimeout(r, 16 + Math.random() * 26));
+      }
+      await new Promise((r) => setTimeout(r, 220));
+    }
+  }
+
+  /* ── present-mode activation ── */
+  const counter = $('#counter'), progress = $('#progress');
+  const npBody = $('#np-body'), npCount = $('#np-count');
+  function activate(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, si) => {
+      const active = si === cur;
+      s.classList.toggle('active', active);
+      if (!active) {
+        $$('.rv, [data-step]', s).forEach((el) => el.classList.remove('in'));
+        clearDelays(s);
+      }
+    });
+    const s = slides[cur];
+    $$('.rv, [data-step]', s).forEach((el) => el.classList.remove('in'));
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      $$('.rv', s).forEach((el) => el.classList.add('in'));
+      s._steps.forEach((el, idx) => {
+        el.style.transitionDelay = (.3 + idx * .09).toFixed(2) + 's';
+        el.classList.add('in');
+      });
+    }));
+    typeSlide(s);
+    counter.innerHTML = '<b>' + String(cur + 1).padStart(2, '0') + '</b> / ' + String(slides.length).padStart(2, '0');
+    progress.style.width = ((cur + 1) / slides.length * 100) + '%';
+    history.replaceState(null, '', '#' + s.id);
+    $('#btn-prev').disabled = cur === 0;
+    $('#btn-next').disabled = cur === slides.length - 1;
+    const talk = $('.talk', s);
+    npBody.innerHTML = talk ? talk.innerHTML.replace(/<span class="ttag">[\s\S]*?<\/span>/, '') : '<p>No notes for this slide.</p>';
+    npCount.textContent = (cur + 1) + ' / ' + slides.length;
+    markMenu();
+  }
+  function next() { if (cur < slides.length - 1) go(cur + 1); }
+  function prev() { if (cur > 0) go(cur - 1); }
+  function go(i) {
+    if (mode === 'present') activate(i);
+    else slides[i].scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
+  }
+
+  /* ── read-mode observers ── */
+  let io = null;
+  function watchRead() {
+    io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          if (e.target.matches('.term') || $('[data-type]', e.target)) typeSlide(e.target.closest('.slide'));
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.14 });
+    $$('.rv, [data-step]').forEach((el) => io.observe(el));
+  }
+  function unwatchRead() { if (io) { io.disconnect(); io = null; } }
+
+  let typedSlides = new WeakSet();
+  const _typeSlide = typeSlide;
+  typeSlide = (s) => {
+    if (mode === 'read') {
+      if (typedSlides.has(s)) return;
+      typedSlides.add(s);
+    }
+    return _typeSlide(s);
+  };
+
+  /* ── scroll progress in read mode ── */
+  function onScroll() {
+    if (mode !== 'read') return;
+    const h = document.documentElement;
+    progress.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+    let best = 0;
+    slides.forEach((s, i) => { if (s.getBoundingClientRect().top < innerHeight * .45) best = i; });
+    cur = best;
+    $('#btn-prev').disabled = cur === 0;
+    $('#btn-next').disabled = cur === slides.length - 1;
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+
+  /* ── mode switching ── */
+  const btnMode = $('#btn-mode'), btnNotes = $('#btn-notes'), btnFull = $('#btn-full');
+  function setMode(m, keepPos) {
+    mode = m;
+    document.body.classList.toggle('present', m === 'present');
+    document.body.classList.toggle('read', m === 'read');
+    btnMode.innerHTML = m === 'present' ? 'Read <kbd>P</kbd>' : 'Present <kbd>P</kbd>';
+    btnNotes.hidden = m !== 'present';
+    btnFull.hidden = m !== 'present';
+    try { localStorage.setItem('errand-deck-mode', m); } catch (e) {}
+    if (m === 'present') {
+      unwatchRead();
+      typedSlides = new WeakSet();
+      $$('.rv, [data-step]').forEach((el) => el.classList.remove('in'));
+      activate(keepPos ? cur : 0);
+    } else {
+      document.body.classList.remove('notes-open');
+      slides.forEach((s) => s.classList.remove('active'));
+      $$('.rv, [data-step]').forEach((el) => el.classList.remove('in'));
+      clearDelays();
+      typedSlides = new WeakSet();
+      watchRead();
+      if (keepPos) setTimeout(() => slides[cur].scrollIntoView({ behavior: 'auto', block: 'start' }), 30);
+      onScroll();
+    }
+  }
+  btnMode.addEventListener('click', () => setMode(mode === 'present' ? 'read' : 'present', true));
+  btnNotes.addEventListener('click', () => document.body.classList.toggle('notes-open'));
+  $('#btn-menu').addEventListener('click', toggleMenu);
+  btnFull.addEventListener('click', () => {
+    document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  });
+  $('#btn-prev').addEventListener('click', prev);
+  $('#btn-next').addEventListener('click', next);
+
+  /* ── keyboard ── */
+  addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const k = e.key.toLowerCase();
+    if (k === 'p') { setMode(mode === 'present' ? 'read' : 'present', true); return; }
+    if (k === 'm') { toggleMenu(); return; }
+    if (k === 'escape') { closeMenu(); return; }
+    if (mode !== 'present') return;
+    if (k === 'arrowright' || (k === ' ' && !e.shiftKey) || k === 'pagedown') { e.preventDefault(); next(); }
+    else if (k === 'arrowleft' || (k === ' ' && e.shiftKey) || k === 'pageup') { e.preventDefault(); prev(); }
+    else if (k === 'home') { e.preventDefault(); activate(0); }
+    else if (k === 'end') { e.preventDefault(); activate(slides.length - 1); }
+    else if (k === 'n') { document.body.classList.toggle('notes-open'); }
+    else if (k === 'f') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+  });
+
+  /* ── boot: mode from ?mode= → localStorage → default read; slide from #hash ── */
+  const qmode = new URLSearchParams(location.search).get('mode');
+  let saved = null;
+  try { saved = localStorage.getItem('errand-deck-mode'); } catch (e) {}
+  const initial = (qmode === 'present' || qmode === 'read') ? qmode : (saved || 'read');
+  const hashIdx = slides.findIndex((s) => '#' + s.id === location.hash);
+  if (hashIdx > 0) cur = hashIdx;
+  setMode(initial, hashIdx > 0);
+})();
+</script>
+
+</body>
+</html>
