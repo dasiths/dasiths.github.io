@@ -13,11 +13,11 @@ toc_sticky: true
 
 *A story about what it really takes to send someone to do a job for you, and why that turns out to be a genuinely hard problem we're now being forced to solve because of AI agents.*
 
-AI agents are software that doesn't just answer questions, it goes off and *does things* for you: books the flight, files the expense, orders the groceries, emails the client. The moment software starts acting on your behalf in the real world, spending your money and touching your accounts, a hard question shows up: how does everyone involved know the agent is really acting for you, only doing what you allowed, and nothing more?
+AI agents are software that doesn't just answer questions, it goes off and *does things* for you: books the flight, files the expense, orders the groceries, emails the client. The moment software starts acting on your behalf in the real world, spending your money and touching your accounts, an important question comes up: how does everyone involved know the agent is really acting for you, only doing what you allowed, and nothing more?
 
-**AAuth** is a protocol built to answer exactly that. It gives an agent its own provable identity, a way to carry your authority without holding the keys to your whole life, a trusted party that can confirm your consent in the moment, and a way to wrap an open-ended job in an approved "mission" that can be checked and called off. You can read more about it at [aauth.dev](https://aauth.dev/).
+**AAuth** is a protocol built to answer exactly that. It gives an agent its own provable identity, a way to carry your authority without giving it broad access to everything you own, a trusted party that can confirm your consent in the moment, and a way to wrap an open-ended job in an approved "mission" that can be checked and called off. You can read more about it at [aauth.dev](https://aauth.dev/).
 
-This post is the gentle on-ramp. Instead of starting with tokens and signatures and well-known endpoints, we'll start with something everyone already understands: a parent sending a kid to the corner shop. By the end you'll have a feel for the whole problem space AAuth is trying to cover, from the easy parts that are basically solved to the genuinely hard parts that the industry is still working out, and the jargon will stop feeling like a foreign language. No prior identity or security background needed.
+This post is the gentle on-ramp. Instead of starting with tokens and signatures and well-known endpoints, we'll start with something everyone already understands: a parent sending a kid to the corner shop. By the end you'll have a feel for the whole problem space AAuth is trying to cover, from the easy parts that are basically solved to the genuinely hard parts that the industry is still working out, and the terminology should feel more familiar. No prior identity or security background needed.
 
 ## Picture it: a summer afternoon in the 1990s
 
@@ -43,13 +43,13 @@ One thing to notice up front: because Sam buys on credit instead of paying cash,
 
 ## What we're trying to learn
 
-Here's the thing this whole story is about:
+The central question is:
 
 > How do you safely send *someone else* to do a job for you?
 
 That sounds easy. We do it all the time. We send kids to shops, assistants to meetings, contractors into our homes. But when you slow down and look at what actually has to be true for it to work, and *not* go wrong, it gets surprisingly deep.
 
-It's also a question we're suddenly being forced to answer carefully, because we've started building **AI agents**: programs that go off and do things for us. Book the trip. Answer the email. Buy the groceries. An agent is just Sam, except Sam is software, the shop is some website's API, and Mom is you. The problem isn't brand new (we were solving a version of it in that '90s corner shop) and it isn't unsolvable. It's a hard problem that used to stay comfortably in the background, and agents have dragged it into the foreground.
+It's also a question we're suddenly being forced to answer carefully, because we've started building **AI agents**: programs that go off and do things for us. Book the trip. Answer the email. Buy the groceries. An agent is just Sam, except Sam is software, the shop is some website's API, and Mom is you. The problem isn't brand new (we were solving a version of it in that '90s corner shop) and it isn't unsolvable. It's a hard problem that used to stay comfortably in the background, and agents have made it much more visible.
 
 So we're going to follow one family running one errand. We'll start with something tiny, *go buy a loaf of bread*, and build up to something open-ended, *go buy the ingredients for a birthday cake*. By the end you'll see exactly where the easy version stops being easy, and why the open-ended version is the part people are still actively working out.
 
@@ -63,7 +63,7 @@ Let's go.
 
 Mom says, "Run to Patel's and get a loaf of bread, put it on our account." Sam heads out the door with no money in his pocket.
 
-Done. Simplest thing in the world, right?
+That sounds straightforward.
 
 Except, pause for a second and look at everything that has to quietly work for this to go okay. Sam has to convince Mr. Patel that he is who he says he is. He has to convince him that Mom actually sent him. And Mr. Patel has to be willing to put it on Mom's tab, which means he's trusting that it really is Sam and that Mom really is good for it.
 
@@ -73,17 +73,17 @@ With real kids and real shopkeepers, all of this happens automatically and we ne
 
 The first problem: anyone can walk into the shop and say "Mom sent me, put it on her account."
 
-Saying your name is just a *claim*. It's air. Some other kid could walk in, say he's Sam, and walk off with goods charged to Mom's tab. A name proves nothing on its own. And remember, because it's all on credit, a convincing fake doesn't just grab one loaf and run. He can keep charging Mom's account until somebody catches on.
+Saying your name is just a *claim*. It is only a statement. Some other kid could walk in, say he's Sam, and walk off with goods charged to Mom's tab. A name proves nothing on its own. And remember, because it's all on credit, a convincing fake doesn't just grab one loaf and run. He can keep charging Mom's account until somebody catches on.
 
 What Sam needs is some way to prove he's actually *him*, something an impostor can't fake just by overhearing the errand. Think of it like this: Sam signs his name on the receipt, and Mr. Patel checks that signature against the one on Sam's ID card. Saying "I'm Sam" is free; *producing Sam's signature and having it match the card* is not. The ID card is the reference everyone can check against, and only the real Sam can produce a matching signature on the spot.
 
-(The real version is even stronger than a handwritten signature, which a determined forger could trace. The software equivalent can't be copied even by someone who has watched Sam sign a hundred times: anyone can *check* a signature, but only the real Sam can *produce* one. Hold onto that idea, because it's the whole foundation.)
+(The real version is even stronger than a handwritten signature, which a determined forger could trace. The software equivalent can't be copied even by someone who has watched Sam sign a hundred times: anyone can *check* a signature, but only the real Sam can *produce* one. That idea matters because the rest builds on it.)
 
 So that's step one. Not "what's your name," but "prove it."
 
 ### Says who?
 
-Now here's the part people skip, and it's the important one.
+The next distinction is important.
 
 Suppose Mr. Patel is totally convinced this really is Sam. Great. It still isn't enough, because **Sam is a kid.** He has no money of his own and no standing to charge Mom's account on his own whim. Knowing it's really Sam tells you *who's standing there*. It tells you nothing about whether he's *allowed to do this*.
 
@@ -101,7 +101,7 @@ Here's the move that makes the whole thing work: Mr. Patel picks up the shop pho
 
 Now Mr. Patel can serve Sam with confidence, without having to track Mom down himself. He just had to trust Dad, and let Dad confirm Mom's wishes for him.
 
-That trusted middle person is the secret ingredient that lets people who don't know each other well delegate safely. Dad's whole job here is to represent the family to the shop and answer for what Mom wants. (In AAuth, this trusted middle party is the **Person Server**. But the name doesn't matter. What matters is the idea: a trusted party that can vouch for the person and confirm their consent in real time.)
+That trusted middle person is the missing piece that lets people who don't know each other well delegate safely. Dad's whole job here is to represent the family to the shop and answer for what Mom wants. (In AAuth, this trusted middle party is the **Person Server**. But the name doesn't matter. What matters is the idea: a trusted party that can vouch for the person and confirm their consent in real time.)
 
 ### The shop has its own rules, too
 
@@ -122,7 +122,7 @@ So far, so good. We've actually solved a real problem here. Sam can be trusted t
 
 If errands were always this tidy, we'd be done. The trouble is, real jobs are almost never a single, specific, written-down thing.
 
-Watch what happens when Mom asks for something *bigger*.
+Now consider a broader request from Mom.
 
 ---
 
@@ -140,11 +140,11 @@ Notice what just happened. There's no shopping list. Sam has to *figure out* wha
 
 **Nobody could have written the permission list up front, because the job invents itself as it happens.**
 
-Hold onto that sentence, because it's the whole reason AI agents are hard. A normal program is a kid with an exact list: buy *this*, buy *that*, come home. An agent is a kid told "buy what you need for the cake" who has to work the rest out alone. The first kind, we've basically figured out. The second kind is where the real work is now.
+That difference is why AI agents are harder to authorize. A normal program is a kid with an exact list: buy *this*, buy *that*, come home. An agent is a kid told "buy what you need for the cake" who has to work the rest out alone. The first kind, we've basically figured out. The second kind is where the real work is now.
 
 ### What's inside the job, and what isn't?
 
-So Mom's authority now has to cover "whatever it takes to buy the cake ingredients," all of it on her tab. Which immediately raises a nasty question: what *does* it take, exactly?
+So Mom's authority now has to cover "whatever it takes to buy the cake ingredients," all of it on her tab. Which immediately raises a difficult question: what *does* it take, exactly?
 
 Flour? Obviously fine. A PlayStation? Obviously not. Easy at the extremes. But the trouble lives in the messy middle:
 
@@ -158,7 +158,7 @@ A narrow, specific job is easy to check. A broad, fuzzy goal is easy to *state* 
 
 ### The note from last weekend
 
-Here's the sneaky one. The one almost nobody sees coming.
+Here is a less obvious case.
 
 Rewind to *last* weekend. Mom sent Sam for picnic supplies: bread rolls, juice, paper plates, the works. Sam went shopping, charged it all to Mom's account, and every bit of it was completely justified at the time. Good kid. Perfect errand.
 
@@ -174,9 +174,9 @@ This is the part that trips up even careful systems. We tend to think about perm
 
 Let's say Mom changes her mind partway through. The party's cancelled. She grabs the phone and calls the shop to call it off.
 
-Too late by a second: Sam is already at the counter, and the cashier is already ringing it onto Mom's account.
+But the timing may not work out: Sam is already at the counter, and the cashier is already ringing it onto Mom's account.
 
-This is a gap people constantly miss. *Withdrawing* permission and *stopping the thing already in motion* are two completely different acts. Mom can revoke all she wants, but if the action is already in flight (rung up at the till, order placed, button clicked) saying "no more" doesn't reach back and undo it. There's always a window between "I changed my mind" and "everything actually stopped," and that window is exactly where the damage lands.
+This is a gap that is easy to miss. *Withdrawing* permission and *stopping the thing already in motion* are two completely different acts. Mom can revoke all she wants, but if the action is already in flight (rung up at the till, order placed, button clicked) saying "no more" doesn't reach back and undo it. There's always a window between "I changed my mind" and "everything actually stopped," and that window is where problems can still happen.
 
 For a loaf of bread, who cares. For an agent moving real money or sending real messages, that little window is everything.
 
@@ -198,11 +198,11 @@ This is where the **audit trail of the whole chain** earns its keep. It's easy f
 
 ### The cart that quietly wandered off
 
-And now the trickiest one, tricky because there's no villain anywhere in it.
+And now the hardest case, because nothing looks wrong in isolation.
 
 Sam's shopping for the cake. He grabs a cake stand, "for the cake." Then candles, "for the cake." Then a banner. Then a card. Then little party hats. Then a tablecloth.
 
-Look at any single item and you can't object. Each one is defensible. The receipt is spotless. No clear rule got broken.
+Look at any single item and you can't object. Each one is defensible. The receipt looks reasonable. No clear rule got broken.
 
 But step back and look at the whole cart, and something's off. Mom asked for *a cake*, and Sam is quietly throwing *a whole party* on her account, one she never approved. The drift doesn't live in any one purchase. It lives in the *pattern*. And if all you ever do is check each item as it's scanned, you'll never catch it, because the problem isn't in the items. It's in the trajectory.
 
@@ -222,14 +222,14 @@ Sending someone to do an **open-ended** thing, a job they figure out as they go,
 
 The best tool we have so far is to give the open-ended job some *shape*. Instead of a vague "buy what you need for the cake," you write down the intent, hand it to that trusted party, and let them check each request against it, keep a log, and call the whole thing off if needed. In AAuth this shaped, written-down, supervised job is called a **mission**, and it's a real and important step forward.
 
-But here's the honest part: a mission is not a magic fence. Here's what AAuth actually does at each hard edge, and where the edge still bites:
+But here's the honest part: a mission does not solve every boundary problem. Here's what AAuth actually does at each hard edge, and where the edge still bites:
 
 - **The finished job (the stale note).** AAuth gives a mission an ending: the agent can mark it complete, and the person can terminate it, after which the trusted party refuses anything further. Tokens are short-lived too, and every renewal lets the shop weigh in again. What's *not* nailed down yet is the finer lifecycle, like telling "done" apart from "paused for review." That's left to a future companion spec.
 - **Calling it off vs. actually stopping ("Sam, stop!").** AAuth lets the person revoke tokens and terminate the mission, so no *new* approvals are handed out. What it can't promise is that work already in motion halts the instant you say stop; that depends on how short-lived the tokens are and how eagerly each shop re-checks. Withdrawing authority lives in the protocol; guaranteeing the hands stop moving is a deployment concern.
 - **Hand-offs (the little brother, the back-order).** This one AAuth answers squarely: every delegation is recorded as a chain leading back to the person, so the final party can see exactly who acted for whom. The part still being worked out is *containment*, proving each hop stayed inside the original job rather than just tracing that it happened.
 - **Drift (the wandering cart).** This one the protocol deliberately doesn't try to solve. Watching an agent's overall trajectory over time is a job for the system built on top of AAuth, not for the authorization protocol underneath it.
 
-So the mission layer is real and load-bearing. It gives you a place to *attach* governance, audit, and a kill switch, not a promise that every edge is sealed. The useful systems are the ones that name these edges out loud and keep working on them.
+So the mission layer is important in practice. It gives you a place to *attach* governance, audit, and a kill switch, not a promise that every edge is sealed. The useful systems are the ones that name these edges out loud and keep working on them.
 
 ## The same story, in AAuth terms
 
@@ -342,6 +342,6 @@ Everything in this story maps onto a real protocol being built for exactly this,
 
 If you'd like to watch this play out for real, proving who an agent is, carrying a person's authority, getting checked by a trusted party, and operating under a mission, the [AAuth Explorer](https://explorer.aauth.dev/) lets you step through each flow interactively, and [aauth.dev](https://aauth.dev/) has the full protocol documentation.
 
-The bread was easy. The cake is the whole story.
+The bread shows the simple case. The cake shows why agentic delegation is harder.
 
 > **Want to try it in code?** I'm the main maintainer of the [AAuth .NET SDK and samples](https://github.com/aauth-dev/dotnet-samples). If you'd like to go from story to working code, clone the repo, run the samples, and see the agent identity, on-behalf-of authority, consent, and missions play out for real. Issues, feedback, and contributions are very welcome, give it a try and let me know what you think.
