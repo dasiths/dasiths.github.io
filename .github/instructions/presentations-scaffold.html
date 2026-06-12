@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TITLE — SUBTITLE</title>
+<meta name="description" content="DESCRIPTION">
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  PRESENTATION SCAFFOLD
+  ═══════════════════════════════════════════════════════════════════════════
+
+  Companion to the blog post: /_posts/YYYY-MM-DD-slug.md
+  Self-contained — no build step, no external JS (except Mermaid CDN if used).
+  Hosted at /presentations/slug/ on dasith.me.
+  No YAML front matter — Jekyll copies verbatim.
+
+  TWO MODES (toggle: "P" key, topbar button, or ?mode=present / ?mode=read)
+  · READ mode (default) — single scrolling page, talk-track notes inline.
+  · PRESENT mode        — one slide at a time; ←/→ or Space to move.
+                          N = notes, M = menu, F = fullscreen.
+
+  HOW TO EDIT
+  · Each slide is one <section class="slide" id="s-..." data-title="Menu label">.
+  · class="rv" fades up on activation (add style="--d:.15s" to stagger).
+  · data-step="1" sets reveal order within a slide in present mode.
+  · Slide accent: style="--c: var(--accent-1)" on the <section>.
+  · Dark slides: class="slide dark".
+
+  Engine adapted from AI-Substrate (github.com/AI-Substrate/harness-engineering).
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+
+<!-- CUSTOMIZE: Load fonts for your theme -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ════════════════════════ TOKENS ════════════════════════
+     CUSTOMIZE all values to match your presentation's theme.
+     See presentations-base.css for the full structural reference.
+  */
+  :root {
+    --bg: #f5f5f0;
+    --panel: #ffffff;
+    --panel-2: #f0ede8;
+    --ink-bg: #1a1a2e;
+    --ink-bg-2: #222240;
+    --text: #1a1a1a;
+    --muted: #555555;
+    --faint: #999999;
+    --line: #e0e0e0;
+    --accent-1: #2563eb;
+    --accent-2: #059669;
+    --accent-3: #d97706;
+    --accent-4: #7c3aed;
+    --accent-5: #dc2626;
+    --term-bg: #fafafa;
+    --term-text: #333333;
+    --term-green: #059669;
+    --term-faint: #999999;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --display: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --serif: "Playfair Display", Georgia, "Times New Roman", serif;
+    --ease: cubic-bezier(.16, 1, .3, 1);
+  }
+
+  /* ════════════════════════ BASE STYLES ════════════════════════
+     Paste the full structural CSS from presentations-base.css here.
+     Then add any theme-specific motifs AFTER. */
+
+  /* ... (copy from presentations-base.css) ... */
+
+  /* ════════════════════════ THEME MOTIFS (optional) ════════════════════════
+     Add presentation-specific decorative CSS here.
+     Examples: background patterns, card textures, custom illustrations.
+  */
+
+</style>
+</head>
+<body class="read">
+
+<!-- Progress bar -->
+<div class="progress" id="progress"></div>
+
+<!-- OPTIONAL: Decorative background elements for your theme -->
+<!-- <div class="decorative-bg" aria-hidden="true">...</div> -->
+
+<!-- Chrome: topbar -->
+<header class="topbar">
+  <!-- CUSTOMIZE: wordmark text -->
+  <a class="wordmark" href="#s-title">Presentation · <b>Title</b></a>
+  <span class="spacer"></span>
+  <button class="tbtn" id="btn-mode">Present <kbd>P</kbd></button>
+  <button class="tbtn" id="btn-notes" hidden>Notes <kbd>N</kbd></button>
+  <button class="tbtn" id="btn-menu">Menu <kbd>M</kbd></button>
+  <button class="tbtn" id="btn-full" hidden>Full <kbd>F</kbd></button>
+</header>
+
+<!-- Chrome: menu overlay -->
+<nav class="menu" id="menu" aria-label="Slide menu"><ol id="menu-list"></ol></nav>
+
+<!-- Chrome: notes panel -->
+<aside class="npanel" aria-label="Speaker notes">
+  <header>Notes <span id="np-count"></span></header>
+  <div class="nbody" id="np-body"></div>
+</aside>
+
+<!-- Chrome: nav buttons -->
+<div class="navc">
+  <span class="count" id="counter"></span>
+  <button class="nbtn" id="btn-prev" aria-label="Previous">←</button>
+  <button class="nbtn" id="btn-next" aria-label="Next">→</button>
+</div>
+<span class="hint">← → navigate · N notes · M menu · P read mode</span>
+
+<!-- ═══════════════════════ SLIDES ═══════════════════════ -->
+<main class="deckwrap" id="deck">
+
+<!-- ═══════════════════════ SLIDE · TITLE ═══════════════════════ -->
+<section class="slide titleslide" id="s-title" data-title="Title" style="--c: var(--accent-2)">
+  <div class="inner titlegrid">
+    <div>
+      <p class="kicker rv"><span class="snum"></span>KICKER TEXT</p>
+      <h1 class="rv" style="--d:.06s">Presentation <em>Title.</em></h1>
+      <p class="sub rv" style="--d:.14s">A subtitle that explains what this presentation covers
+        and why the reader should care.</p>
+      <div class="keys rv" style="--d:.24s">
+        <span class="k"><b>scroll</b> to read</span>
+        <span class="k"><b>P</b> to present</span>
+        <span class="k"><b>M</b> contents</span>
+      </div>
+    </div>
+    <div class="scene" aria-hidden="true">
+      <!-- OPTIONAL: CSS illustration for title slide -->
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · CONTENT EXAMPLE ═══════════════════════ -->
+<section class="slide" id="s-example" data-title="Example slide" style="--c: var(--accent-1)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Section label</p>
+    <h1 class="rv" style="--d:.06s">The headline is the <em>takeaway.</em></h1>
+    <p class="lede rv" style="--d:.12s">One or two sentences expanding on the headline.
+      Use <strong>bold</strong> for emphasis on key phrases.</p>
+
+    <ul class="bullets" data-step="1">
+      <li><b>First point</b> with supporting detail.</li>
+      <li><b>Second point</b> with supporting detail.</li>
+      <li><b>Third point</b> with supporting detail.</li>
+    </ul>
+
+    <div class="thread" data-step="2"><p><b>Transition</b> text linking to the next slide's idea.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Speaker notes go here. This is visible in read mode below the slide,
+        and in the notes panel in present mode. Keep close to the blog post's
+        prose but tightened for spoken delivery.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · DARK DIVIDER ═══════════════════════ -->
+<section class="slide dark" id="s-divider" data-title="Part divider" style="--c: var(--accent-2)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Part two</p>
+    <h1 class="rv" style="--d:.06s">Section <em>title.</em></h1>
+    <p class="lede rv" style="--d:.12s">Brief setup for what this section covers.</p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Transition notes between major sections.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · CARDS EXAMPLE ═══════════════════════ -->
+<section class="slide" id="s-cards" data-title="Cards layout" style="--c: var(--accent-3)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Concepts</p>
+    <h1 class="rv" style="--d:.06s">Use cards for <em>parallel</em> ideas.</h1>
+    <div class="grid-3" style="margin-top: 22px;">
+      <div class="card" data-step="1">
+        <span class="glyph">◆</span>
+        <h3>Card title</h3>
+        <p>Card body text explaining <b>one concept</b> concisely.</p>
+      </div>
+      <div class="card" data-step="1">
+        <span class="glyph">◇</span>
+        <h3>Card title</h3>
+        <p>Card body text explaining <b>another concept</b> concisely.</p>
+      </div>
+      <div class="card" data-step="2">
+        <span class="glyph">○</span>
+        <h3>Card title</h3>
+        <p>Card body text explaining <b>a third concept</b> concisely.</p>
+      </div>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Expand on the cards with narrative context from the blog post.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · STATEMENT ═══════════════════════ -->
+<section class="slide" id="s-statement" data-title="Key insight" style="--c: var(--accent-4)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>The key point</p>
+    <div class="statement rv" style="--d:.06s">
+      A large, impactful sentence that captures the <b>central insight</b> of this section.
+    </div>
+    <p class="lede" data-step="1" style="margin-top: 26px;">
+      Follow-up context that grounds the statement in specifics.</p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Why this matters and how it connects to the broader argument.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · CLOSE ═══════════════════════ -->
+<section class="slide dark" id="s-close" data-title="Closing" style="--c: var(--accent-2)">
+  <div class="inner" style="text-align: center;">
+    <p class="kicker rv" style="justify-content: center;"><span class="snum"></span>Wrapping up</p>
+    <div class="statement rv" style="--d:.1s; margin: 30px auto 0; max-width: 18em;">
+      Closing statement that <b>lands the main message.</b>
+    </div>
+    <div class="cta rv" style="--d:.28s; margin: 48px auto 0; text-align: left;">
+      <span class="ctag">Next steps</span>
+      <p>Links and resources for the reader to explore further.</p>
+      <div class="keys" style="margin-top: 4px;">
+        <a class="k" href="/YYYY/MM/DD/slug/" style="background: transparent; border-color: #3a414b; color: #9aa1ab;">← read the full blog post</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══════════════════════ ENGINE ═══════════════════════
+     Paste the full JS from presentations-engine.js here.
+-->
+<script>
+// ... (copy from presentations-engine.js) ...
+</script>
+
+<!-- Mermaid (include ONLY if the presentation has sequence/flow diagrams) -->
+<!--
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid) {
+    window.mermaid.initialize({
+      startOnLoad: true,
+      securityLevel: 'loose',
+      theme: 'base',
+      fontFamily: "var(--display)",
+      themeVariables: {
+        background: '#fafafa',
+        primaryColor: '#ffffff',
+        primaryBorderColor: '#059669',
+        primaryTextColor: '#1a1a1a',
+        lineColor: '#999999',
+        actorBkg: '#ffffff',
+        actorBorder: '#059669',
+        actorTextColor: '#1a1a1a',
+        actorLineColor: '#e0e0e0',
+        signalColor: '#555555',
+        signalTextColor: '#1a1a1a',
+        noteBkgColor: '#fef3c7',
+        noteBorderColor: '#d97706',
+        noteTextColor: '#1a1a1a',
+        sequenceNumberColor: '#ffffff'
+      },
+      sequence: { useMaxWidth: true, mirrorActors: false, wrap: true, width: 150 }
+    });
+  }
+</script>
+-->
+
+</body>
+</html>

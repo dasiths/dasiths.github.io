@@ -1,0 +1,131 @@
+---
+description: "Instructions for converting blog posts or articles into self-contained HTML slide presentations. Covers architecture, styling, slide markup, and content adaptation."
+applyTo: "presentations/**"
+---
+
+# Presentation Generation Instructions
+
+Convert a blog post or article into a self-contained HTML slide presentation hosted under `/presentations/<slug>/index.html`.
+
+## Reference Files
+
+These files live next to this instructions file and contain the complete base code. An agent should read them when generating a new presentation:
+
+| File | Purpose |
+|------|---------|
+| `.github/instructions/presentations-base.css` | Full structural CSS: tokens, chrome, slide layout, reveal system, all components. Copy into the `<style>` of each new presentation and customize tokens. |
+| `.github/instructions/presentations-engine.js` | Full JavaScript engine: mode switching, keyboard nav, IntersectionObserver, slide numbering, data-step sequencing, typing animation. Copy into a `<script>` block before `</body>`. |
+| `.github/instructions/presentations-scaffold.html` | Complete HTML skeleton showing document structure, chrome markup, and example slides using each component type. Use as the starting point for every new presentation. |
+| `presentations/errand/index.html` | A fully realized example (90s corner-shop theme). Shows how theming, custom CSS illustrations, Mermaid diagrams, and all components come together in a real deck. |
+
+**Workflow**: Start from `presentations-scaffold.html`. Paste in the CSS from `presentations-base.css` and JS from `presentations-engine.js`. Then customize the `:root` tokens, fonts, and optional theme motifs for the new presentation's content.
+
+## Architecture
+
+- **Single HTML file.** No build step, no bundler. One `index.html` with inline `<style>` and inline `<script>`.
+- **No YAML front matter.** Jekyll copies the file verbatim as a static asset.
+- **Two modes** toggled by the `P` key, a topbar button, or `?mode=present` / `?mode=read`:
+  - **Read mode** (default): single scrolling page, talk-track notes visible inline below each slide.
+  - **Present mode**: one slide at a time, arrow/space navigation, speaker notes in a side panel (`N`), menu (`M`), fullscreen (`F`).
+- **External dependencies**: only Mermaid from CDN (for sequence diagrams if needed). Everything else is self-contained.
+
+## Base Scaffold
+
+The engine consists of:
+
+1. **Tokens** — CSS custom properties for colors, fonts, spacing (see `presentations-base.css` `:root`).
+2. **Chrome** — topbar, progress bar, nav cluster, menu overlay, notes panel.
+3. **Slide layout** — `body.present` (viewport-fitted) and `body.read` (stacked scrolling) rules.
+4. **Reveal system** — `.rv` class for fade-up on intersection (read) or activation (present); `[data-step]` for sequenced reveals within a slide.
+5. **Components** — `.kicker`, `.lede`, `.statement`, `.quote`, `.bullets`, `.card`, `.duo`, `.abc`, `.term`, `.maptbl`, `.chips`, `.stats`, `.loop`, `.thread`, `.cta`, `.merframe`.
+6. **Script** — mode switching, keyboard shortcuts, IntersectionObserver for read-mode reveals, hash-based navigation, slide numbering, data-step sequencing, terminal typing animation (see `presentations-engine.js`).
+
+## Theming
+
+Each presentation has its own visual theme. The theme is NOT always 90s-retro. Choose a theme that fits the content:
+
+- Define all theme colors, fonts, and motifs in `:root` CSS custom properties.
+- Use Google Fonts loaded via `<link>` in the `<head>`.
+- Theme-specific decorative elements (e.g. Memphis confetti, chalkboard slides, kraft-paper card textures) are optional motifs. Add them only when they serve the story.
+- Per-slide accent color: `style="--c: var(--colorname)"` on the `<section>`.
+- Dark slides: add class `dark` (and optionally `board` for chalkboard look).
+- Provide a `--bg`, `--panel`, `--text`, `--muted`, `--faint`, `--line` set at minimum plus 3-5 accent colors.
+
+## Slide Markup
+
+Each slide is one `<section>`:
+
+```html
+<section class="slide" id="s-slug" data-title="Menu label" style="--c: var(--accent)">
+  <div class="inner">
+    <!-- content -->
+  </div>
+</section>
+```
+
+### Content structure per slide
+
+1. **Kicker** — short uppercase label with slide counter: `<p class="kicker rv"><span class="snum"></span>Label</p>`
+2. **Headline** — `<h1 class="rv">` with `<em>` for italic serif accent word.
+3. **Lede** — `<p class="lede rv">` for the explanatory sub-line.
+4. **Body** — use components: `.bullets`, `.card` grids, `.duo`, `.term`, `.quote`, `.statement`, `.merframe` for diagrams.
+5. **Thread** — optional stitching line connecting to next idea: `<div class="thread">`.
+6. **Talk track** — `<aside class="talk">` with `<span class="ttag">Talk track</span>` and `<p>` paragraphs.
+
+### Reveal timing
+
+- Add `class="rv"` for fade-up on slide activation.
+- Use `style="--d:.06s"` increments to stagger reveals.
+- Use `data-step="1"`, `data-step="2"` etc. for sequenced reveals in present mode.
+
+### Visual scenes
+
+- Wrap illustrative CSS art in `<div class="scene">` (or `scene compact`).
+- Keep illustrations as pure CSS/HTML — no images unless the source post has them.
+- Animate sparingly: subtle loops (`animation: ... infinite`) for ambient life. Respect `prefers-reduced-motion`.
+
+## Content Adaptation Rules
+
+When converting a blog post to slides:
+
+1. **Read the entire post first.** Understand the narrative arc before structuring slides.
+2. **One idea per slide.** Each slide should convey a single concept the audience can grasp in 10-15 seconds (present mode) or a comfortable scroll-stop (read mode).
+3. **Preserve the post's voice.** If the post is conversational, the slides should be too. Don't corporate-ify.
+4. **Headlines do the heavy lifting.** The `<h1>` on each slide should be the takeaway, not a topic label. Prefer "Saying your name is just *a claim*" over "Identity verification."
+5. **Use the post's own phrasing.** Pull key sentences directly. Don't paraphrase into weaker versions.
+6. **Talk track = the post's prose.** The `<aside class="talk">` holds the narrative that connects slides. This is where the post's longer explanations live. Keep it close to the original text but tightened for spoken delivery.
+7. **Diagrams over description.** If the post explains a flow or sequence, render it as a Mermaid diagram inside a `.merframe`. Use the post's own labels.
+8. **Tables become cards or grids.** Blog tables map to `.grid-2`, `.grid-3`, `.abc`, or `.maptbl` depending on content density.
+9. **The post's structure IS the slide order.** Don't rearrange. If the post builds Part 1 → Part 2, the deck should too, with dark divider slides between parts.
+10. **Include a title slide and a closing slide.** Title slide carries the post title, subtitle, and navigation hints. Closing slide links back to the full post and any relevant resources.
+
+## Mermaid Diagrams
+
+- Wrap in `<div class="merframe"><div class="mermaid">...</div><p class="mercap">Caption</p></div>`.
+- Configure Mermaid with `theme: 'base'` and custom `themeVariables` matching the presentation's color tokens.
+- Use `securityLevel: 'loose'` and `startOnLoad: true`.
+
+## Accessibility and Quality
+
+- All decorative scenes: `aria-hidden="true"`.
+- `@media (prefers-reduced-motion: reduce)` disables all animations and transitions.
+- Print styles: hide chrome, show all slides stacked, show talk tracks.
+- Keyboard navigation must work completely without mouse.
+- Topbar shows: wordmark (presentation title), mode toggle, notes toggle, menu toggle, fullscreen toggle.
+
+## File Placement
+
+- Path: `/presentations/<slug>/index.html`
+- Companion blog post: `/_posts/YYYY-MM-DD-<slug>.md`
+- The blog post should link to the presentation and vice versa.
+- Teaser image if used: `/assets/images/<slug>_teaser.png`
+
+## What NOT to Do
+
+- Do not use reveal.js, impress.js, or any external slide framework.
+- Do not split into multiple files (no separate CSS/JS).
+- Do not add a package.json or build step for the presentation.
+- Do not use iframes.
+- Do not add tracking or analytics scripts.
+- Do not over-animate. Ambient motion should be subtle and few. Most slides have zero custom animation.
+- Do not make every presentation look the same. Theme each one to its content.
