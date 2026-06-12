@@ -50,6 +50,37 @@ Each presentation has its own visual theme. The theme is NOT always 90s-retro. C
 - Per-slide accent color: `style="--c: var(--colorname)"` on the `<section>`.
 - Dark slides: add class `dark` (and optionally `board` for chalkboard look).
 - Provide a `--bg`, `--panel`, `--text`, `--muted`, `--faint`, `--line` set at minimum plus 3-5 accent colors.
+- **Rotate the accent** across slides so consecutive sections feel distinct. Don't use the same `--c` on every slide.
+
+## Typography System
+
+Every presentation uses **three font roles**, defined as tokens and never mixed arbitrarily:
+
+| Token | Role | Used by |
+|-------|------|---------|
+| `--display` | Sans-serif. The workhorse for headings and body. | `h1`, `.lede`, `.card p`, `.duo p`, most text |
+| `--serif` | Italic serif. Editorial accent only. | `<em>` inside headings, `.statement`, `.quote` |
+| `--mono` | Monospace, uppercase, wide letter-spacing. | `.kicker`, `.ttag`, `.mercap`, `.chip`, `.who`, `.num`, `.t-*`, table headers, captions, key pills |
+
+The mono font always appears **uppercase with `letter-spacing: .12em–.26em`** for labels and metadata. The serif font is **always italic** and reserved for emphasis moments, never body copy.
+
+### Heading style
+
+- `h1` is large (`clamp(34px, 5vw, 66px)`), heavy (`font-weight: 750`), tight (`letter-spacing: -.028em`, `line-height: 1.04`), capped at `max-width: 16em`.
+- Put **one or two accent words** in `<em>`. These render in **serif italic, in the slide's accent color** — this is the signature look. Example: `The bread shows the simple <em>case.</em>`
+- Title-slide `h1` is larger (`clamp(44px, 7vw, 92px)`); use class `titleslide` on the section.
+- On dark slides, `h1` color lightens automatically — no extra markup needed.
+- Keep headlines as the **takeaway**, not a topic label (see Content Adaptation Rules).
+
+### Emphasis conventions (important — they differ by context)
+
+Inline emphasis means different things depending on where it sits:
+
+- **In headings, `.statement`, `.quote`** → use `<em>` (or `<b>` in statement/quote). This turns the text **serif italic in the accent color**. Use it for the one phrase the slide pivots on.
+- **In `.lede`, `.bullets`, `.card`, `.duo`** → use `<strong>` or `<b>`. This **does not change color or font** — it only darkens body text from `--muted` up to full `--text` for weight contrast.
+- **Inline code** → wrap in `<code>`. Renders in mono with a faint accent-tinted background.
+
+Do not use `<em>` for color emphasis inside body text, and do not use `<b>` expecting color inside body text — the rules above are deliberate and consistent across the deck.
 
 ## Slide Markup
 
