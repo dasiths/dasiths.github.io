@@ -110,13 +110,10 @@ author:
   name             : "Dasith Wijesiriwardena"
   avatar           : "/assets/images/profile_bio_small.jpg"
   bio              : |
-    Software Engineer | Solutions Architect | Tech Speaker | Geek with an unhealthy fascination for distributed systems and a #microsoftie. Not in that order. I’m currently based in Melbourne and work for <a href="https://www.microsoft.com/en-us/msservices/consulting" target="_blank">Microsoft.</a>
+    💥 Breaking distributed systems, observing them fall apart with OpenTelemetry, then teaching AI agents to fix them. 🧑‍💻 Principal Software Engineer @ Microsoft. 📍 Melbourne. Opinions my own, bugs probably also mine.
     <br />
     <br />
-    I've been developing software for close to 2 decades now. Since my early days of playing with C++, VB, ASP and PHP, software development has gone through a paradigm shift. These days I mostly work on things that run natively on the cloud and edge. Join me on my journey through the world of .NET and all things distributed.
-    <br />
-    <br />
-    <i>Consider any opinions expressed here as my own.</i>
+    I've spent 20+ years building software, from low-level systems to cloud-native distributed architectures. These days I'm deep in the world of AI agents, exploring how we secure them, authenticate them, and collaborate with them to build better software. This blog covers that journey along with distributed systems, .NET, and all things engineering.
   location         : "Melbourne, VIC"
   email            :
   links:
