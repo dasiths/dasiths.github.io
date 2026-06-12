@@ -7,6 +7,19 @@ applyTo: "presentations/**"
 
 Convert a blog post or article into a self-contained HTML slide presentation hosted under `/presentations/<slug>/index.html`.
 
+## Before You Start (required)
+
+Before generating any files, ask the user and wait for answers:
+
+1. **Slug** — "What slug should the presentation use?" This sets the folder name (`/presentations/<slug>/`), the `localStorage` key (`<slug>-deck-mode`), and the title-slide/wordmark text. Suggest a default derived from the blog post filename or title, but confirm it.
+2. **Visual theme and motif** — "What visual theme and motif do you want?" Confirm before writing any CSS:
+   - The overall **mood/era** (e.g. retro 90s, clean editorial, technical/terminal, warm/organic, dark/neon).
+   - The **color palette** (accent colors) and **fonts** to load.
+   - Any **decorative motif** (background pattern, card texture, custom CSS illustrations) and whether it should appear, or whether the deck should stay minimal.
+   - Propose 1-2 concrete theme options with example palettes if the user is unsure, but do not assume the errand deck's 90s corner-shop theme — that was specific to that post.
+
+Only proceed to scaffolding once the slug and theme are confirmed.
+
 ## Reference Files
 
 These files live next to this instructions file and contain the complete base code. An agent should read them when generating a new presentation:
@@ -139,11 +152,41 @@ Pick the component that matches the content shape. All accept the slide's `--c` 
 - Put commands in `.term` using `.t-cmd`, `.t-ok`, `.t-dim`, `.t-out`, `.t-row` rows.
 - Add the `data-type` attribute to any element whose text should **type out character-by-character** when the slide is revealed. The engine captures the text on load and replays it. Reduced-motion users see the full text instantly.
 
-### Visual scenes
+### Visual scenes (the fun part)
 
-- Wrap illustrative CSS art in `<div class="scene">` (or `scene compact`).
-- Keep illustrations as pure CSS/HTML — no images unless the source post has them.
-- Animate sparingly: subtle loops (`animation: ... infinite`) for ambient life. Respect `prefers-reduced-motion`.
+The decks are brought to life by **bespoke, hand-built CSS illustrations** — one small scene per slide that visualizes that slide's metaphor. These are not stock graphics or icons; they are made of positioned `<div>`s with gradients, borders, `clip-path`, and `-webkit-mask`, then given **subtle infinite animations** so they feel alive without distracting. This is a signature part of the style and worth the effort.
+
+- Wrap each illustration in `<div class="scene" aria-hidden="true">` (or `scene compact` for content slides). On title/setup slides, the scene sits in the second column of a `.titlegrid`/`.cols`.
+- Build the art from semantic-ish nested divs (e.g. `.shop > .shop-sign + .shop-awning + .shop-front`). Keep it pure CSS/HTML — no images, no SVG files, no external assets.
+- Each scene **enters** with a shared rise animation (e.g. `shopRise`: fade + translateY) on load.
+- Each scene has **one or two ambient loops** — small, slow, `infinite` — that suggest life. Keep amplitude tiny.
+- **All scene animation must be disabled** under `@media (prefers-reduced-motion: reduce)` (the base CSS already blanket-disables animations; keep custom keyframes inside that contract).
+
+**Scene catalog from the errand deck** (read [presentations/errand/index.html](presentations/errand/index.html) for the actual CSS — copy and re-skin these as starting points):
+
+| Scene | What it depicts | Ambient animation |
+|-------|-----------------|-------------------|
+| `.shop` | Shop facade: sign, striped awning (masked scallops), window with marker price | `pricewobble`, `openglow` on the OPEN sign |
+| `.streetscene` | Terrace of buildings + corner shop + pavement + lamppost, with a kid walking | `walk` (kid strides back and forth), `flicker` (lamp) |
+| `.till` | Cash register: display, keypad, drawer, poking receipt slip | `nosale` (display blinks) |
+| `.oldreceipt` | Aged, curling receipt pinned up, with an angled "EXPIRED"-style stamp | `stamppulse` (stamp throbs) |
+| `.figures` | Two figures (parent + helper) joined by a dashed "authority" link | `flow` (dot travels the link), `bob` (helper bobs) |
+| `.trolley` | Overflowing shopping trolley with stacked items | `teeter` (a balanced item rocks) |
+| `.signpost` | Crossroads signpost with three directional arms | `swing` (one arm sways) |
+| `.shelf` | Shop shelf of goods with verdict badges (✓ / ✗ / ?) | `qpulse` (the "?" badge pulses) |
+| `.stopscene` | STOP sign next to a till still printing a receipt | `stoppulse` (sign), `feed` (receipt scrolls out) |
+
+The point isn't to reuse these exact scenes — they're corner-shop specific. The point is the **technique**: invent a small CSS illustration for each slide's metaphor in the chosen theme, and animate it subtly. Match the new presentation's confirmed theme/motif.
+
+### Background and surface motifs
+
+Optional, theme-specific decoration that runs behind or across the whole deck:
+
+- **Ambient background** — a fixed, `z-index: -1`, low-opacity layer of scattered shapes (the errand deck's `.memphis` confetti: dots, triangles, squares, zigzags, plus-signs). Set `pointer-events: none` and `aria-hidden`.
+- **Surface texture** — a faint repeating-gradient texture layered onto cards/panels via `background-image` (the errand deck's kraft-paper look on `.card`, `.abc .aff`, `.duo .half`).
+- **Divider treatment** — a distinct look for dark divider slides (the errand deck's `.board` chalkboard: dotted "chalk dust" background, dashed border frame, marker-font heading, a "TODAY'S SPECIALS" tab). Apply with `class="slide dark board"`.
+
+Use these only when they reinforce the theme; a minimal deck may skip all three.
 
 ## Content Adaptation Rules
 
@@ -188,5 +231,5 @@ When converting a blog post to slides:
 - Do not add a package.json or build step for the presentation.
 - Do not use iframes.
 - Do not add tracking or analytics scripts.
-- Do not over-animate. Ambient motion should be subtle and few. Most slides have zero custom animation.
+- Do not over-animate. Ambient motion should be subtle, slow, and small in amplitude — one or two looping animations per scene, never flashy. Text content reveals via the `.rv`/`data-step` system, not custom animation.
 - Do not make every presentation look the same. Theme each one to its content.
