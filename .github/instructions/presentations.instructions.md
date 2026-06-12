@@ -109,6 +109,36 @@ Each slide is one `<section>`:
 - Use `style="--d:.06s"` increments to stagger reveals.
 - Use `data-step="1"`, `data-step="2"` etc. for sequenced reveals in present mode.
 
+### Component reference
+
+Pick the component that matches the content shape. All accept the slide's `--c` accent.
+
+| Component | Markup | Use for |
+|-----------|--------|---------|
+| Kicker | `<p class="kicker rv"><span class="snum"></span>LABEL</p>` | Section label above the headline. `snum` auto-fills slide number. |
+| Headline | `<h1 class="rv">Text <em>accent.</em></h1>` | The slide's takeaway. |
+| Lede | `<p class="lede rv">…</p>` | One- or two-sentence explanation under the headline. |
+| Bullets | `<ul class="bullets"><li>…</li></ul>` | A short list of parallel points. |
+| Cards | `<div class="grid-3"><div class="card">…</div></div>` | 2-3 parallel concepts, each with a title and blurb. `.grid-2` for two. |
+| Duo | `<div class="duo"><div class="half">…</div></div>` | Two contrasting items side by side (this vs. that). |
+| ABC | `<div class="abc"><div class="aff"><span class="letter">A</span>…</div></div>` | Three lettered/sequential explanation cards. |
+| Statement | `<div class="statement rv">Big <b>point.</b></div>` | A single large serif pull-quote that fills the slide. |
+| Quote | `<p class="quote">…<span class="attr">SOURCE</span></p>` | A cited or attributed line. |
+| Thread | `<div class="thread"><p><b>Label</b> …</p></div>` | A transition stitch linking to the next idea. |
+| Terminal | `<div class="term">…</div>` | A code/command block. Add `data-type` to a line to type it out on reveal. |
+| Stats | `<div class="stats"><div class="stat"><span class="big">N</span><span class="cap">…</span></div></div>` | Big numbers with captions. |
+| Loop | `<div class="loop"><span class="step">…</span><span class="larr">→</span>…</div>` | A short left-to-right process flow. |
+| Map table | `<table class="maptbl">…</table>` | Dense mapping/glossary (story term → real term → meaning). |
+| Chips | `<div class="chips"><span class="chip">TAG</span></div>` | A row of small uppercase tags. |
+| CTA | `<div class="cta"><span class="ctag">LABEL</span><p>…</p></div>` | A closing call-to-action with links. |
+| Mermaid | `<div class="merframe"><div class="mermaid">…</div><p class="mercap">…</p></div>` | A sequence/flow diagram. |
+| Two-column | `<div class="cols"><div>…</div><div>…</div></div>` | Split a slide into text + visual or two text blocks. |
+
+### Terminal typing animation
+
+- Put commands in `.term` using `.t-cmd`, `.t-ok`, `.t-dim`, `.t-out`, `.t-row` rows.
+- Add the `data-type` attribute to any element whose text should **type out character-by-character** when the slide is revealed. The engine captures the text on load and replays it. Reduced-motion users see the full text instantly.
+
 ### Visual scenes
 
 - Wrap illustrative CSS art in `<div class="scene">` (or `scene compact`).
