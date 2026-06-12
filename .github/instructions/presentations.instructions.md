@@ -30,8 +30,9 @@ These files live next to this instructions file and contain the complete base co
 | `.github/instructions/presentations-engine.js` | Full JavaScript engine: mode switching, keyboard nav, IntersectionObserver, slide numbering, data-step sequencing, typing animation. Copy into a `<script>` block before `</body>`. |
 | `.github/instructions/presentations-scaffold.html` | Complete HTML skeleton showing document structure, chrome markup, and example slides using each component type. Use as the starting point for every new presentation. |
 | `presentations/errand/index.html` | A fully realized example (90s corner-shop theme). Shows how theming, custom CSS illustrations, Mermaid diagrams, and all components come together in a real deck. |
+| `presentations/index.html` | The gallery landing page that lists every deck. Standalone (no shared CSS/JS). Add a card here for each new presentation — see Gallery Index. |
 
-**Workflow**: Start from `presentations-scaffold.html`. Paste in the CSS from `presentations-base.css` and JS from `presentations-engine.js`. Then customize the `:root` tokens, fonts, and optional theme motifs for the new presentation's content.
+**Workflow**: Start from `presentations-scaffold.html`. Paste in the CSS from `presentations-base.css` and JS from `presentations-engine.js`. Then customize the `:root` tokens, fonts, and optional theme motifs for the new presentation's content. Finally, register the new deck in `presentations/index.html` (see Gallery Index below).
 
 ## Architecture
 
@@ -223,6 +224,38 @@ When converting a blog post to slides:
 - Companion blog post: `/_posts/YYYY-MM-DD-<slug>.md`
 - The blog post should link to the presentation and vice versa.
 - Teaser image if used: `/assets/images/<slug>_teaser.png`
+
+## Gallery Index (required for every new deck)
+
+`presentations/index.html` is a self-contained gallery landing page that lists every deck under `/presentations/`. It uses the same dark terminal/neon tokens, fonts, and ambient grid backdrop as a deck, but is a standalone page — no shared CSS/JS. **After creating a new presentation, add it to this gallery.**
+
+To add a deck, copy an existing `<article>` block inside `<main class="gallery">` and update it:
+
+```html
+<article>
+  <a class="deck" href="/presentations/<slug>/" style="--c: var(--accent-N); --th-bg: #0a0e16;"
+     aria-label="Open: <Full deck title>">
+    <div class="thumb th-<motif>" aria-hidden="true">
+      <!-- bespoke CSS mini-thumbnail for this deck's theme -->
+    </div>
+    <div class="meta">
+      <span class="tag">Topic label <span class="yr">· Event / context</span></span>
+      <h2><Short title>: <em>accent phrase</em> rest of title</h2>
+      <p>One- or two-sentence synopsis pulled from the deck's title-slide lede.</p>
+      <div class="chips"><span class="chip">Tag</span><span class="chip">Tag</span></div>
+      <span class="go">Open deck →</span>
+    </div>
+  </a>
+</article>
+```
+
+Rules for gallery entries:
+
+- **Pick a distinct `--c` accent** (`--accent-1`..`--accent-5`) so cards don't repeat the same color side by side. Set `--th-bg` to a near-black tinted to the deck's theme.
+- **Build a bespoke CSS thumbnail**, not a screenshot or image. Add a `.th-<motif>` class and its styles in the `<style>` block (see `.th-ctx` terminal-window and `.th-shop` corner-shop examples). Re-skin the deck's own title-slide scene at small scale; keep one subtle `floatup`/ambient loop.
+- **Reuse the deck's own title and lede** for `h2` and `p`, with one accent phrase in `<em>`.
+- Keep the card a single `<a class="deck">` link wrapping both thumbnail and meta so the whole card is clickable; keep the `aria-label`.
+- The gallery is **standalone** — do not import deck CSS. If you add tokens or a thumbnail motif, add them to this file's own `<style>`.
 
 ## What NOT to Do
 

@@ -1,0 +1,1444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Throw Away The Vibes — Context Engineering Is All You Need</title>
+<meta name="description" content="Why reliable results from AI coding agents come from engineering the context you feed them, not from prompting harder. A talk by Dasith Wijesiriwardena.">
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  THROW AWAY THE VIBES — CONTEXT ENGINEERING IS ALL YOU NEED
+  ═══════════════════════════════════════════════════════════════════════════
+  Companion to: /_posts/2026-06-10-throw-away-the-vibes-context-engineering-ddd-melbourne-2026.md
+  Self-contained — no build step, no external JS. Hosted at /presentations/context-engineering/.
+  Theme: dark terminal / neon.
+
+  TWO MODES (toggle: "P", topbar button, or ?mode=present / ?mode=read)
+  · READ mode (default) — single scrolling page, talk-track notes inline.
+  · PRESENT mode        — one slide at a time; ←/→ or Space to move.
+                          N = notes, M = menu, F = fullscreen.
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ════════════════════════ TOKENS — dark terminal / neon ════════════════════════ */
+  :root {
+    --bg: #080b11;
+    --panel: #111722;
+    --panel-2: #0c111a;
+    --ink-bg: #05070c;
+    --ink-bg-2: #0b101a;
+    --text: #e7eef7;
+    --muted: #97a3b4;
+    --faint: #5c6878;
+    --line: #1e2733;
+    --accent-1: #2ad6ee;   /* cyan */
+    --accent-2: #7ef0a8;   /* mint/lime-green */
+    --accent-3: #ffc35a;   /* amber */
+    --accent-4: #b79bff;   /* violet */
+    --accent-5: #ff6b8b;   /* magenta/coral */
+    --term-bg: #0a0e16;
+    --term-text: #c6d2e2;
+    --term-green: #7ef0a8;
+    --term-faint: #5c6878;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --display: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --serif: "Newsreader", Georgia, "Times New Roman", serif;
+    --ease: cubic-bezier(.16, 1, .3, 1);
+  }
+
+  /* ════════════════════════ RESET & BODY ════════════════════════ */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--display);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  ::selection { background: color-mix(in srgb, var(--accent-1) 28%, transparent); }
+
+  /* ════════════════════════ CHROME ════════════════════════ */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 90;
+    display: flex; align-items: center; gap: 14px; padding: 12px 18px; pointer-events: none;
+  }
+  .topbar > * { pointer-events: auto; }
+  .wordmark {
+    font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--muted); text-decoration: none; white-space: nowrap;
+  }
+  .wordmark b { color: var(--accent-1); font-weight: 700; }
+  .topbar .spacer { flex: 1; pointer-events: none; }
+  .tbtn {
+    font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--muted);
+    background: color-mix(in srgb, var(--panel) 82%, transparent);
+    border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer;
+    backdrop-filter: blur(8px); transition: color .25s, border-color .25s, background .25s;
+  }
+  .tbtn:hover { color: var(--accent-1); border-color: color-mix(in srgb, var(--accent-1) 50%, transparent); }
+  .tbtn.on { color: var(--accent-1); border-color: var(--accent-1); background: color-mix(in srgb, var(--accent-1) 8%, var(--panel)); }
+  .tbtn kbd {
+    font-family: inherit; font-size: 8.5px; color: var(--faint);
+    border: 1px solid var(--line); border-radius: 4px; padding: 1px 4px; margin-left: 7px;
+  }
+
+  .progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+    background: linear-gradient(90deg, var(--accent-4), var(--accent-1));
+    z-index: 95; transition: width .35s var(--ease);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--accent-1) 60%, transparent);
+  }
+
+  .navc { position: fixed; bottom: 22px; right: 22px; z-index: 90; display: none; align-items: center; gap: 10px; }
+  body.present .navc { display: flex; }
+  body.read .navc { display: flex; }
+  body.read .navc .count { display: none; }
+  body.read .nbtn { width: 38px; height: 38px; font-size: 14px; }
+  .navc .count { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; color: var(--faint); margin-right: 4px; }
+  .navc .count b { color: var(--text); font-weight: 700; }
+  .nbtn {
+    width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--panel) 88%, transparent); backdrop-filter: blur(8px);
+    color: var(--text); font-size: 17px; cursor: pointer; display: grid; place-items: center;
+    transition: border-color .25s, color .25s, transform .15s;
+  }
+  .nbtn:hover { border-color: var(--accent-1); color: var(--accent-1); }
+  .nbtn:active { transform: scale(.92); }
+  .nbtn:disabled { opacity: .3; cursor: default; }
+
+  .hint {
+    position: fixed; bottom: 26px; left: 26px; z-index: 90; font-family: var(--mono);
+    font-size: 9.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--faint); display: none;
+  }
+  body.present .hint { display: block; }
+  @media (max-width: 760px) { .hint { display: none !important; } }
+
+  .menu {
+    position: fixed; inset: 0; z-index: 120; background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(14px); display: none; overflow-y: auto; padding: 90px 24px 60px;
+  }
+  .menu.open { display: block; }
+  .menu ol { max-width: 680px; margin: 0 auto; list-style: none; counter-reset: m; }
+  .menu li { counter-increment: m; }
+  .menu a {
+    display: flex; align-items: baseline; gap: 18px; padding: 11px 14px; border-radius: 10px;
+    text-decoration: none; color: var(--text); font-size: clamp(16px, 2vw, 21px); font-weight: 550;
+    letter-spacing: -.01em; transition: background .2s, color .2s;
+  }
+  .menu a::before { content: counter(m, decimal-leading-zero); font-family: var(--mono); font-size: 11px; color: var(--faint); }
+  .menu a:hover { background: color-mix(in srgb, var(--accent-1) 9%, transparent); color: var(--accent-1); }
+  .menu a.here { color: var(--accent-1); }
+  .menu a.here::after { content: '●'; font-size: 8px; color: var(--accent-1); margin-left: auto; }
+
+  .npanel {
+    position: fixed; top: 0; right: 0; bottom: 0; width: min(400px, 88vw); z-index: 100;
+    background: var(--panel); border-left: 1px solid var(--line); box-shadow: -18px 0 50px rgba(0,0,0,.4);
+    transform: translateX(102%); transition: transform .4s var(--ease); display: flex; flex-direction: column;
+  }
+  body.present.notes-open .npanel { transform: none; }
+  .npanel header {
+    padding: 18px 22px 14px; border-bottom: 1px solid var(--line); font-family: var(--mono);
+    font-size: 10px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-1);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .npanel header span { color: var(--faint); font-weight: 400; }
+  .npanel .nbody { padding: 20px 24px 40px; overflow-y: auto; font-size: 14.5px; color: var(--muted); font-weight: 380; }
+  .npanel .nbody p { margin-bottom: 14px; }
+  .npanel .nbody b { color: var(--text); font-weight: 650; }
+  body.present.notes-open .deckwrap { margin-right: min(400px, 88vw); }
+
+  /* ════════════════════════ SLIDE LAYOUT ════════════════════════ */
+  .deckwrap { transition: margin-right .4s var(--ease); }
+  .slide { position: relative; }
+  .slide .inner { max-width: 1140px; margin: 0 auto; padding: 0 clamp(22px, 5vw, 64px); width: 100%; }
+
+  body.present { overflow: hidden; height: 100dvh; }
+  body.present .deckwrap { height: 100dvh; position: relative; }
+  body.present .slide {
+    position: absolute; inset: 0; display: flex; visibility: hidden; opacity: 0;
+    transform: translateY(14px) scale(.985);
+    transition: opacity .5s var(--ease), transform .5s var(--ease), visibility 0s .5s;
+    overflow-y: auto; padding: 76px 0 70px;
+  }
+  body.present .slide .inner { margin: auto; }
+  body.present .slide.active {
+    visibility: visible; opacity: 1; transform: none;
+    transition: opacity .5s var(--ease), transform .5s var(--ease), visibility 0s 0s; z-index: 2;
+  }
+  body.present .talk { display: none; }
+
+  body.read .slide {
+    min-height: 58vh; display: flex; align-items: center;
+    padding: clamp(64px, 10vh, 120px) 0; border-bottom: 1px solid var(--line);
+  }
+  body.read .slide:last-child { border-bottom: 0; }
+  body.read .npanel { display: none; }
+
+  .slide::before {
+    content: ''; position: absolute; top: 8%; right: -12%; width: 50vw; height: 70%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--c, var(--accent-1)) 12%, transparent), transparent 70%);
+    pointer-events: none;
+  }
+  .slide:nth-child(even)::before { right: auto; left: -12%; }
+
+  .slide.dark { background: var(--ink-bg); color: var(--text); }
+  .slide.dark::before { background: radial-gradient(closest-side, color-mix(in srgb, var(--c, var(--accent-2)) 18%, transparent), transparent 70%); }
+  body.read .slide.dark { border-bottom-color: #161d28; }
+
+  /* ════════════════════════ REVEAL SYSTEM ════════════════════════ */
+  .rv, [data-step] {
+    opacity: 0; transform: translateY(22px);
+    transition: opacity .65s var(--ease), transform .65s var(--ease); transition-delay: var(--d, 0s);
+  }
+  .rv.in, [data-step].in { opacity: 1; transform: none; }
+  body.present [data-step] { transform: translateY(26px) scale(.99); transition-delay: 0s; }
+  body.present [data-step].in { transform: none; }
+
+  /* ════════════════════════ COMPONENTS ════════════════════════ */
+  .kicker {
+    font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .26em;
+    text-transform: uppercase; color: var(--c, var(--accent-1)); display: flex; align-items: center;
+    gap: 12px; margin-bottom: 8px;
+  }
+  .kicker::before {
+    content: ''; width: 30px; height: 11px;
+    background: repeating-linear-gradient(90deg,
+      var(--c, var(--accent-1)) 0 2px, transparent 2px 4px,
+      var(--c, var(--accent-1)) 4px 5px, transparent 5px 8px);
+  }
+  .kicker .snum { color: var(--faint); font-weight: 400; letter-spacing: .14em; }
+
+  .slide h1 {
+    font-size: clamp(34px, 5vw, 66px); font-weight: 700; line-height: 1.04;
+    letter-spacing: -.028em; margin: 14px 0 16px; max-width: 16em;
+  }
+  .slide h1 em {
+    font-family: var(--serif); font-style: italic; font-weight: 500;
+    color: var(--c, var(--accent-2)); letter-spacing: 0;
+  }
+  .slide.dark h1 { color: #f4f8fd; }
+
+  .lede {
+    font-size: clamp(15.5px, 1.7vw, 19px); color: var(--muted); max-width: 38em;
+    font-weight: 380; margin-bottom: 10px;
+  }
+  .lede strong { color: var(--text); font-weight: 620; }
+
+  .bullets { list-style: none; margin-top: 18px; max-width: 46em; }
+  .bullets li {
+    position: relative; padding: 7px 0 7px 26px; font-size: clamp(14.5px, 1.5vw, 17px);
+    color: var(--muted); font-weight: 400;
+  }
+  .bullets li::before { content: '▸'; position: absolute; left: 2px; color: var(--c, var(--accent-2)); font-size: 13px; }
+  .bullets li b, .bullets li strong { color: var(--text); font-weight: 650; }
+  .bullets li code, .lede code, .card code {
+    font-family: var(--mono); font-size: .82em;
+    background: color-mix(in srgb, var(--c, var(--accent-2)) 16%, var(--panel));
+    border: 1px solid color-mix(in srgb, var(--c, var(--accent-2)) 32%, transparent);
+    border-radius: 5px; padding: 1px 6px; color: color-mix(in srgb, var(--c, var(--accent-2)) 80%, white);
+  }
+  .bullets .sub { display: block; font-size: .88em; color: var(--faint); margin-top: 3px; }
+
+  .cols { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(24px, 4vw, 56px); align-items: start; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+
+  .card {
+    border: 1px solid var(--line); border-radius: 16px;
+    background: linear-gradient(180deg, var(--panel), var(--panel-2)); padding: 22px 24px;
+    box-shadow: 0 2px 14px rgba(0,0,0,.35); transition: transform .3s, border-color .3s, box-shadow .3s;
+  }
+  .card:hover {
+    transform: translateY(-4px); border-color: color-mix(in srgb, var(--c, var(--accent-2)) 50%, transparent);
+    box-shadow: 0 14px 40px rgba(0,0,0,.5), 0 0 26px color-mix(in srgb, var(--c, var(--accent-2)) 14%, transparent);
+  }
+  .card .glyph { font-size: 20px; color: var(--c, var(--accent-2)); display: block; margin-bottom: 10px; }
+  .card h3 { font-size: 16.5px; font-weight: 700; letter-spacing: -.012em; margin-bottom: 7px; }
+  .card h3 em { font-family: var(--serif); font-style: italic; font-weight: 500; color: var(--c, var(--accent-2)); }
+  .card p { font-size: 13.5px; color: var(--muted); line-height: 1.62; font-weight: 380; }
+  .card p b { color: var(--text); font-weight: 620; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 20px; }
+  .chip {
+    font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+    border: 1px solid color-mix(in srgb, var(--c, var(--accent-1)) 42%, transparent);
+    color: var(--c, var(--accent-1)); background: color-mix(in srgb, var(--c, var(--accent-1)) 12%, var(--panel));
+    border-radius: 999px; padding: 6px 13px;
+  }
+
+  .statement {
+    font-family: var(--serif); font-style: italic; font-size: clamp(28px, 4.6vw, 58px);
+    line-height: 1.22; letter-spacing: -.01em; max-width: 18em; color: var(--text); font-weight: 400;
+  }
+  .statement b { color: var(--c, var(--accent-2)); font-weight: 500; }
+
+  .quote {
+    border-left: 2.5px solid var(--c, var(--accent-2)); padding: 4px 0 4px 22px;
+    font-family: var(--serif); font-style: italic; font-size: clamp(17px, 2vw, 23px);
+    color: var(--text); max-width: 30em; margin-top: 26px; font-weight: 400;
+  }
+  .quote b { color: var(--c, var(--accent-2)); font-weight: 500; }
+  .quote .attr {
+    display: block; font-family: var(--mono); font-style: normal; font-size: 9.5px;
+    letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin-top: 8px;
+  }
+
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 26px; }
+  .duo .half {
+    border: 1px solid var(--line); border-radius: 16px;
+    background: linear-gradient(180deg, var(--panel), var(--panel-2)); padding: 24px 26px;
+  }
+  .duo .num {
+    font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--c, var(--accent-5)); display: block; margin-bottom: 10px;
+  }
+  .duo h3 { font-size: clamp(17px, 1.9vw, 22px); font-weight: 700; letter-spacing: -.018em; margin-bottom: 8px; }
+  .duo p { font-size: 14px; color: var(--muted); font-weight: 380; line-height: 1.65; }
+  .duo p b { color: var(--text); font-weight: 620; }
+
+  .abc { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 28px; }
+  .abc .aff {
+    border: 1px solid var(--line); border-radius: 16px;
+    background: linear-gradient(180deg, var(--panel), var(--panel-2)); padding: 24px;
+    transition: transform .3s, border-color .3s;
+  }
+  .abc .aff:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--c, var(--accent-2)) 50%, transparent); }
+  .abc .letter {
+    width: 32px; height: 32px; display: grid; place-items: center;
+    border: 1.5px solid color-mix(in srgb, var(--c, var(--accent-2)) 55%, transparent); border-radius: 50%;
+    background: color-mix(in srgb, var(--c, var(--accent-2)) 12%, var(--panel));
+    font-family: var(--mono); font-size: 12.5px; font-weight: 700; color: var(--c, var(--accent-2)); margin-bottom: 14px;
+  }
+  .abc h3 { font-size: 17px; font-weight: 700; letter-spacing: -.015em; margin-bottom: 7px; }
+  .abc h3 em { font-family: var(--serif); font-style: italic; font-weight: 500; color: var(--c, var(--accent-2)); }
+  .abc p { font-size: 13.5px; color: var(--muted); line-height: 1.62; font-weight: 380; }
+  .abc p b { color: var(--text); font-weight: 620; }
+
+  .term {
+    background: var(--term-bg); color: var(--term-text); font-family: var(--mono);
+    font-size: clamp(13px, 1.5vw, 16px); line-height: 1.4; border: 1px solid var(--line);
+    border-radius: 12px; overflow: hidden; box-shadow: 0 12px 34px rgba(0,0,0,.5);
+  }
+  .term-bar { padding: 12px 16px 10px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; }
+  .term-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+  .term-bar i:first-child { background: var(--accent-5); }
+  .term-bar i:nth-child(2) { background: var(--accent-3); }
+  .term-bar i:nth-child(3) { background: var(--accent-2); }
+  .term-body { padding: 14px 18px 18px; display: grid; gap: 4px; }
+  .t-row { display: flex; flex-wrap: wrap; gap: 2px 16px; align-items: baseline; justify-content: space-between; }
+  .t-cmd { color: var(--term-text); font-weight: 400; }
+  .t-cmd::before { content: '> '; color: var(--accent-1); }
+  .t-ok { color: var(--term-green); }
+  .t-dim { color: var(--term-faint); }
+  .t-bad { color: var(--accent-5); }
+  .t-out { color: var(--term-text); white-space: pre-wrap; line-height: 1.28; }
+  .t-out b { color: var(--accent-1); font-weight: 400; }
+  .t-cursor {
+    display: inline-block; width: 9px; height: 16px; background: var(--accent-1);
+    vertical-align: text-bottom; margin-left: 4px; animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .stats { display: flex; gap: clamp(20px, 4vw, 56px); flex-wrap: wrap; margin: 26px 0 6px; }
+  .stat .big { font-size: clamp(38px, 5vw, 64px); font-weight: 700; letter-spacing: -.04em; line-height: 1; color: var(--text); }
+  .stat .big em { font-family: var(--serif); font-style: italic; font-weight: 500; color: var(--c, var(--accent-2)); }
+  .stat .cap {
+    font-family: var(--mono); font-size: 9.5px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--faint); margin-top: 8px; max-width: 22em;
+  }
+
+  .loop { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-top: 26px; }
+  .loop .step {
+    font-family: var(--mono); font-size: clamp(9px, 1vw, 11px); font-weight: 600; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px;
+    padding: 9px 15px; background: var(--panel); transition: color .3s, border-color .3s;
+  }
+  .loop .step:hover { color: var(--accent-1); border-color: color-mix(in srgb, var(--accent-1) 55%, transparent); }
+  .loop .larr { color: var(--faint); font-family: var(--mono); font-size: 11px; }
+
+  .thread { display: flex; align-items: baseline; gap: 14px; margin-top: clamp(26px, 4vh, 44px); max-width: 52em; }
+  .thread::before {
+    content: '─ ─ ─▶'; font-family: var(--mono); font-size: 10px; letter-spacing: .12em;
+    color: var(--c, var(--accent-2)); white-space: nowrap; flex: none;
+  }
+  .thread p { font-size: 13.5px; color: var(--muted); font-weight: 400; }
+  .thread p b {
+    font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--c, var(--accent-2)); margin-right: 6px;
+  }
+
+  .talk { margin-top: clamp(30px, 5vh, 48px); border-top: 1px dashed var(--line); padding-top: 22px; max-width: 52em; }
+  .talk .ttag {
+    font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--accent-3); display: block; margin-bottom: 12px;
+  }
+  .talk p { font-size: 14.5px; color: var(--muted); font-weight: 380; line-height: 1.75; margin-bottom: 12px; }
+  .talk p b { color: var(--text); font-weight: 650; }
+
+  .maptbl { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: clamp(12.5px, 1.3vw, 15px); }
+  .maptbl th, .maptbl td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .maptbl thead th {
+    font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--faint);
+  }
+  .maptbl tbody td { color: var(--muted); font-weight: 380; }
+  .maptbl tbody td:first-child { color: var(--text); font-weight: 560; }
+  .maptbl tbody td b { color: var(--accent-1); font-family: var(--mono); font-size: .82em; font-weight: 700; letter-spacing: .04em; }
+
+  .cta {
+    margin-top: 44px; max-width: 44em; border: 1px solid var(--line); border-left: 3px solid var(--accent-2);
+    border-radius: 12px; background: var(--ink-bg-2); padding: 20px 24px 18px;
+  }
+  .cta .ctag {
+    font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--accent-2); display: block; margin-bottom: 10px;
+  }
+  .cta p { font-size: 14px; color: var(--muted); font-weight: 380; margin-bottom: 12px; }
+  .cta a { color: var(--accent-2); }
+
+  .keys { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 34px; }
+  .keys .k {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 7px 12px;
+  }
+  .keys .k b { color: var(--accent-1); font-weight: 700; }
+  a.k { text-decoration: none; transition: color .25s, border-color .25s; }
+  a.k:hover { color: var(--accent-1) !important; border-color: var(--accent-1) !important; }
+
+  /* ════════════════════════ TITLE SLIDE ════════════════════════ */
+  .titlegrid { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(20px, 4vw, 60px); align-items: center; }
+  .titleslide h1 { font-size: clamp(40px, 6.4vw, 84px); max-width: none; line-height: .99; }
+  .titleslide .sub {
+    font-family: var(--serif); font-style: italic; font-size: clamp(19px, 2.4vw, 28px);
+    color: var(--muted); margin-top: 14px; max-width: 22em;
+  }
+
+  /* ════════════════════════ AMBIENT BACKGROUND (grid + scanline) ════════════════════════ */
+  .gridbg {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background-image:
+      linear-gradient(color-mix(in srgb, var(--accent-1) 5%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--accent-1) 5%, transparent) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask: radial-gradient(ellipse 80% 70% at 60% 0%, #000 0%, transparent 75%);
+    mask: radial-gradient(ellipse 80% 70% at 60% 0%, #000 0%, transparent 75%);
+    opacity: .5;
+  }
+
+  /* ════════════════════════ FROSTED CONSOLE BACKDROP ════════════════════════
+     Faint monospace log lines drifting upward, heavily blurred so they read as
+     ambient texture rather than legible text. Sits behind the grid. */
+  .consolebg {
+    position: fixed; inset: 0; z-index: -2; pointer-events: none; overflow: hidden;
+    -webkit-mask: radial-gradient(ellipse 95% 85% at 50% 45%, #000 0%, transparent 80%);
+    mask: radial-gradient(ellipse 95% 85% at 50% 45%, #000 0%, transparent 80%);
+  }
+  .consolebg .feed {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    display: grid; gap: 14px; padding: 0 5vw;
+    font-family: var(--mono); font-size: clamp(14px, 1.5vw, 18px); line-height: 1.5;
+    color: color-mix(in srgb, var(--accent-2) 45%, var(--muted));
+    filter: blur(4.5px); opacity: .2;
+    animation: feedscroll 75s linear infinite;
+  }
+  .consolebg .feed .ln { white-space: nowrap; }
+  .consolebg .feed .ln .pre { color: color-mix(in srgb, var(--accent-1) 70%, transparent); }
+  .consolebg .feed .ln .ok { color: var(--accent-2); }
+  .consolebg .feed .ln .warn { color: var(--accent-3); }
+  .consolebg .feed .ln .dim { color: var(--faint); }
+  @keyframes feedscroll { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+
+  /* ════════════════════════ SCENES (bespoke CSS illustrations) ════════════════════════ */
+  .scene { position: relative; height: clamp(280px, 38vh, 460px); display: grid; place-items: center; }
+  .scene.compact { height: clamp(220px, 32vh, 340px); }
+  body.read .scene.compact { height: clamp(250px, 34vh, 360px); }
+  @keyframes rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+
+  /* — context window (title) — */
+  .ctxwin {
+    position: relative; width: min(370px, 80vw);
+    background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    border: 1px solid var(--line); border-radius: 14px; padding: 0 0 18px;
+    box-shadow: 0 34px 70px rgba(0,0,0,.6), 0 0 50px color-mix(in srgb, var(--accent-1) 12%, transparent);
+    animation: rise 1s var(--ease) both .2s;
+  }
+  .ctxwin .winbar { display: flex; gap: 7px; padding: 13px 15px; border-bottom: 1px solid var(--line); align-items: center; }
+  .ctxwin .winbar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+  .ctxwin .winbar i:nth-child(1) { background: var(--accent-5); }
+  .ctxwin .winbar i:nth-child(2) { background: var(--accent-3); }
+  .ctxwin .winbar i:nth-child(3) { background: var(--accent-2); }
+  .ctxwin .wintitle { font-family: var(--mono); font-size: 8.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--faint); margin-left: 8px; }
+  .ctxwin .lines { padding: 18px 16px 6px; display: grid; gap: 9px; }
+  .ctxwin .ln { height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--muted) 20%, transparent); }
+  .ctxwin .ln.a { width: 80%; } .ctxwin .ln.b { width: 94%; } .ctxwin .ln.c { width: 62%; } .ctxwin .ln.d { width: 88%; }
+  .ctxwin .ln.hot { background: linear-gradient(90deg, color-mix(in srgb, var(--accent-1) 75%, transparent), transparent); box-shadow: 0 0 12px color-mix(in srgb, var(--accent-1) 35%, transparent); }
+  .ctxwin .gauge { margin: 16px 16px 0; }
+  .ctxwin .gtrack { height: 11px; border-radius: 999px; background: color-mix(in srgb, var(--muted) 14%, transparent); overflow: hidden; position: relative; }
+  .ctxwin .gfill {
+    position: absolute; inset: 0 auto 0 0; width: 58%; border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
+    box-shadow: 0 0 18px color-mix(in srgb, var(--accent-1) 60%, transparent);
+    animation: gpulse 4.5s var(--ease) infinite;
+  }
+  @keyframes gpulse { 0%, 100% { width: 52%; } 50% { width: 64%; } }
+  .ctxwin .glabel { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 8.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); margin-top: 9px; }
+  .ctxwin .glabel b { color: var(--accent-1); font-weight: 700; }
+  .ctxwin .tok {
+    position: absolute; top: -14px; right: 20px; font-family: var(--mono); font-size: 8.5px; font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--accent-4);
+    background: color-mix(in srgb, var(--accent-4) 16%, var(--panel)); border: 1px solid color-mix(in srgb, var(--accent-4) 45%, transparent);
+    border-radius: 999px; padding: 5px 11px; animation: floaty 5s ease-in-out infinite;
+  }
+  @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+
+  /* — overfilled window (long context) — */
+  .overfill {
+    position: relative; width: min(330px, 78vw);
+    background: linear-gradient(180deg, var(--panel), var(--panel-2)); border: 1px solid var(--line);
+    border-radius: 14px; padding: 16px; box-shadow: 0 30px 60px rgba(0,0,0,.6); animation: rise 1s var(--ease) both .2s;
+  }
+  .overfill .stack2 { display: grid; gap: 6px; }
+  .overfill .ln2 { height: 7px; border-radius: 4px; background: color-mix(in srgb, var(--muted) 18%, transparent); }
+  .overfill .ln2:nth-child(odd) { width: 96%; } .overfill .ln2:nth-child(even) { width: 82%; }
+  .overfill .ln2.needle {
+    background: linear-gradient(90deg, var(--accent-3), transparent); width: 70% !important;
+    animation: needle 3.6s ease-in-out infinite;
+  }
+  @keyframes needle { 0%, 100% { opacity: .3; } 50% { opacity: 1; box-shadow: 0 0 14px color-mix(in srgb, var(--accent-3) 70%, transparent); } }
+  .overfill .full {
+    margin-top: 13px; height: 11px; border-radius: 999px; background: var(--accent-5);
+    box-shadow: 0 0 20px color-mix(in srgb, var(--accent-5) 60%, transparent); animation: warn 2.5s ease-in-out infinite;
+  }
+  @keyframes warn { 0%, 100% { opacity: .65; } 50% { opacity: 1; } }
+  .overfill .flabel { font-family: var(--mono); font-size: 8.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent-5); margin-top: 9px; text-align: right; }
+
+  /* — layered stack (architecture) — */
+  .stk { position: relative; width: min(340px, 78vw); display: grid; gap: 10px; animation: rise 1s var(--ease) both .2s; }
+  .stk .layer {
+    border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    padding: 14px 16px; font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .13em;
+    text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; align-items: center;
+  }
+  .stk .layer .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: .6; }
+  .stk .layer.hot {
+    border-color: color-mix(in srgb, var(--accent-1) 60%, transparent); color: var(--accent-1);
+    background: color-mix(in srgb, var(--accent-1) 8%, var(--panel)); animation: hotpulse 4.5s var(--ease) infinite;
+  }
+  .stk .layer.hot .dot { opacity: 1; }
+  @keyframes hotpulse {
+    0%, 100% { box-shadow: 0 0 16px color-mix(in srgb, var(--accent-1) 14%, transparent); }
+    50% { box-shadow: 0 0 34px color-mix(in srgb, var(--accent-1) 32%, transparent); }
+  }
+
+  /* — scratchpad / breadcrumb file — */
+  .scratch {
+    position: relative; width: min(330px, 76vw);
+    background: linear-gradient(180deg, var(--panel), var(--panel-2)); border: 1px solid var(--line);
+    border-radius: 14px; padding: 0 0 20px; box-shadow: 0 30px 60px rgba(0,0,0,.6); animation: rise 1s var(--ease) both .2s;
+  }
+  .scratch .tab {
+    display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 9px; font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--accent-2);
+    background: color-mix(in srgb, var(--accent-2) 12%, var(--panel)); border: 1px solid color-mix(in srgb, var(--accent-2) 38%, transparent);
+    border-radius: 8px; padding: 7px 13px; margin: 14px 0 0 16px;
+  }
+  .scratch .body2 { padding: 16px 18px 4px; display: grid; gap: 12px; }
+  .scratch .task { display: flex; align-items: center; gap: 11px; }
+  .scratch .box { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid var(--line); flex: none; position: relative; }
+  .scratch .box.done { background: var(--accent-2); border-color: var(--accent-2); }
+  .scratch .box.done::after { content: '✓'; position: absolute; inset: 0; display: grid; place-items: center; font-size: 9px; color: var(--ink-bg); font-weight: 700; }
+  .scratch .tln { height: 7px; border-radius: 4px; background: color-mix(in srgb, var(--muted) 22%, transparent); flex: 1; }
+  .scratch .task.done .tln { background: color-mix(in srgb, var(--accent-2) 30%, transparent); }
+  .scratch .trail { position: relative; display: flex; align-items: center; margin: 18px 18px 0; }
+  .scratch .trail .seg { flex: 1; height: 2px; background: color-mix(in srgb, var(--muted) 22%, transparent); }
+  .scratch .trail .node { width: 9px; height: 9px; border-radius: 50%; background: var(--panel); border: 2px solid color-mix(in srgb, var(--accent-2) 60%, transparent); flex: none; }
+  .scratch .crumb {
+    position: absolute; top: 50%; left: 0; width: 7px; height: 7px; border-radius: 50%; background: var(--accent-2);
+    transform: translate(-50%, -50%); box-shadow: 0 0 12px var(--accent-2); animation: crumb 5s linear infinite;
+  }
+  @keyframes crumb { 0% { left: 4%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { left: 96%; opacity: 0; } }
+
+  /* — breadcrumb slide: keep it viewport-tight in present mode — */
+  #s-breadcrumb .scene.compact { height: clamp(180px, 24vh, 240px); }
+  #s-breadcrumb .abc .aff { padding: 16px 18px; }
+  #s-breadcrumb .abc .letter { width: 28px; height: 28px; margin-bottom: 10px; }
+  #s-breadcrumb .abc h3 { font-size: 15.5px; margin-bottom: 5px; }
+  #s-breadcrumb .abc p { font-size: 12.5px; line-height: 1.55; }
+  /* — RPI pipeline — */
+  .pipeline { position: relative; width: min(330px, 78vw); display: grid; gap: 0; animation: rise 1s var(--ease) both .2s; }
+  .pipeline .node {
+    position: relative; border: 1px solid var(--line); border-radius: 12px;
+    background: linear-gradient(180deg, var(--panel), var(--panel-2)); padding: 13px 16px;
+    display: flex; align-items: center; gap: 13px; z-index: 2;
+  }
+  .pipeline .node .rk {
+    width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; flex: none;
+    font-family: var(--mono); font-weight: 700; font-size: 14px; color: var(--c, var(--accent-2));
+    border: 1.5px solid color-mix(in srgb, var(--c, var(--accent-2)) 50%, transparent);
+    background: color-mix(in srgb, var(--c, var(--accent-2)) 10%, var(--panel));
+  }
+  .pipeline .node .nm { font-family: var(--mono); font-size: 9px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); }
+  .pipeline .node .nm b { display: block; color: var(--text); font-size: 12px; letter-spacing: .03em; margin-top: 2px; }
+  .pipeline .conn { height: 13px; width: 2px; margin-left: 31px; background: color-mix(in srgb, var(--muted) 26%, transparent); }
+  .pipeline .rail { position: absolute; left: 31px; top: 24px; bottom: 24px; width: 2px; z-index: 1; overflow: hidden; }
+  .pipeline .rail .tok {
+    position: absolute; left: -3px; top: 0; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent-1); box-shadow: 0 0 14px var(--accent-1); animation: flowdown 4.5s ease-in-out infinite;
+  }
+  @keyframes flowdown { 0% { top: -8px; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+
+  /* — generator vs judge (premise) — */
+  .gj { position: relative; width: min(320px, 78vw); display: grid; gap: 14px; animation: rise 1s var(--ease) both .2s; }
+  .gj .panelc {
+    border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    padding: 16px 18px; box-shadow: 0 16px 40px rgba(0,0,0,.45);
+  }
+  .gj .glab { font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .gj .gen .glab { color: var(--accent-2); }
+  .gj .jud .glab { color: var(--accent-5); }
+  .gj .glab .verdict { font-size: 8px; color: var(--faint); letter-spacing: .14em; }
+  /* generator: fast streaming tokens */
+  .gj .stream { display: flex; gap: 6px; overflow: hidden; }
+  .gj .stream .tk { width: 22px; height: 9px; border-radius: 3px; background: color-mix(in srgb, var(--accent-2) 30%, transparent); flex: none; animation: emit 1.6s ease-in-out infinite; }
+  .gj .stream .tk:nth-child(2) { animation-delay: .2s; } .gj .stream .tk:nth-child(3) { animation-delay: .4s; }
+  .gj .stream .tk:nth-child(4) { animation-delay: .6s; } .gj .stream .tk:nth-child(5) { animation-delay: .8s; }
+  .gj .stream .tk:nth-child(6) { animation-delay: 1s; }
+  @keyframes emit { 0%, 100% { opacity: .35; transform: translateX(0); } 50% { opacity: 1; box-shadow: 0 0 12px color-mix(in srgb, var(--accent-2) 70%, transparent); } }
+  /* judge: a slowly tilting balance beam */
+  .gj .scale { position: relative; height: 46px; display: grid; place-items: center; }
+  .gj .beam { position: relative; width: 78%; height: 3px; border-radius: 3px; background: color-mix(in srgb, var(--accent-5) 55%, transparent); transform-origin: center; animation: tilt 5s ease-in-out infinite; }
+  .gj .beam::before, .gj .beam::after { content: ''; position: absolute; top: 50%; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--accent-5) 50%, transparent); background: color-mix(in srgb, var(--accent-5) 10%, var(--panel)); transform: translateY(-50%); }
+  .gj .beam::before { left: -9px; } .gj .beam::after { right: -9px; }
+  .gj .scale .pivot { position: absolute; bottom: 4px; width: 2px; height: 22px; background: color-mix(in srgb, var(--accent-5) 40%, transparent); }
+  @keyframes tilt { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } }
+
+  /* — dimmer dial (just enough) — */
+  .dial { position: relative; width: min(330px, 80vw); animation: rise 1s var(--ease) both .2s; }
+  .dial .track { position: relative; height: 16px; border-radius: 999px; overflow: hidden;
+    background: linear-gradient(90deg,
+      color-mix(in srgb, var(--accent-1) 22%, var(--panel)) 0 33%,
+      color-mix(in srgb, var(--accent-2) 45%, var(--panel)) 33% 66%,
+      color-mix(in srgb, var(--accent-5) 30%, var(--panel)) 66% 100%);
+    border: 1px solid var(--line);
+  }
+  .dial .knob {
+    position: absolute; top: 50%; left: 50%; width: 26px; height: 26px; border-radius: 50%;
+    transform: translate(-50%, -50%); background: var(--accent-2);
+    box-shadow: 0 0 24px color-mix(in srgb, var(--accent-2) 75%, transparent), 0 4px 10px rgba(0,0,0,.5);
+    border: 3px solid var(--panel); animation: settle 5s ease-in-out infinite;
+  }
+  @keyframes settle { 0%, 100% { left: 47%; } 50% { left: 53%; } }
+  .dial .ticks { display: flex; justify-content: space-between; margin-top: 16px; font-family: var(--mono); font-size: 8.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); }
+  .dial .ticks b { color: var(--accent-2); font-weight: 700; }
+
+  /* — divider part-number motif (data rain numeral) — */
+  .slide.dark .inner { position: relative; }
+  .partmark {
+    position: absolute; top: -8px; right: 0; z-index: 0; pointer-events: none;
+    font-family: var(--mono); font-weight: 700; font-size: clamp(120px, 22vw, 260px); line-height: .8;
+    letter-spacing: -.04em; color: color-mix(in srgb, var(--c, var(--accent-1)) 12%, transparent);
+    -webkit-text-stroke: 1px color-mix(in srgb, var(--c, var(--accent-1)) 22%, transparent);
+    animation: markglow 6s ease-in-out infinite;
+  }
+  @keyframes markglow {
+    0%, 100% { opacity: .55; filter: drop-shadow(0 0 0 transparent); }
+    50% { opacity: .9; filter: drop-shadow(0 0 30px color-mix(in srgb, var(--c, var(--accent-1)) 30%, transparent)); }
+  }
+  .slide.dark .inner > * { position: relative; z-index: 1; }
+  @media (max-width: 760px) { .partmark { opacity: .3 !important; font-size: clamp(90px, 30vw, 150px); } }
+
+  /* ════════════════════════ RESPONSIVE ════════════════════════ */
+  @media (max-width: 980px) {
+    .cols, .titlegrid, .grid-3, .grid-4, .abc { grid-template-columns: 1fr; }
+    .titlegrid .scene { order: -1; height: clamp(240px, 34vh, 320px); }
+  }
+  @media (max-width: 640px) {
+    .grid-2, .duo { grid-template-columns: 1fr; }
+    body.present .slide { padding: 64px 0 86px; }
+    .maptbl thead { display: none; }
+    .maptbl, .maptbl tbody, .maptbl tr, .maptbl td { display: block; width: 100%; }
+    .maptbl tr { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; padding: 6px 10px; }
+    .maptbl td { border: 0; padding: 4px 4px; }
+  }
+
+  /* ════════════════════════ ACCESSIBILITY ════════════════════════ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .rv, [data-step] { opacity: 1; transform: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* ════════════════════════ PRINT ════════════════════════ */
+  @media print {
+    .topbar, .navc, .hint, .progress, .menu, .npanel, .gridbg, .consolebg { display: none !important; }
+    body.present .slide { position: static; visibility: visible; opacity: 1; transform: none; }
+    .slide { page-break-after: always; border: 0; }
+    .rv, [data-step] { opacity: 1 !important; transform: none !important; }
+    .talk { display: block !important; }
+  }
+</style>
+</head>
+<body class="read">
+
+<div class="consolebg" aria-hidden="true">
+  <div class="feed">
+    <div class="ln"><span class="pre">$</span> agent.context.assemble --task "refactor auth module"</div>
+    <div class="ln"><span class="dim"># scanning workspace · 1,284 files indexed</span></div>
+    <div class="ln"><span class="ok">✓</span> loaded skill: repo-conventions <span class="dim">(2.1k tokens)</span></div>
+    <div class="ln"><span class="ok">✓</span> tool loadout: read, edit, grep <span class="dim">· 3 of 41 enabled</span></div>
+    <div class="ln"><span class="warn">!</span> context at 58% — compacting older turns</div>
+    <div class="ln"><span class="pre">&gt;</span> externalize → breadcrumbs.md</div>
+    <div class="ln"><span class="dim"># sub-agent[research] spawned · isolated scope</span></div>
+    <div class="ln"><span class="ok">✓</span> plan decomposed into 6 decoupled steps</div>
+    <div class="ln"><span class="pre">&gt;</span> implement step 03/06 <span class="dim">parallel</span></div>
+    <div class="ln"><span class="ok">✓</span> review: aligned with research boundaries</div>
+    <div class="ln"><span class="dim"># clash detected → dropped stale snippet</span></div>
+    <div class="ln"><span class="pre">$</span> commit --message "just enough context"</div>
+    <!-- duplicate for seamless loop -->
+    <div class="ln"><span class="pre">$</span> agent.context.assemble --task "refactor auth module"</div>
+    <div class="ln"><span class="dim"># scanning workspace · 1,284 files indexed</span></div>
+    <div class="ln"><span class="ok">✓</span> loaded skill: repo-conventions <span class="dim">(2.1k tokens)</span></div>
+    <div class="ln"><span class="ok">✓</span> tool loadout: read, edit, grep <span class="dim">· 3 of 41 enabled</span></div>
+    <div class="ln"><span class="warn">!</span> context at 58% — compacting older turns</div>
+    <div class="ln"><span class="pre">&gt;</span> externalize → breadcrumbs.md</div>
+    <div class="ln"><span class="dim"># sub-agent[research] spawned · isolated scope</span></div>
+    <div class="ln"><span class="ok">✓</span> plan decomposed into 6 decoupled steps</div>
+    <div class="ln"><span class="pre">&gt;</span> implement step 03/06 <span class="dim">parallel</span></div>
+    <div class="ln"><span class="ok">✓</span> review: aligned with research boundaries</div>
+    <div class="ln"><span class="dim"># clash detected → dropped stale snippet</span></div>
+    <div class="ln"><span class="pre">$</span> commit --message "just enough context"</div>
+  </div>
+</div>
+<div class="gridbg" aria-hidden="true"></div>
+<div class="progress" id="progress"></div>
+
+<header class="topbar">
+  <a class="wordmark" href="#s-title">Context Engineering · <b>Throw Away The Vibes</b></a>
+  <span class="spacer"></span>
+  <button class="tbtn" id="btn-mode">Present <kbd>P</kbd></button>
+  <button class="tbtn" id="btn-notes" hidden>Notes <kbd>N</kbd></button>
+  <button class="tbtn" id="btn-menu">Menu <kbd>M</kbd></button>
+  <button class="tbtn" id="btn-full" hidden>Full <kbd>F</kbd></button>
+</header>
+
+<nav class="menu" id="menu" aria-label="Slide menu"><ol id="menu-list"></ol></nav>
+
+<aside class="npanel" aria-label="Speaker notes">
+  <header>Notes <span id="np-count"></span></header>
+  <div class="nbody" id="np-body"></div>
+</aside>
+
+<div class="navc">
+  <span class="count" id="counter"></span>
+  <button class="nbtn" id="btn-prev" aria-label="Previous">←</button>
+  <button class="nbtn" id="btn-next" aria-label="Next">→</button>
+</div>
+<span class="hint">← → navigate · N notes · M menu · P read mode</span>
+
+<main class="deckwrap" id="deck">
+
+<!-- ═══════════════════════ SLIDE · TITLE ═══════════════════════ -->
+<section class="slide titleslide" id="s-title" data-title="Title" style="--c: var(--accent-1)">
+  <div class="inner titlegrid">
+    <div>
+      <p class="kicker rv"><span class="snum"></span>DDD Melbourne 2026</p>
+      <h1 class="rv" style="--d:.06s">Throw away the <em>vibes.</em></h1>
+      <p class="sub rv" style="--d:.14s">Reliable results from AI coding agents don't come from prompting
+        harder. They come from engineering the context you feed the model.</p>
+      <div class="keys rv" style="--d:.24s">
+        <span class="k"><b>scroll</b> to read — notes included</span>
+        <span class="k"><b>P</b> to present</span>
+        <span class="k"><b>M</b> contents</span>
+        <a class="k" href="https://dasith.me/"><b>↗</b> dasith.me</a>
+      </div>
+    </div>
+    <div class="scene" aria-hidden="true">
+      <div class="ctxwin">
+        <span class="tok">+ 1.2M tokens</span>
+        <div class="winbar"><i></i><i></i><i></i><span class="wintitle">agent · context</span></div>
+        <div class="lines">
+          <div class="ln a"></div>
+          <div class="ln hot b"></div>
+          <div class="ln c"></div>
+          <div class="ln d"></div>
+        </div>
+        <div class="gauge">
+          <div class="gtrack"><div class="gfill"></div></div>
+          <div class="glabel"><span>context used</span><span><b>just enough</b></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · THE HIGH ═══════════════════════ -->
+<section class="slide" id="s-high" data-title="The high, then the wall" style="--c: var(--accent-5)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>The familiar story</p>
+    <h1 class="rv" style="--d:.06s">The magic that <em>evaporates.</em></h1>
+    <p class="lede rv" style="--d:.12s">Most of us feel an intoxicating high the first time we use an AI coding
+      agent. Then we point it at a real codebase and the magic disappears.</p>
+
+    <div class="duo" data-step="1">
+      <div class="half">
+        <span class="num" style="--c: var(--accent-2)">Hello World</span>
+        <h3>It works flawlessly</h3>
+        <p>The toy example lands perfectly. It feels like <b>the future has arrived.</b></p>
+      </div>
+      <div class="half">
+        <span class="num">Brownfield</span>
+        <h3>The frustration hits</h3>
+        <p>Point the same agent at a large business repo and the results fall apart. The tools aren't useless —
+          we're feeding them the <b>wrong context.</b></p>
+      </div>
+    </div>
+
+    <div class="thread" data-step="2"><p><b>So</b> the fix is not a better prompt. It's a better information environment.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Many of us experience an intoxicating high the first time we use an AI coding agent. The "Hello World"
+        example works flawlessly, and it feels like the future has arrived. Then we point the same agent at a large
+        brownfield business repository and the magic evaporates.</p>
+      <p>The frustration that follows is not a sign the tools are useless. It is a sign that we are feeding them the
+        wrong context. This talk is my attempt to explain why that happens, and what to do about it.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · PREMISE ═══════════════════════ -->
+<section class="slide" id="s-premise" data-title="The premise" style="--c: var(--accent-4)">
+  <div class="inner cols" style="align-items: center;">
+    <div>
+      <p class="kicker rv"><span class="snum"></span>The premise</p>
+      <div class="statement rv" style="--d:.06s; font-size: clamp(24px, 3.6vw, 44px);">
+        Exceptional generators of code. <b>Weak judges</b> of architecture and context.
+      </div>
+      <p class="lede" data-step="1" style="margin-top: 24px;">The instinct is to keep prompting across many turns until
+        the agent eventually gets it right. The better goal is to <strong>fix the context</strong> so the first answer
+        lands close to correct — that's context engineering, and it matters far more than the vibes.</p>
+    </div>
+    <div class="scene compact" aria-hidden="true">
+      <div class="gj">
+        <div class="panelc gen">
+          <div class="glab"><span>Generator</span><span class="verdict">fast · fluent</span></div>
+          <div class="stream"><span class="tk"></span><span class="tk"></span><span class="tk"></span><span class="tk"></span><span class="tk"></span><span class="tk"></span></div>
+        </div>
+        <div class="panelc jud">
+          <div class="glab"><span>Judge</span><span class="verdict">unsure · wobbles</span></div>
+          <div class="scale"><span class="pivot"></span><span class="beam"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Coding agents are exceptional at generating text and code, but they have poor architectural and contextual
+        judgement. The instinct when an agent produces bad code is to keep prompting it across many turns until it
+        eventually gets things right.</p>
+      <p>The better goal is to fix the context we feed the model so it produces an aligned, correct answer on the
+        first attempt. That discipline is context engineering, and it matters far more than the vibes.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · BEYOND VIBE CODING ═══════════════════════ -->
+<section class="slide" id="s-vibes" data-title="Beyond vibe coding" style="--c: var(--accent-2)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Where the effort goes</p>
+    <h1 class="rv" style="--d:.06s">Stop nudging. Curate the <em>input.</em></h1>
+    <p class="lede rv" style="--d:.12s">Vibe coding leans on a hopeful loop: generate, notice it's wrong, nudge
+      repeatedly until it converges. That loop is slow, it pollutes the conversation, and it rarely meets our bar.</p>
+
+    <div class="duo" data-step="1">
+      <div class="half">
+        <span class="num">Vibe coding</span>
+        <h3>Correct after the fact</h3>
+        <p>Let the agent generate, then prompt it again and again. Brilliant generator, <b>weak judge</b> — so the
+          loop drags on.</p>
+      </div>
+      <div class="half">
+        <span class="num" style="--c: var(--accent-2)">Context engineering</span>
+        <h3>Invest in the input</h3>
+        <p>Curate exactly what the model sees <b>before it writes a line</b>, so the very first answer lands close to
+          correct.</p>
+      </div>
+    </div>
+
+    <div class="thread" data-step="2"><p><b>Reflex</b> Once you internalize the generator–judge asymmetry, the job changes.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>The core shift is a change in where we spend our effort. Vibe coding leans on a hopeful loop: let the agent
+        generate something, notice it is wrong, and nudge it repeatedly until it converges. That loop is slow, it
+        pollutes the conversation, and it rarely produces the quality we would accept from ourselves.</p>
+      <p>Agents are brilliant generators and weak judges. Once you internalize that asymmetry, the job changes.
+        Instead of correcting bad output after the fact, you invest in the input. You curate exactly what the model
+        sees before it writes a single line, so the very first answer lands close to correct.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · DIVIDER: LONG CONTEXT ═══════════════════════ -->
+<section class="slide dark" id="s-div-context" data-title="Part 1 — Long context isn't enough" style="--c: var(--accent-1)">
+  <div class="inner">
+    <span class="partmark" aria-hidden="true">01</span>
+    <p class="kicker rv"><span class="snum"></span>Part one</p>
+    <h1 class="rv" style="--d:.06s">Why a long context window <em>isn't enough.</em></h1>
+    <p class="lede rv" style="--d:.12s">The common reaction is to assume the fix is simply more context. In practice,
+      that approach makes things worse.</p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>A common reaction is to assume the fix is more context. Just throw thousands of files into a million-token
+        window and let the model sort it out. In practice, that makes things worse — and there are four distinct ways
+        it fails.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · OVERFILL SCENE ═══════════════════════ -->
+<section class="slide" id="s-overfill" data-title="More is not better" style="--c: var(--accent-3)">
+  <div class="inner cols">
+    <div>
+      <p class="kicker rv"><span class="snum"></span>The needle problem</p>
+      <h1 class="rv" style="--d:.06s">A million tokens of <em>noise.</em></h1>
+      <p class="lede rv" style="--d:.12s">Cramming thousands of files into a huge window doesn't help the model find
+        the one detail that matters. The signal drowns.</p>
+      <p class="lede" data-step="1"><strong>The takeaway is not "less context" as a rule.</strong> It is
+        <em style="font-family:var(--serif); font-style:italic; color:var(--accent-3)">just enough</em> context,
+        delivered at the exact moment it is needed.</p>
+    </div>
+    <div class="scene compact" aria-hidden="true">
+      <div class="overfill">
+        <div class="stack2">
+          <div class="ln2"></div><div class="ln2"></div><div class="ln2 needle"></div>
+          <div class="ln2"></div><div class="ln2"></div><div class="ln2"></div>
+          <div class="ln2"></div><div class="ln2"></div><div class="ln2"></div>
+        </div>
+        <div class="full"></div>
+        <div class="flabel">context window · 100% full</div>
+      </div>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>The fix is not just more context. Throwing thousands of files into a million-token window makes things worse,
+        not better. The takeaway is not "less context" as a blanket rule. It is just enough context, delivered at the
+        exact moment it is needed.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · FOUR FAILURE MODES ═══════════════════════ -->
+<section class="slide" id="s-failures" data-title="Four failure modes" style="--c: var(--accent-5)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Four failure modes of long context</p>
+    <h1 class="rv" style="--d:.06s">How long context <em>breaks down.</em></h1>
+    <div class="grid-4" style="margin-top: 22px;">
+      <div class="card" data-step="1" style="--c: var(--accent-5)">
+        <span class="glyph">☣</span>
+        <h3>Poisoning</h3>
+        <p>A hallucinated error early in a thread <b>lingers</b> and keeps corrupting everything generated after it.</p>
+      </div>
+      <div class="card" data-step="1" style="--c: var(--accent-3)">
+        <span class="glyph">◎</span>
+        <h3>Distraction</h3>
+        <p>Attention weights vary across a long prompt, so the model misses crucial details buried in big blocks —
+          the <b>needle in a haystack.</b></p>
+      </div>
+      <div class="card" data-step="2" style="--c: var(--accent-1)">
+        <span class="glyph">≋</span>
+        <h3>Confusion</h3>
+        <p>Superfluous, redundant information <b>dilutes the signal</b> and pulls the model toward irrelevant details.</p>
+      </div>
+      <div class="card" data-step="2" style="--c: var(--accent-4)">
+        <span class="glyph">⚡</span>
+        <h3>Clash</h3>
+        <p>Contradictory pieces of code in the same window leave the model unable to tell <b>which one to trust.</b></p>
+      </div>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p><b>Poisoning:</b> if an agent hallucinates an error early in a thread and you keep using that thread, the bad
+        information lingers and keeps corrupting everything afterwards. <b>Distraction:</b> models apply different
+        attention weights across a long prompt, so they routinely miss crucial details buried in large blocks of text.</p>
+      <p><b>Confusion:</b> superfluous or redundant information dilutes the signal and pulls the model toward irrelevant
+        details. <b>Clash:</b> when contradictory pieces of code coexist in the same window, the model cannot reliably
+        tell which one to trust.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · JUST ENOUGH ═══════════════════════ -->
+<section class="slide" id="s-justenough" data-title="Just enough context" style="--c: var(--accent-2)">
+  <div class="inner cols" style="align-items: center;">
+    <div>
+      <p class="kicker rv"><span class="snum"></span>The rule of thumb</p>
+      <div class="statement rv" style="--d:.06s">
+        Not less context. <b>Just enough</b> context — delivered at the exact moment it's needed.
+      </div>
+    </div>
+    <div class="scene compact" aria-hidden="true">
+      <div class="dial">
+        <div class="track"><span class="knob"></span></div>
+        <div class="ticks"><span>too little</span><span><b>just enough</b></span><span>too much</span></div>
+      </div>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>The takeaway is not "less context" as a blanket rule. It is just enough context, delivered at the exact moment
+        it is needed. Everything that follows is about how to achieve that.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · DIVIDER: ARCHITECTURE ═══════════════════════ -->
+<section class="slide dark" id="s-div-arch" data-title="Part 2 — The architecture" style="--c: var(--accent-4)">
+  <div class="inner">
+    <span class="partmark" aria-hidden="true">02</span>
+    <p class="kicker rv"><span class="snum"></span>Part two</p>
+    <h1 class="rv" style="--d:.06s">The architecture of <em>context engineering.</em></h1>
+    <p class="lede rv" style="--d:.12s">A distinct layer that sits on top of prompt engineering and beneath autonomous
+      agents and opinionated engineering workflows.</p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>I frame context engineering as a distinct layer. Prompt engineering shapes the instruction. Context
+        engineering shapes the surrounding information environment that the instruction operates within.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · THE LAYER ═══════════════════════ -->
+<section class="slide" id="s-layer" data-title="The layer in the stack" style="--c: var(--accent-1)">
+  <div class="inner cols">
+    <div>
+      <p class="kicker rv"><span class="snum"></span>Where it sits</p>
+      <h1 class="rv" style="--d:.06s">A layer of its <em>own.</em></h1>
+      <p class="lede rv" style="--d:.12s">Prompt engineering shapes the instruction. Context engineering shapes the
+        information environment that instruction operates within — the layer everything else builds on.</p>
+    </div>
+    <div class="scene compact" aria-hidden="true">
+      <div class="stk">
+        <div class="layer">Opinionated workflows <span class="dot"></span></div>
+        <div class="layer">Autonomous agents <span class="dot"></span></div>
+        <div class="layer hot">Context engineering <span class="dot"></span></div>
+        <div class="layer">Prompt engineering <span class="dot"></span></div>
+      </div>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Context engineering sits on top of traditional prompt engineering and directly beneath autonomous agents and
+        opinionated engineering workflows. Prompt engineering shapes the instruction. Context engineering shapes the
+        surrounding information environment that the instruction operates within.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · FOUR TACTICS ═══════════════════════ -->
+<section class="slide" id="s-tactics" data-title="Four tactics" style="--c: var(--accent-3)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Keeping context lean and relevant</p>
+    <h1 class="rv" style="--d:.06s">Four architectural <em>tactics.</em></h1>
+    <div class="grid-4" style="margin-top: 22px;">
+      <div class="card" data-step="1" style="--c: var(--accent-1)">
+        <span class="glyph">⇲</span>
+        <h3>Externalizing context</h3>
+        <p>Move context out of volatile chat history into a <b>shared space</b> the human and agent edit as one source
+          of truth.</p>
+      </div>
+      <div class="card" data-step="1" style="--c: var(--accent-2)">
+        <span class="glyph">⚙</span>
+        <h3>Tool loadout</h3>
+        <p>Restrict active tools, MCP servers, and skills to <b>only what the problem needs</b>, so the model isn't
+          overwhelmed by options.</p>
+      </div>
+      <div class="card" data-step="2" style="--c: var(--accent-3)">
+        <span class="glyph">⊟</span>
+        <h3>Compression</h3>
+        <p><b>Summarize</b> to condense with some loss, or <b>compact</b> by swapping full text for references the
+          agent can retrieve later.</p>
+      </div>
+      <div class="card" data-step="2" style="--c: var(--accent-4)">
+        <span class="glyph">⧉</span>
+        <h3>Isolation</h3>
+        <p>Quarantine work into separate threads or <b>sub-agent scopes</b> so no single agent drowns in the broader
+          orchestration.</p>
+      </div>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p><b>Externalizing context:</b> move context out of volatile chat history into a dedicated, shared space where
+        human and agent collaborate on the same source of truth. <b>Tool loadout selection:</b> restrict the agent's
+        active tools, MCP servers, and skills to only what the immediate problem requires.</p>
+      <p><b>Context compression:</b> use summarization to condense text while accepting some information loss, or
+        compaction to swap full text for references the agent can retrieve later. <b>Isolation:</b> quarantine work
+        into separate threads or sub-agent scopes so an individual agent is never drowned by the broader orchestration.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · DIVIDER: WORKFLOWS ═══════════════════════ -->
+<section class="slide dark" id="s-div-workflows" data-title="Part 3 — Practical workflows" style="--c: var(--accent-5)">
+  <div class="inner">
+    <span class="partmark" aria-hidden="true">03</span>
+    <p class="kicker rv"><span class="snum"></span>Part three</p>
+    <h1 class="rv" style="--d:.06s">Practical <em>workflows.</em></h1>
+    <p class="lede rv" style="--d:.12s">Theory is only useful if it changes how you work on Monday morning. Two
+      workflows turn these ideas into repeatable practice.</p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Theory is only useful if it changes how you work on Monday morning. I shared two workflows that turn these
+        ideas into repeatable practice: the Breadcrumb Protocol and the RPI flow.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · BREADCRUMB PROTOCOL ═══════════════════════ -->
+<section class="slide" id="s-breadcrumb" data-title="The Breadcrumb Protocol" style="--c: var(--accent-2)">
+  <div class="inner">
+    <div class="cols" style="align-items: center;">
+      <div>
+        <p class="kicker rv"><span class="snum"></span>Workflow one</p>
+        <h1 class="rv" style="--d:.06s">The Breadcrumb <em>Protocol.</em></h1>
+        <p class="lede rv" style="--d:.12s">A lightweight human-and-agent pattern built around a single markdown
+          scratchpad. The conversation is disposable. The file is durable.</p>
+      </div>
+      <div class="scene compact" aria-hidden="true">
+        <div class="scratch">
+          <span class="tab">▸ breadcrumbs.md</span>
+          <div class="body2">
+            <div class="task done"><span class="box done"></span><span class="tln"></span></div>
+            <div class="task done"><span class="box done"></span><span class="tln"></span></div>
+            <div class="task"><span class="box"></span><span class="tln"></span></div>
+            <div class="task"><span class="box"></span><span class="tln"></span></div>
+          </div>
+          <div class="trail">
+            <span class="node"></span><span class="seg"></span><span class="node"></span><span class="seg"></span>
+            <span class="node"></span><span class="seg"></span><span class="node"></span>
+            <span class="crumb"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="abc" style="margin-top: 24px;">
+      <div class="aff" data-step="1"><span class="letter">1</span><h3>Plan &amp; break down</h3><p>Human and agent co-author a task breakdown in a markdown file <b>before any code</b> is generated.</p></div>
+      <div class="aff" data-step="1"><span class="letter">2</span><h3>Iterate &amp; log</h3><p>As the agent executes, the file is continuously updated with <b>state, decisions, and discoveries.</b></p></div>
+      <div class="aff" data-step="2"><span class="letter">3</span><h3>Quarantine failures</h3><p>When a thread is polluted, abandon it. Keep the file, note <b>why it failed</b>, and feed it to a fresh session.</p></div>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>The first workflow is a lightweight human-and-agent collaboration pattern built around a single markdown
+        scratchpad file. Plan and break down: before any code is generated, the human and the agent co-author a task
+        breakdown inside a markdown file. Iterate and log: as the agent executes, the file is continuously updated with
+        state, decisions, and discoveries.</p>
+      <p>Quarantine failures: when a chat session becomes polluted or goes off the rails, abandon the thread entirely.
+        Keep the markdown scratchpad, document why the session failed, and feed that clean file into a brand-new
+        session. The scratchpad is externalized context made concrete. The conversation is disposable. The file is durable.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · RPI FLOW ═══════════════════════ -->
+<section class="slide" id="s-rpi" data-title="The RPI flow" style="--c: var(--accent-4)">
+  <div class="inner cols">
+    <div>
+      <p class="kicker rv"><span class="snum"></span>Workflow two</p>
+      <h1 class="rv" style="--d:.06s">Research, Plan, Implement, <em>Review.</em></h1>
+      <p class="lede rv" style="--d:.12s">The same principles scaled across a team. Microsoft's open-source
+        <code>hve-core</code> structures development into a constrained, multi-step pipeline where each stage hands a
+        clean, scoped context to the next.</p>
+      <div class="loop" data-step="1">
+        <span class="step">Research</span><span class="larr">→</span>
+        <span class="step">Plan</span><span class="larr">→</span>
+        <span class="step">Implement</span><span class="larr">→</span>
+        <span class="step">Review</span>
+      </div>
+      <div class="thread" data-step="2"><p><b>Isolation</b> Each stage is the isolation tactic applied at the level of a whole development process.</p></div>
+    </div>
+    <div class="scene compact" aria-hidden="true">
+      <div class="pipeline">
+        <div class="rail"><span class="tok"></span></div>
+        <div class="node"><span class="rk">R</span><span class="nm">Stage 01<b>Research</b></span></div>
+        <div class="conn"></div>
+        <div class="node"><span class="rk">P</span><span class="nm">Stage 02<b>Plan</b></span></div>
+        <div class="conn"></div>
+        <div class="node"><span class="rk">I</span><span class="nm">Stage 03<b>Implement</b></span></div>
+        <div class="conn"></div>
+        <div class="node"><span class="rk">R</span><span class="nm">Stage 04<b>Review</b></span></div>
+      </div>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>The second workflow scales the same principles across a team. Microsoft's Industry Solutions Engineering team
+        open-sourced the hve-core repository, which structures development into a constrained pipeline. Research: a
+        highly capable model analyses all the resource materials and produces a comprehensive baseline. Plan: a
+        specialized planner decomposes that research into decoupled, granular steps.</p>
+      <p>Implement: independent sub-agents implement each sub-task in isolation, and in parallel where the work allows.
+        Review: the resulting code is reviewed meticulously against the original research boundaries and the plan. Each
+        stage hands a clean, scoped context to the next — the isolation tactic applied at the level of a whole process.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · TAKEAWAYS ═══════════════════════ -->
+<section class="slide" id="s-takeaways" data-title="Takeaways for 2026" style="--c: var(--accent-1)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Takeaways for 2026 and beyond</p>
+    <h1 class="rv" style="--d:.06s">Practices worth <em>adopting.</em></h1>
+    <ul class="bullets" data-step="1">
+      <li><b>Watch your context threshold.</b> Past roughly <code>60%</code> capacity, compact it or start a fresh thread rather than pushing on.</li>
+      <li><b>Treat sub-agents as functions.</b> Resist anthropomorphizing them — each is a discrete, tightly scoped step with clear inputs and outputs.</li>
+      <li><b>Shift the review left.</b> Don't wait for the PR to review a wall of green text. Review incrementally as the work happens.</li>
+      <li><b>Master one harness.</b> Stop chasing every new tool. Pick a core stack, learn its context limits, and get good at harness engineering.</li>
+    </ul>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Watch your context threshold: once an agent's context window reaches roughly 60% capacity, compact it or start
+        a fresh thread. Treat sub-agents as functions: resist anthropomorphizing them. Think of each as a discrete,
+        tightly scoped step with clear inputs and outputs.</p>
+      <p>Shift the review left: AI-assisted tools produce large, rapid changes, so waiting until the pull request to
+        review a giant wall of green text does not work. Master one harness: pick a core stack, learn its specific
+        context limitations, and get genuinely good at harness engineering.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · CLOSE ═══════════════════════ -->
+<section class="slide dark" id="s-close" data-title="Closing" style="--c: var(--accent-2)">
+  <div class="inner" style="text-align: center;">
+    <p class="kicker rv" style="justify-content: center;"><span class="snum"></span>Wrapping up</p>
+    <div class="statement rv" style="--d:.1s; margin: 30px auto 0; max-width: 16em;">
+      The vibes can go. The <b>engineering</b> stays.
+    </div>
+    <p class="lede rv" style="--d:.2s; margin: 22px auto 0; max-width: 34em;">Human expertise hasn't become less
+      valuable. The role shifts from typing code toward scaffolding, steering, and the systematic curation of context.</p>
+    <div class="cta rv" style="--d:.28s; margin: 44px auto 0; text-align: left;">
+      <span class="ctag">Go deeper</span>
+      <p>The full write-up, the talk recording, and the workflows referenced here:</p>
+      <div class="keys" style="margin-top: 4px;">
+        <a class="k" href="/2026/06/10/throw-away-the-vibes-context-engineering-ddd-melbourne-2026/"><b>←</b> read the full blog post</a>
+        <a class="k" href="https://www.youtube.com/watch?v=CkpQsz_Tpow"><b>↗</b> watch the talk</a>
+        <a class="k" href="https://dasith.me/2025/04/02/vibe-coding-breadcrumbs/"><b>↗</b> breadcrumb protocol</a>
+        <a class="k" href="https://github.com/microsoft/hve-core"><b>↗</b> hve-core</a>
+      </div>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>The thread running through all of it is that human engineering expertise has not become less valuable. The role
+        has shifted from typing code by hand toward high-level scaffolding, steering, and the systematic curation of
+        context. The vibes can go. The engineering stays.</p>
+    </aside>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══════════════════════ ENGINE ═══════════════════════ -->
+<script>
+(() => {
+  'use strict';
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const slides = $$('.slide');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let cur = 0;
+  let mode = 'read';
+
+  slides.forEach((s, i) => {
+    const n = $('.kicker .snum', s);
+    if (n) n.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0') + ' · ';
+  });
+
+  const menu = $('#menu'), menuList = $('#menu-list');
+  slides.forEach((s, i) => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = '#' + s.id;
+    a.textContent = s.dataset.title || s.id;
+    a.addEventListener('click', (e) => { e.preventDefault(); closeMenu(); go(i); });
+    li.appendChild(a);
+    menuList.appendChild(li);
+  });
+  const openMenu = () => { menu.classList.add('open'); markMenu(); };
+  const closeMenu = () => menu.classList.remove('open');
+  const toggleMenu = () => menu.classList.contains('open') ? closeMenu() : openMenu();
+  const markMenu = () => $$('a', menuList).forEach((a, i) => a.classList.toggle('here', i === cur));
+
+  slides.forEach((s) => {
+    s._steps = $$('[data-step]', s).sort((a, b) => (parseFloat(a.dataset.step) || 0) - (parseFloat(b.dataset.step) || 0));
+  });
+  const clearDelays = (root = document) => $$('[data-step]', root).forEach((el) => { el.style.transitionDelay = ''; });
+
+  $$('[data-type]').forEach((el) => { el.dataset.full = el.textContent; });
+  let typeRun = 0;
+  async function _typeSlide(s) {
+    const token = ++typeRun;
+    const els = $$('[data-type]', s);
+    if (!els.length) return;
+    if (reduced) { els.forEach((el) => { el.textContent = el.dataset.full; }); return; }
+    els.forEach((el) => { el.textContent = ''; });
+    for (const el of els) {
+      for (let i = 0; i <= el.dataset.full.length; i++) {
+        if (token !== typeRun) return;
+        el.textContent = el.dataset.full.slice(0, i);
+        await new Promise((r) => setTimeout(r, 16 + Math.random() * 26));
+      }
+      await new Promise((r) => setTimeout(r, 220));
+    }
+  }
+
+  const counter = $('#counter'), progress = $('#progress');
+  const npBody = $('#np-body'), npCount = $('#np-count');
+  function activate(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, si) => {
+      const active = si === cur;
+      s.classList.toggle('active', active);
+      if (!active) {
+        $$('.rv, [data-step]', s).forEach((el) => el.classList.remove('in'));
+        clearDelays(s);
+      }
+    });
+    const s = slides[cur];
+    $$('.rv, [data-step]', s).forEach((el) => el.classList.remove('in'));
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      $$('.rv', s).forEach((el) => el.classList.add('in'));
+      s._steps.forEach((el, idx) => {
+        el.style.transitionDelay = (.3 + idx * .09).toFixed(2) + 's';
+        el.classList.add('in');
+      });
+    }));
+    typeSlide(s);
+    counter.innerHTML = '<b>' + String(cur + 1).padStart(2, '0') + '</b> / ' + String(slides.length).padStart(2, '0');
+    progress.style.width = ((cur + 1) / slides.length * 100) + '%';
+    history.replaceState(null, '', '#' + s.id);
+    $('#btn-prev').disabled = cur === 0;
+    $('#btn-next').disabled = cur === slides.length - 1;
+    const talk = $('.talk', s);
+    npBody.innerHTML = talk ? talk.innerHTML.replace(/<span class="ttag">[\s\S]*?<\/span>/, '') : '<p>No notes for this slide.</p>';
+    npCount.textContent = (cur + 1) + ' / ' + slides.length;
+    markMenu();
+  }
+  function next() { if (cur < slides.length - 1) go(cur + 1); }
+  function prev() { if (cur > 0) go(cur - 1); }
+  function go(i) {
+    if (mode === 'present') activate(i);
+    else slides[i].scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
+  }
+
+  let io = null;
+  function watchRead() {
+    io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          if (e.target.matches('.term') || $('[data-type]', e.target)) typeSlide(e.target.closest('.slide'));
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.14 });
+    $$('.rv, [data-step]').forEach((el) => io.observe(el));
+  }
+  function unwatchRead() { if (io) { io.disconnect(); io = null; } }
+
+  let typedSlides = new WeakSet();
+  function typeSlide(s) {
+    if (mode === 'read') {
+      if (typedSlides.has(s)) return;
+      typedSlides.add(s);
+    }
+    return _typeSlide(s);
+  }
+
+  function onScroll() {
+    if (mode !== 'read') return;
+    const h = document.documentElement;
+    progress.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+    let best = 0;
+    slides.forEach((s, i) => { if (s.getBoundingClientRect().top < innerHeight * .45) best = i; });
+    cur = best;
+    $('#btn-prev').disabled = cur === 0;
+    $('#btn-next').disabled = cur === slides.length - 1;
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+
+  const btnMode = $('#btn-mode'), btnNotes = $('#btn-notes'), btnFull = $('#btn-full');
+  function setMode(m, keepPos) {
+    mode = m;
+    document.body.classList.toggle('present', m === 'present');
+    document.body.classList.toggle('read', m === 'read');
+    btnMode.innerHTML = m === 'present' ? 'Read <kbd>P</kbd>' : 'Present <kbd>P</kbd>';
+    btnNotes.hidden = m !== 'present';
+    btnFull.hidden = m !== 'present';
+    try { localStorage.setItem('context-engineering-deck-mode', m); } catch (e) {}
+    if (m === 'present') {
+      unwatchRead();
+      typedSlides = new WeakSet();
+      $$('.rv, [data-step]').forEach((el) => el.classList.remove('in'));
+      activate(keepPos ? cur : 0);
+    } else {
+      document.body.classList.remove('notes-open');
+      slides.forEach((s) => s.classList.remove('active'));
+      $$('.rv, [data-step]').forEach((el) => el.classList.remove('in'));
+      clearDelays();
+      typedSlides = new WeakSet();
+      watchRead();
+      if (keepPos) setTimeout(() => slides[cur].scrollIntoView({ behavior: 'auto', block: 'start' }), 30);
+      onScroll();
+    }
+  }
+  btnMode.addEventListener('click', () => setMode(mode === 'present' ? 'read' : 'present', true));
+  btnNotes.addEventListener('click', () => document.body.classList.toggle('notes-open'));
+  $('#btn-menu').addEventListener('click', toggleMenu);
+  btnFull.addEventListener('click', () => { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); });
+  $('#btn-prev').addEventListener('click', prev);
+  $('#btn-next').addEventListener('click', next);
+
+  addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const k = e.key.toLowerCase();
+    if (k === 'p') { setMode(mode === 'present' ? 'read' : 'present', true); return; }
+    if (k === 'm') { toggleMenu(); return; }
+    if (k === 'escape') { closeMenu(); return; }
+    if (mode !== 'present') return;
+    if (k === 'arrowright' || (k === ' ' && !e.shiftKey) || k === 'pagedown') { e.preventDefault(); next(); }
+    else if (k === 'arrowleft' || (k === ' ' && e.shiftKey) || k === 'pageup') { e.preventDefault(); prev(); }
+    else if (k === 'home') { e.preventDefault(); activate(0); }
+    else if (k === 'end') { e.preventDefault(); activate(slides.length - 1); }
+    else if (k === 'n') { document.body.classList.toggle('notes-open'); }
+    else if (k === 'f') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+  });
+
+  const qmode = new URLSearchParams(location.search).get('mode');
+  let saved = null;
+  try { saved = localStorage.getItem('context-engineering-deck-mode'); } catch (e) {}
+  const initial = (qmode === 'present' || qmode === 'read') ? qmode : (saved || 'read');
+  const hashIdx = slides.findIndex((s) => '#' + s.id === location.hash);
+  if (hashIdx > 0) cur = hashIdx;
+  setMode(initial, hashIdx > 0);
+})();
+</script>
+
+</body>
+</html>

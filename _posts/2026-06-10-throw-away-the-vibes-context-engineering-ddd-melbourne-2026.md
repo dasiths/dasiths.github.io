@@ -23,6 +23,7 @@ The video of the session is available on YouTube, and the slides are on Speaker 
 
 * **Video of the talk:** [Throw Away The Vibes: Context Engineering Is All You Need - DDD Melbourne 2026](https://www.youtube.com/watch?v=CkpQsz_Tpow)
 * **Slides:** [Throw Away The Vibes: Context Engineering Is All You Need on Speaker Deck](https://speakerdeck.com/dasiths/throw-away-the-vibes-context-engineering-is-all-you-need-ddd-melbourne-2026)
+* **Interactive slides:** [Throw Away The Vibes — an interactive walkthrough of this talk](/presentations/context-engineering/)
 * **Session details:** [Sessionize abstract](https://sessionize.com/s/dasiths/throw-away-the-vibes-context-engineering-is-all-yo/144452)
 
 The talk premise, in short:
