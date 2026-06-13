@@ -202,7 +202,7 @@ When converting a blog post to slides:
 7. **Diagrams over description.** If the post explains a flow or sequence, render it as a Mermaid diagram inside a `.merframe`. Use the post's own labels.
 8. **Tables become cards or grids.** Blog tables map to `.grid-2`, `.grid-3`, `.abc`, or `.maptbl` depending on content density.
 9. **The post's structure IS the slide order.** Don't rearrange. If the post builds Part 1 → Part 2, the deck should too, with dark divider slides between parts.
-10. **Include a title slide and a closing slide.** Title slide carries the post title, subtitle, and navigation hints. Closing slide links back to the full post and any relevant resources.
+10. **Include a title slide and a closing slide.** Title slide carries the breadcrumb + series + date line (`.deckmeta`, see Breadcrumb Navigation), the post title, subtitle, and navigation hints. Closing slide links back to the full post and any relevant resources.
 
 ## Mermaid Diagrams
 
@@ -216,7 +216,46 @@ When converting a blog post to slides:
 - `@media (prefers-reduced-motion: reduce)` disables all animations and transitions.
 - Print styles: hide chrome, show all slides stacked, show talk tracks.
 - Keyboard navigation must work completely without mouse.
-- Topbar shows: wordmark (presentation title), mode toggle, notes toggle, menu toggle, fullscreen toggle.
+- Topbar shows: breadcrumb up-link (`Decks`), wordmark (presentation title), mode toggle, notes toggle, menu toggle, fullscreen toggle.
+
+## Breadcrumb Navigation (required for every deck)
+
+Every deck must give the viewer a way back up to the gallery. The topbar's left edge is a breadcrumb trail:
+
+```html
+<header class="topbar">
+  <a class="crumb" href="/presentations/">Decks</a>
+  <span class="crumb-sep" aria-hidden="true">›</span>
+  <a class="wordmark" href="#s-title">Series · <b>Deck Title</b></a>
+  <span class="spacer"></span>
+  <!-- mode / notes / menu / full buttons -->
+</header>
+```
+
+- `.crumb` links **up one level** to the gallery (`/presentations/`), which itself links back to the blog home. Do not point it at `/` directly.
+- `.crumb-sep` (`›`) is decorative — mark it `aria-hidden="true"`.
+- The `.wordmark` stays the **current page** in the trail and continues to link to `#s-title` (the title slide). Its form is **`<Series> · <Deck Title>`** — the lead label is the deck's **series name** (the same series used in the gallery), not a topic or in-world flavor label. This keeps the topbar breadcrumb identical in shape across every deck.
+- `.crumb` and `.crumb-sep` styles live in `presentations-base.css`; the `:hover` color uses the deck's primary accent token. Copy them alongside `.wordmark`.
+- The gallery `index.html` is the top of the trail and keeps its own `← dasith.me` home link — no `.crumb` needed there.
+
+### Title-slide breadcrumb + date line
+
+The topbar breadcrumb is mirrored on the title slide itself by a `.deckmeta` line, the first element inside the title slide's content column (before the kicker):
+
+```html
+<p class="deckmeta rv">
+  <a href="/presentations/">Decks</a>
+  <span class="sep" aria-hidden="true">›</span>
+  <span class="ser"><Series Name></span>
+  <span class="sep" aria-hidden="true">·</span>
+  <time datetime="YYYY-MM-DD">DD Mon YYYY</time>
+</p>
+```
+
+- The **series** must match the deck's series in the gallery and the topbar wordmark.
+- The **date** is the companion blog post's date (`YYYY-MM-DD` from `/_posts/`); show it human-friendly (e.g. `10 Jun 2026`) with the ISO value in `datetime`.
+- `.deckmeta` styles live in `presentations-base.css`; the series label and link hover use the deck's accent. The separators are `aria-hidden`.
+- This is the only place the date appears inside a deck — keep it on the title slide, not on every slide.
 
 ## File Placement
 
@@ -225,11 +264,55 @@ When converting a blog post to slides:
 - The blog post should link to the presentation and vice versa.
 - Teaser image if used: `/assets/images/<slug>_teaser.png`
 
+## Analytics and Tracking (required for every page)
+
+Presentations are standalone static HTML with **no Jekyll front matter**, so Jekyll copies them verbatim and they do **not** inherit the site's `_includes/analytics.html` or `_includes/seo.html`. Tracking must therefore be wired in per page.
+
+To keep tracking consistent and in one place, every page under `/presentations/` (each deck **and** the gallery `index.html`) must reference the shared snippet `presentations/shared/analytics.js`. Add this one line in the `<head>`, right after the `<title>`/`<meta name="description">`:
+
+```html
+<script src="/presentations/shared/analytics.js" defer></script>
+```
+
+That single file is the source of truth for:
+
+- **Google Analytics (gtag.js)** — page-view tracking.
+- **Search-engine site verification** — Google (`google-site-verification`) and Bing (`msvalidate.01`) meta tags injected at runtime.
+
+Rules:
+
+- **Never inline the gtag snippet or hard-code the tracking ID** into a deck. Always reference the shared file so the IDs live in exactly one place.
+- The IDs inside `presentations/shared/analytics.js` mirror `_config.yml` (`analytics.google.tracking_id`, `google_site_verification`, `bing_site_verification`). If those change, update the shared file too.
+- The snippet skips `localhost`/`127.0.0.1` so local previews aren't tracked — no extra work needed for dev.
+
 ## Gallery Index (required for every new deck)
 
 `presentations/index.html` is a self-contained gallery landing page that lists every deck under `/presentations/`. It uses the same dark terminal/neon tokens, fonts, and ambient grid backdrop as a deck, but is a standalone page — no shared CSS/JS. **After creating a new presentation, add it to this gallery.**
 
-To add a deck, copy an existing `<article>` block inside `<main class="gallery">` and update it:
+### Series grouping (first-class)
+
+Decks are organized into **series** — a named track of related talks. `<main class="gallery">` is a vertical stack of `<section class="series">` blocks, each with a heading and its own grid of deck cards. A series may contain a single deck; the grouping still applies.
+
+```html
+<section class="series" style="--s: var(--accent-N)">
+  <header class="series-head">
+    <p class="series-label">Series</p>
+    <h2 class="series-title"><Series name></h2>
+    <p class="series-blurb">One sentence describing the through-line of the series.</p>
+  </header>
+  <div class="series-grid">
+    <!-- one or more <article> deck cards -->
+  </div>
+</section>
+```
+
+- **Place a new deck in its series.** If the series already exists, copy an `<article>` into that section's `.series-grid`. If it's a new series, copy a whole `<section class="series">` block, set a distinct `--s` accent, and write the `series-title` and `series-blurb`.
+- **`--s` is the series accent** (`--accent-1`..`--accent-5`), used by the `series-label` and its tick mark. Keep consecutive series visually distinct.
+- Order series most-relevant/most-recent first.
+
+### Deck card
+
+To add a deck, copy an existing `<article>` block inside a `.series-grid` and update it:
 
 ```html
 <article>
@@ -239,7 +322,7 @@ To add a deck, copy an existing `<article>` block inside `<main class="gallery">
       <!-- bespoke CSS mini-thumbnail for this deck's theme -->
     </div>
     <div class="meta">
-      <span class="tag">Topic label <span class="yr">· Event / context</span></span>
+      <span class="tag">Topic label <span class="yr">· Event / context</span><time class="date" datetime="YYYY-MM-DD">DD Mon YYYY</time></span>
       <h2><Short title>: <em>accent phrase</em> rest of title</h2>
       <p>One- or two-sentence synopsis pulled from the deck's title-slide lede.</p>
       <div class="chips"><span class="chip">Tag</span><span class="chip">Tag</span></div>
@@ -251,7 +334,8 @@ To add a deck, copy an existing `<article>` block inside `<main class="gallery">
 
 Rules for gallery entries:
 
-- **Pick a distinct `--c` accent** (`--accent-1`..`--accent-5`) so cards don't repeat the same color side by side. Set `--th-bg` to a near-black tinted to the deck's theme.
+- **Pick a distinct `--c` accent** (`--accent-1`..`--accent-5`) so cards don't repeat the same color side by side. Set `--th-bg` to a near-black tinted to the deck's theme. A deck's `--c` is usually the same as its series `--s`, but it doesn't have to be.
+- **Every deck card carries a date.** Add a `<time class="date" datetime="YYYY-MM-DD">DD Mon YYYY</time>` at the end of the `.tag` row. Use the companion blog post's date (the `YYYY-MM-DD` from `/_posts/`). The machine-readable `datetime` attribute is ISO; the visible text is human-friendly (e.g. `10 Jun 2026`).
 - **Build a bespoke CSS thumbnail**, not a screenshot or image. Add a `.th-<motif>` class and its styles in the `<style>` block (see `.th-ctx` terminal-window and `.th-shop` corner-shop examples). Re-skin the deck's own title-slide scene at small scale; keep one subtle `floatup`/ambient loop.
 - **Reuse the deck's own title and lede** for `h2` and `p`, with one accent phrase in `<em>`.
 - Keep the card a single `<a class="deck">` link wrapping both thumbnail and meta so the whole card is clickable; keep the `aria-label`.
@@ -260,9 +344,9 @@ Rules for gallery entries:
 ## What NOT to Do
 
 - Do not use reveal.js, impress.js, or any external slide framework.
-- Do not split into multiple files (no separate CSS/JS).
+- Do not split a deck's own CSS/JS into multiple files — the deck's styles and engine stay inline in its `index.html`. (The shared `presentations/shared/analytics.js` is the one allowed exception; reference it, don't inline it.)
 - Do not add a package.json or build step for the presentation.
 - Do not use iframes.
-- Do not add tracking or analytics scripts.
+- Do not inline or hard-code analytics/tracking IDs into a deck. Use the shared `presentations/shared/analytics.js` reference instead (see Analytics and Tracking).
 - Do not over-animate. Ambient motion should be subtle, slow, and small in amplitude — one or two looping animations per scene, never flashy. Text content reveals via the `.rv`/`data-step` system, not custom animation.
 - Do not make every presentation look the same. Theme each one to its content.

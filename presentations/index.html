@@ -5,13 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Presentations — Dasith Wijesiriwardena</title>
 <meta name="description" content="Interactive, self-contained slide decks by Dasith Wijesiriwardena. Read them like an article or present them full-screen.">
+<script src="/presentations/shared/analytics.js" defer></script>
 <!--
   ═══════════════════════════════════════════════════════════════════════════
   PRESENTATIONS — GALLERY INDEX
   ═══════════════════════════════════════════════════════════════════════════
   A self-contained landing page that lists every deck under /presentations/.
   No build step, no YAML front matter — Jekyll copies it verbatim.
-  Add a new deck by copying a <article class="deck"> block below.
+
+  Decks are grouped into SERIES. To add a deck:
+    · existing series → copy an <article> into that <section class="series">'s .series-grid
+    · new series      → copy a whole <section class="series"> block, set its --s accent,
+                        series-title and series-blurb, then add the deck(s)
+  Each deck card carries a <time class="date"> in its .tag row.
   ═══════════════════════════════════════════════════════════════════════════
 -->
 
@@ -54,19 +60,73 @@
   ::selection { background: color-mix(in srgb, var(--accent-1) 28%, transparent); }
   a { color: inherit; }
 
-  /* ── ambient grid backdrop ── */
+  /* ── ambient backdrop: aurora + grid + network + spotlight ── */
+  /* (1) soft drifting aurora blobs in the accent palette */
+  .aurora {
+    position: fixed; inset: 0; z-index: -4; pointer-events: none; overflow: hidden;
+  }
+  .aurora span {
+    position: absolute; border-radius: 50%; filter: blur(90px); opacity: .2;
+    will-change: transform;
+  }
+  .aurora .a1 {
+    width: 58vw; height: 58vw; top: -18vw; left: -12vw;
+    background: radial-gradient(circle, var(--accent-1), transparent 62%);
+    animation: drift1 28s ease-in-out infinite;
+  }
+  .aurora .a2 {
+    width: 50vw; height: 50vw; top: -6vw; right: -14vw;
+    background: radial-gradient(circle, var(--accent-4), transparent 62%);
+    animation: drift2 36s ease-in-out infinite;
+  }
+  .aurora .a3 {
+    width: 46vw; height: 46vw; top: 30vh; left: 26vw;
+    background: radial-gradient(circle, var(--accent-2), transparent 64%);
+    opacity: .14; animation: drift3 44s ease-in-out infinite;
+  }
+  @keyframes drift1 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(6vw, 4vh) scale(1.12); } }
+  @keyframes drift2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-5vw, 5vh) scale(1.08); } }
+  @keyframes drift3 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-4vw, -6vh) scale(1.1); } }
+
+  /* (2) ambient grid — faint blueprint base, gently panning */
   .gridbg {
-    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    position: fixed; inset: 0; z-index: -3; pointer-events: none;
     background-image:
       linear-gradient(color-mix(in srgb, var(--accent-1) 5%, transparent) 1px, transparent 1px),
       linear-gradient(90deg, color-mix(in srgb, var(--accent-1) 5%, transparent) 1px, transparent 1px);
     background-size: 46px 46px;
     -webkit-mask: radial-gradient(ellipse 85% 70% at 50% 0%, #000 0%, transparent 78%);
     mask: radial-gradient(ellipse 85% 70% at 50% 0%, #000 0%, transparent 78%);
-    opacity: .55;
+    opacity: .3;
+    animation: gridpan 40s linear infinite;
+  }
+  @keyframes gridpan { to { background-position: 46px 46px; } }
+
+  /* (3) knowledge-graph network with pulsing edges (canvas) */
+  .netbg { position: fixed; inset: 0; z-index: -2; pointer-events: none; }
+
+  /* (4) top spotlight + edge vignette to frame the masthead */
+  .spotlight {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% -8%, color-mix(in srgb, var(--accent-1) 14%, transparent), transparent 60%),
+      radial-gradient(ellipse 120% 80% at 50% 50%, transparent 58%, color-mix(in srgb, var(--bg) 88%, #000) 100%);
   }
 
-  .wrap { max-width: 1180px; margin: 0 auto; padding: clamp(54px, 9vh, 110px) clamp(22px, 5vw, 64px) 80px; }
+  /* (5) frosted-glass column behind the content for readability */
+  .frost {
+    position: fixed; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: min(1240px, 100vw); z-index: 0; pointer-events: none;
+    backdrop-filter: blur(7px) saturate(115%);
+    -webkit-backdrop-filter: blur(7px) saturate(115%);
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--bg) 34%, transparent),
+      color-mix(in srgb, var(--bg) 20%, transparent));
+    -webkit-mask: linear-gradient(90deg, transparent 0, #000 11%, #000 89%, transparent 100%);
+    mask: linear-gradient(90deg, transparent 0, #000 11%, #000 89%, transparent 100%);
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: clamp(54px, 9vh, 110px) clamp(22px, 5vw, 64px) 80px; }
 
   /* ── masthead ── */
   .home {
@@ -102,9 +162,63 @@
     border-radius: 5px; padding: 1px 6px; color: color-mix(in srgb, var(--accent-2) 80%, white);
   }
 
+  /* ── search / filter ── */
+  .search {
+    margin-top: clamp(24px, 4vh, 38px); position: relative; max-width: 420px;
+  }
+  .search svg { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; opacity: .6; }
+  .search input {
+    width: 100%; font-family: var(--mono); font-size: 12px; letter-spacing: .04em; color: var(--text);
+    background: color-mix(in srgb, var(--panel) 80%, transparent);
+    border: 1px solid var(--line); border-radius: 999px; padding: 12px 16px 12px 40px;
+    outline: none; transition: border-color .25s, box-shadow .25s, background .25s;
+  }
+  .search input::placeholder { color: var(--faint); text-transform: uppercase; letter-spacing: .12em; font-size: 11px; }
+  .search input:focus {
+    border-color: color-mix(in srgb, var(--accent-1) 55%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-1) 12%, transparent);
+    background: var(--panel);
+  }
+  .search .clear {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    font-family: var(--mono); font-size: 14px; line-height: 1; color: var(--faint);
+    background: none; border: 0; cursor: pointer; padding: 6px 9px; border-radius: 50%;
+    transition: color .2s, background .2s;
+  }
+  .search .clear:hover { color: var(--text); background: color-mix(in srgb, var(--text) 8%, transparent); }
+  .search .clear[hidden] { display: none; }
+
+  .series[hidden], article[hidden] { display: none; }
+  .noresults {
+    display: none; font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--faint); padding: 28px 0;
+  }
+  .noresults b { color: var(--text); font-weight: 700; }
+  .gallery.empty .noresults { display: block; }
+
   /* ── gallery grid ── */
   .gallery {
     margin-top: clamp(38px, 6vh, 64px);
+    display: flex; flex-direction: column; gap: clamp(40px, 6vh, 68px);
+  }
+
+  /* ── series grouping ── */
+  .series-head {
+    display: grid; gap: 6px; padding-bottom: 18px; margin-bottom: clamp(20px, 3vh, 30px);
+    border-bottom: 1px solid var(--line);
+  }
+  .series-label {
+    font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .26em;
+    text-transform: uppercase; color: var(--s, var(--accent-1)); display: flex; align-items: center; gap: 10px;
+  }
+  .series-label::before {
+    content: ''; width: 22px; height: 9px;
+    background: repeating-linear-gradient(90deg,
+      var(--s, var(--accent-1)) 0 2px, transparent 2px 4px, var(--s, var(--accent-1)) 4px 5px, transparent 5px 8px);
+  }
+  .series-title { font-size: clamp(22px, 3vw, 32px); font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
+  .series-blurb { font-size: clamp(14px, 1.5vw, 16px); color: var(--muted); max-width: 42em; font-weight: 380; }
+  .series-grid {
     display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(18px, 2.5vw, 28px);
   }
 
@@ -135,9 +249,13 @@
   .deck .meta { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 11px; flex: 1; }
   .deck .tag {
     font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase;
-    color: var(--c, var(--accent-1)); display: flex; align-items: center; gap: 10px;
+    color: var(--c, var(--accent-1)); display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   }
   .deck .tag .yr { color: var(--faint); font-weight: 400; }
+  .deck .tag .date {
+    margin-left: auto; color: var(--muted); font-weight: 600; letter-spacing: .12em;
+    white-space: nowrap; padding-left: 10px;
+  }
   .deck h2 { font-size: clamp(20px, 2.3vw, 27px); font-weight: 700; letter-spacing: -.02em; line-height: 1.12; }
   .deck h2 em { font-family: var(--serif); font-style: italic; font-weight: 500; color: var(--c, var(--accent-1)); }
   .deck p { font-size: 14px; color: var(--muted); font-weight: 380; line-height: 1.6; }
@@ -218,7 +336,7 @@
   footer a:hover { text-decoration: underline; }
 
   @media (max-width: 760px) {
-    .gallery { grid-template-columns: 1fr; }
+    .series-grid { grid-template-columns: 1fr; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -228,82 +346,349 @@
 </head>
 <body>
 
+<div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
 <div class="gridbg" aria-hidden="true"></div>
+<canvas class="netbg" aria-hidden="true"></canvas>
+<div class="spotlight" aria-hidden="true"></div>
+<div class="frost" aria-hidden="true"></div>
 
 <div class="wrap">
   <a class="home" href="https://dasith.me/">← dasith.me</a>
 
   <header class="mast">
     <p class="kicker">Slide decks</p>
-    <h1>Presentations, built to <em>read or present.</em></h1>
-    <p class="lede">A collection of self-contained, interactive talks. Each deck works as a scrolling article
-      with speaker notes inline, or full-screen with arrow-key navigation — press <code>P</code> to switch.
-      No slides to download; everything runs in the browser.</p>
+    <h1>Browser-based presentations, <em>read or play.</em></h1>
+    <p class="lede">Each one is a complete talk that lives in a single web page — no app, no download.
+      Read it top-to-bottom like an article with the speaker notes inline, or press <code>P</code> to play it
+      as a full-screen deck and drive it with the arrow keys.</p>
+
+    <div class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="search" id="deck-search" placeholder="Filter decks by name" autocomplete="off" spellcheck="false"
+        aria-label="Filter decks by name">
+      <button class="clear" id="deck-search-clear" type="button" hidden aria-label="Clear filter">✕</button>
+    </div>
   </header>
 
   <main class="gallery">
 
-    <!-- ═══════════════════════ DECK · CONTEXT ENGINEERING ═══════════════════════ -->
-    <article>
-      <a class="deck" href="/presentations/context-engineering/" style="--c: var(--accent-1); --th-bg: #0a0e16;" aria-label="Open: Throw Away The Vibes — Context Engineering Is All You Need">
-        <div class="thumb th-ctx" aria-hidden="true">
-          <div class="winx">
-            <div class="bar"><i></i><i></i><i></i><span>agent · context</span></div>
-            <div class="rows">
-              <div class="r"></div>
-              <div class="r hot"></div>
-              <div class="r"></div>
-            </div>
-            <div class="gline"></div>
-          </div>
-        </div>
-        <div class="meta">
-          <span class="tag">Context Engineering <span class="yr">· DDD Melbourne 2026</span></span>
-          <h2>Throw Away The Vibes: <em>Context Engineering</em> Is All You Need</h2>
-          <p>Reliable results from AI coding agents don't come from prompting harder — they come from engineering
-            the context you feed the model. The failure modes of long context, four architectural tactics, and two
-            practical workflows.</p>
-          <div class="chips">
-            <span class="chip">AI agents</span>
-            <span class="chip">LLM</span>
-            <span class="chip">Workflows</span>
-          </div>
-          <span class="go">Open deck →</span>
-        </div>
-      </a>
-    </article>
+    <p class="noresults" role="status">No decks match <b id="noresults-q"></b>.</p>
 
-    <!-- ═══════════════════════ DECK · THE ERRAND ═══════════════════════ -->
-    <article>
-      <a class="deck" href="/presentations/errand/" style="--c: var(--accent-2); --th-bg: #10130c;" aria-label="Open: The Errand — Agentic Delegation, Explained">
-        <div class="thumb th-shop" aria-hidden="true">
-          <div class="shopx">
-            <div class="sign"><b>PATEL'S</b><span>EST. 1994</span></div>
-            <div class="awn"></div>
-            <div class="front"><span class="open">OPEN</span></div>
-          </div>
-        </div>
-        <div class="meta">
-          <span class="tag">Agentic Delegation <span class="yr">· Identity &amp; AAuth</span></span>
-          <h2>The Errand: <em>Agentic Delegation,</em> Explained</h2>
-          <p>What sending a kid to the corner shop teaches us about letting AI agents act on our behalf — and why
-            that turns out to be a genuinely hard identity problem.</p>
-          <div class="chips">
-            <span class="chip">Agents</span>
-            <span class="chip">Identity</span>
-            <span class="chip">Security</span>
-          </div>
-          <span class="go">Open deck →</span>
-        </div>
-      </a>
-    </article>
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         SERIES · AGENTIC IAM
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <section class="series" style="--s: var(--accent-2)">
+      <header class="series-head">
+        <p class="series-label">Series</p>
+        <h2 class="series-title">Agentic IAM</h2>
+        <p class="series-blurb">Identity, delegation, and authorization for AI agents acting on our behalf.</p>
+      </header>
+      <div class="series-grid">
+
+        <!-- ── DECK · THE ERRAND ── -->
+        <article>
+          <a class="deck" href="/presentations/errand/" style="--c: var(--accent-2); --th-bg: #10130c;" aria-label="Open: The Errand — Agentic Delegation, Explained">
+            <div class="thumb th-shop" aria-hidden="true">
+              <div class="shopx">
+                <div class="sign"><b>PATEL'S</b><span>EST. 1994</span></div>
+                <div class="awn"></div>
+                <div class="front"><span class="open">OPEN</span></div>
+              </div>
+            </div>
+            <div class="meta">
+              <span class="tag">Agentic Delegation <span class="yr">· Identity &amp; AAuth</span><time class="date" datetime="2026-06-10">10 Jun 2026</time></span>
+              <h2>The Errand: <em>Agentic Delegation,</em> Explained</h2>
+              <p>What sending a kid to the corner shop teaches us about letting AI agents act on our behalf — and why
+                that turns out to be a genuinely hard identity problem.</p>
+              <div class="chips">
+                <span class="chip">Agents</span>
+                <span class="chip">Identity</span>
+                <span class="chip">Security</span>
+              </div>
+              <span class="go">Open deck →</span>
+            </div>
+          </a>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         SERIES · AI ASSISTED ENGINEERING
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <section class="series" style="--s: var(--accent-1)">
+      <header class="series-head">
+        <p class="series-label">Series</p>
+        <h2 class="series-title">AI Assisted Engineering</h2>
+        <p class="series-blurb">Getting reliable, repeatable results when building software with AI coding agents.</p>
+      </header>
+      <div class="series-grid">
+
+        <!-- ── DECK · CONTEXT ENGINEERING ── -->
+        <article>
+          <a class="deck" href="/presentations/context-engineering/" style="--c: var(--accent-1); --th-bg: #0a0e16;" aria-label="Open: Throw Away The Vibes — Context Engineering Is All You Need">
+            <div class="thumb th-ctx" aria-hidden="true">
+              <div class="winx">
+                <div class="bar"><i></i><i></i><i></i><span>agent · context</span></div>
+                <div class="rows">
+                  <div class="r"></div>
+                  <div class="r hot"></div>
+                  <div class="r"></div>
+                </div>
+                <div class="gline"></div>
+              </div>
+            </div>
+            <div class="meta">
+              <span class="tag">Context Engineering <span class="yr">· DDD Melbourne 2026</span><time class="date" datetime="2026-06-10">10 Jun 2026</time></span>
+              <h2>Throw Away The Vibes: <em>Context Engineering</em> Is All You Need</h2>
+              <p>Reliable results from AI coding agents don't come from prompting harder — they come from engineering
+                the context you feed the model. The failure modes of long context, four architectural tactics, and two
+                practical workflows.</p>
+              <div class="chips">
+                <span class="chip">AI agents</span>
+                <span class="chip">LLM</span>
+                <span class="chip">Workflows</span>
+              </div>
+              <span class="go">Open deck →</span>
+            </div>
+          </a>
+        </article>
+
+      </div>
+    </section>
 
   </main>
 
   <footer>
-    <p>Built by <a href="https://dasith.me/">Dasith Wijesiriwardena</a> · read mode and present mode in every deck</p>
+    <p>Built by <a href="https://dasith.me/">Dasith Wijesiriwardena</a> with GitHub Copilot · read mode and present mode in every deck</p>
   </footer>
 </div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     DECK FILTER — substring match on deck name (the card's <h2>)
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  var input = document.getElementById('deck-search');
+  var clear = document.getElementById('deck-search-clear');
+  var gallery = document.querySelector('.gallery');
+  if (!input || !gallery) return;
+
+  var cards = Array.prototype.map.call(gallery.querySelectorAll('article'), function (article) {
+    var h2 = article.querySelector('h2');
+    return { article: article, name: (h2 ? h2.textContent : '').toLowerCase() };
+  });
+  var sections = Array.prototype.slice.call(gallery.querySelectorAll('.series'));
+  var qOut = document.getElementById('noresults-q');
+
+  function apply() {
+    var q = input.value.trim().toLowerCase();
+    clear.hidden = q === '';
+    var anyVisible = false;
+    cards.forEach(function (c) {
+      var match = q === '' || c.name.indexOf(q) !== -1;
+      c.article.hidden = !match;
+      if (match) anyVisible = true;
+    });
+    // hide a series whose cards are all filtered out
+    sections.forEach(function (sec) {
+      var hasVisible = !!sec.querySelector('article:not([hidden])');
+      sec.hidden = !hasVisible;
+    });
+    gallery.classList.toggle('empty', !anyVisible);
+    if (qOut) qOut.textContent = '"' + input.value.trim() + '"';
+  }
+
+  input.addEventListener('input', apply);
+  clear.addEventListener('click', function () { input.value = ''; apply(); input.focus(); });
+  input.addEventListener('keydown', function (e) { if (e.key === 'Escape') { input.value = ''; apply(); } });
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     KNOWLEDGE-GRAPH BACKDROP
+     A canvas network of concept words pulled from the blog's posts. Nodes are
+     wired into parent→child trees; "electricity" pulses travel random root→leaf
+     paths, lighting edges and the words they pass through. Pure canvas, no deps,
+     pointer-events: none, and fully static under prefers-reduced-motion.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  var canvas = document.querySelector('.netbg');
+  if (!canvas || !canvas.getContext) return;
+  var ctx = canvas.getContext('2d');
+  var REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Concept words pulled from the blog's post titles.
+  var WORDS = [
+    'Context Engineering', 'Agentic Delegation', 'Breadcrumb Protocol', 'Event Sourcing',
+    'Eventual Consistency', 'Distributed Systems', 'Object Capability', 'Mediator Pattern',
+    'AzureAD', 'Bearer Tokens', 'Supply Chain', 'Durable Functions', 'OpenTelemetry',
+    'MQTT', 'Web API', 'Microservices', 'Prompt Injection', 'LLM', 'Tool Use', 'OAuth',
+    'ORAS', 'CSRF Tokens', 'Multi-tenant', 'REST', 'EF Core', 'DbUp', 'Simple Endpoints',
+    'GitOps', 'EdgeDevOps', 'NimbleConfig', 'Distributed Tracing', 'Identity', 'AAuth',
+    'Claims', 'Context Propagation', 'Secure Supply Chain'
+  ];
+  var ACCENTS = ['#2ad6ee', '#7ef0a8', '#ffc35a', '#b79bff', '#ff6b8b'];
+
+  var W, H, DPR, nodes, edges, pulses, raf, lastT, spawnAccum, running = true;
+
+  function rand(a, b) { return a + Math.random() * (b - a); }
+  function pick(a) { return a[(Math.random() * a.length) | 0]; }
+  function rgba(hex, a) {
+    var h = hex.replace('#', '');
+    return 'rgba(' + parseInt(h.slice(0, 2), 16) + ',' + parseInt(h.slice(2, 4), 16) + ',' + parseInt(h.slice(4, 6), 16) + ',' + a + ')';
+  }
+
+  function resize() {
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    canvas.width = W * DPR; canvas.height = H * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    build();
+  }
+
+  function connect(a, b) { nodes[a].children.push(b); nodes[b].parents.push(a); edges.push([a, b]); }
+
+  function build() {
+    nodes = []; edges = []; pulses = []; spawnAccum = 0;
+    var target = Math.max(16, Math.min(WORDS.length, Math.round(W * H / 46000)));
+    var words = WORDS.slice().sort(function () { return Math.random() - 0.5; });
+    var minD = Math.min(W, H) * 0.12, tries = 0;
+    while (nodes.length < target && tries < target * 80) {
+      tries++;
+      var x = rand(W * 0.05, W * 0.95), y = rand(H * 0.07, H * 0.93), ok = true;
+      for (var i = 0; i < nodes.length; i++) {
+        if (Math.hypot(nodes[i].bx - x, nodes[i].by - y) < minD) { ok = false; break; }
+      }
+      if (!ok) continue;
+      nodes.push({
+        x: x, y: y, bx: x, by: y, label: words[nodes.length % words.length],
+        amp: rand(5, 14), spd: rand(0.00006, 0.00015), ph: rand(0, 6.28), ph2: rand(0, 6.28),
+        children: [], parents: [], act: 0, col: '#9fb0c4'
+      });
+    }
+    // spanning forest: each node links to its nearest earlier node (parent→child, acyclic)
+    for (var n = 1; n < nodes.length; n++) {
+      var best = -1, bestD = Infinity, second = -1, secD = Infinity;
+      for (var j = 0; j < n; j++) {
+        var d = Math.hypot(nodes[n].bx - nodes[j].bx, nodes[n].by - nodes[j].by);
+        if (d < bestD) { secD = bestD; second = best; bestD = d; best = j; }
+        else if (d < secD) { secD = d; second = j; }
+      }
+      if (best >= 0) connect(best, n);
+      if (second >= 0 && secD < minD * 2.3 && Math.random() < 0.34) connect(second, n);
+    }
+  }
+
+  function spawnPulse() {
+    var roots = [];
+    for (var i = 0; i < nodes.length; i++) if (!nodes[i].parents.length && nodes[i].children.length) roots.push(i);
+    var cur = roots.length ? pick(roots) : (Math.random() * nodes.length) | 0;
+    var path = [cur], hops = 2 + (Math.random() * 5 | 0);
+    while (hops-- > 0) {
+      var ch = nodes[cur].children;
+      if (!ch.length) break;
+      cur = pick(ch); path.push(cur);
+    }
+    if (path.length < 2) return;
+    pulses.push({ path: path, seg: 0, t: 0, speed: rand(0.7, 1.4), color: pick(ACCENTS) });
+  }
+
+  function step(now, dt) {
+    for (var i = 0; i < nodes.length; i++) {
+      var nd = nodes[i];
+      nd.x = nd.bx + Math.sin(now * nd.spd + nd.ph) * nd.amp;
+      nd.y = nd.by + Math.cos(now * nd.spd * 1.1 + nd.ph2) * nd.amp;
+      if (nd.act > 0) nd.act = Math.max(0, nd.act - dt * 0.0016);
+    }
+    for (var p = pulses.length - 1; p >= 0; p--) {
+      var pu = pulses[p];
+      pu.t += pu.speed * dt / 1000 * 1.5;
+      while (pu.t >= 1 && pu.seg < pu.path.length - 2) { pu.t -= 1; pu.seg++; }
+      if (pu.seg >= pu.path.length - 2 && pu.t >= 1) {
+        var endN = nodes[pu.path[pu.path.length - 1]];
+        endN.act = 1; endN.col = pu.color;
+        pulses.splice(p, 1);
+      }
+    }
+  }
+
+  function draw(now) {
+    ctx.clearRect(0, 0, W, H);
+    // base edges
+    ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(125,145,175,0.10)';
+    ctx.beginPath();
+    for (var e = 0; e < edges.length; e++) {
+      var A = nodes[edges[e][0]], B = nodes[edges[e][1]];
+      ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y);
+    }
+    ctx.stroke();
+    // pulses (lit edge + glowing head)
+    for (var p = 0; p < pulses.length; p++) {
+      var pu = pulses[p], a = nodes[pu.path[pu.seg]], b = nodes[pu.path[pu.seg + 1]];
+      if (!a || !b) continue;
+      var t = pu.t < 1 ? pu.t : 1, hx = a.x + (b.x - a.x) * t, hy = a.y + (b.y - a.y) * t;
+      var g = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
+      g.addColorStop(0, rgba(pu.color, 0));
+      g.addColorStop(Math.max(0, t - 0.3), rgba(pu.color, 0));
+      g.addColorStop(t, rgba(pu.color, 0.5));
+      ctx.strokeStyle = g; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(hx, hy); ctx.stroke();
+      a.act = Math.max(a.act, 1 - t * 0.5); a.col = pu.color;
+      if (t > 0.9) { b.act = 1; b.col = pu.color; }
+      ctx.save();
+      ctx.shadowBlur = 9; ctx.shadowColor = pu.color; ctx.fillStyle = rgba(pu.color, 0.7);
+      ctx.beginPath(); ctx.arc(hx, hy, 2.2, 0, 6.2832); ctx.fill();
+      ctx.restore();
+    }
+    ctx.lineWidth = 1;
+    // nodes + labels
+    ctx.font = '600 9.5px "JetBrains Mono", ui-monospace, monospace';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (var i = 0; i < nodes.length; i++) {
+      var nd = nodes[i], lit = nd.act > 0.02;
+      if (lit) { ctx.save(); ctx.shadowBlur = 7 * nd.act; ctx.shadowColor = nd.col; }
+      ctx.fillStyle = lit ? rgba(nd.col, 0.32 + nd.act * 0.3) : 'rgba(150,165,190,0.22)';
+      ctx.beginPath(); ctx.arc(nd.x, nd.y, lit ? 2.3 : 1.8, 0, 6.2832); ctx.fill();
+      if (lit) ctx.restore();
+      ctx.fillStyle = lit ? rgba(nd.col, Math.min(0.62, 0.32 + nd.act * 0.45)) : 'rgba(150,165,190,' + (0.11 + nd.act * 0.32) + ')';
+      ctx.fillText(nd.label.toUpperCase(), nd.x, nd.y - 11);
+    }
+  }
+
+  function frame(now) {
+    if (!running) return;
+    var dt = Math.min(50, now - (lastT || now)); lastT = now;
+    spawnAccum += dt;
+    if (spawnAccum > 850 && pulses.length < 6) {
+      spawnAccum = 0; spawnPulse(); if (Math.random() < 0.4) spawnPulse();
+    }
+    step(now, dt); draw(now);
+    raf = requestAnimationFrame(frame);
+  }
+
+  var rzT;
+  window.addEventListener('resize', function () { clearTimeout(rzT); rzT = setTimeout(resize, 200); });
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) { running = false; cancelAnimationFrame(raf); }
+    else if (!REDUCE && !running) { running = true; lastT = 0; raf = requestAnimationFrame(frame); }
+  });
+
+  resize();
+  if (REDUCE) {
+    for (var k = 0; k < Math.min(7, nodes.length); k++) {
+      var nn = nodes[(Math.random() * nodes.length) | 0]; nn.act = 1; nn.col = pick(ACCENTS);
+    }
+    draw(performance.now());
+  } else {
+    raf = requestAnimationFrame(frame);
+  }
+})();
+</script>
 
 </body>
 </html>

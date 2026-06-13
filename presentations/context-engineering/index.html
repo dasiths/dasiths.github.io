@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Throw Away The Vibes — Context Engineering Is All You Need</title>
 <meta name="description" content="Why reliable results from AI coding agents come from engineering the context you feed them, not from prompting harder. A talk by Dasith Wijesiriwardena.">
+<script src="/presentations/shared/analytics.js" defer></script>
 <!--
   ═══════════════════════════════════════════════════════════════════════════
   THROW AWAY THE VIBES — CONTEXT ENGINEERING IS ALL YOU NEED
@@ -76,6 +77,13 @@
     text-transform: uppercase; color: var(--muted); text-decoration: none; white-space: nowrap;
   }
   .wordmark b { color: var(--accent-1); font-weight: 700; }
+  .crumb {
+    font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--muted); text-decoration: none; white-space: nowrap;
+    transition: color .25s;
+  }
+  .crumb:hover { color: var(--accent-1); }
+  .crumb-sep { font-family: var(--mono); font-size: 10px; color: var(--faint); pointer-events: none; }
   .topbar .spacer { flex: 1; pointer-events: none; }
   .tbtn {
     font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .14em;
@@ -416,6 +424,16 @@
 
   /* ════════════════════════ TITLE SLIDE ════════════════════════ */
   .titlegrid { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(20px, 4vw, 60px); align-items: center; }
+  .deckmeta {
+    font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .2em;
+    text-transform: uppercase; color: var(--muted);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-bottom: 18px;
+  }
+  .deckmeta a { color: var(--muted); text-decoration: none; transition: color .25s; }
+  .deckmeta a:hover { color: var(--c, var(--accent-1)); }
+  .deckmeta .sep { color: var(--faint); }
+  .deckmeta .ser { color: var(--c, var(--accent-1)); font-weight: 700; }
+  .deckmeta time { color: var(--faint); font-weight: 600; }
   .titleslide h1 { font-size: clamp(40px, 6.4vw, 84px); max-width: none; line-height: .99; }
   .titleslide .sub {
     font-family: var(--serif); font-style: italic; font-size: clamp(19px, 2.4vw, 28px);
@@ -722,7 +740,9 @@
 <div class="progress" id="progress"></div>
 
 <header class="topbar">
-  <a class="wordmark" href="#s-title">Context Engineering · <b>Throw Away The Vibes</b></a>
+  <a class="crumb" href="/presentations/">Decks</a>
+  <span class="crumb-sep" aria-hidden="true">›</span>
+  <a class="wordmark" href="#s-title">AI Assisted Engineering · <b>Throw Away The Vibes</b></a>
   <span class="spacer"></span>
   <button class="tbtn" id="btn-mode">Present <kbd>P</kbd></button>
   <button class="tbtn" id="btn-notes" hidden>Notes <kbd>N</kbd></button>
@@ -750,6 +770,13 @@
 <section class="slide titleslide" id="s-title" data-title="Title" style="--c: var(--accent-1)">
   <div class="inner titlegrid">
     <div>
+      <p class="deckmeta rv">
+        <a href="/presentations/">Decks</a>
+        <span class="sep" aria-hidden="true">›</span>
+        <span class="ser">AI Assisted Engineering</span>
+        <span class="sep" aria-hidden="true">·</span>
+        <time datetime="2026-06-10">10 Jun 2026</time>
+      </p>
       <p class="kicker rv"><span class="snum"></span>DDD Melbourne 2026</p>
       <h1 class="rv" style="--d:.06s">Throw away the <em>vibes.</em></h1>
       <p class="sub rv" style="--d:.14s">Reliable results from AI coding agents don't come from prompting

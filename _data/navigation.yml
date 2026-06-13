@@ -4,6 +4,8 @@ main:
     url: /
   - title: "Posts"
     url: /recent
+  - title: "Decks"
+    url: /presentations/
   - title: "About"
     url: /about
   - title: "Contact"

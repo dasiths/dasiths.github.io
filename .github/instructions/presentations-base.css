@@ -92,6 +92,13 @@ body {
   white-space: nowrap;
 }
 .wordmark b { color: var(--accent-2); font-weight: 700; }
+.crumb {
+  font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--muted); text-decoration: none; white-space: nowrap;
+  transition: color .25s;
+}
+.crumb:hover { color: var(--accent-2); }
+.crumb-sep { font-family: var(--mono); font-size: 10px; color: var(--faint); pointer-events: none; }
 .topbar .spacer { flex: 1; pointer-events: none; }
 .tbtn {
   font-family: var(--mono);
@@ -770,6 +777,17 @@ a.k:hover { color: var(--accent-1) !important; border-color: var(--accent-1) !im
 
 /* ════════════════════════ TITLE SLIDE ════════════════════════ */
 .titlegrid { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(20px, 4vw, 60px); align-items: center; }
+/* Title-slide breadcrumb + date line (Decks › Series · date) */
+.deckmeta {
+  font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--muted);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-bottom: 18px;
+}
+.deckmeta a { color: var(--muted); text-decoration: none; transition: color .25s; }
+.deckmeta a:hover { color: var(--c, var(--accent-2)); }
+.deckmeta .sep { color: var(--faint); }
+.deckmeta .ser { color: var(--c, var(--accent-2)); font-weight: 700; }
+.deckmeta time { color: var(--faint); font-weight: 600; }
 .titleslide h1 {
   font-size: clamp(44px, 7vw, 92px);
   max-width: none;

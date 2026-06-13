@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TITLE — SUBTITLE</title>
 <meta name="description" content="DESCRIPTION">
+<!-- Shared analytics + search-engine verification (see Analytics and Tracking). -->
+<script src="/presentations/shared/analytics.js" defer></script>
 <!--
   ═══════════════════════════════════════════════════════════════════════════
   PRESENTATION SCAFFOLD
@@ -89,8 +91,11 @@
 
 <!-- Chrome: topbar -->
 <header class="topbar">
-  <!-- CUSTOMIZE: wordmark text -->
-  <a class="wordmark" href="#s-title">Presentation · <b>Title</b></a>
+  <!-- Breadcrumb up-link to the gallery — keep on every deck -->
+  <a class="crumb" href="/presentations/">Decks</a>
+  <span class="crumb-sep" aria-hidden="true">›</span>
+  <!-- CUSTOMIZE: wordmark = "<Series> · <Deck Title>" (series must match the gallery) -->
+  <a class="wordmark" href="#s-title">Series Name · <b>Deck Title</b></a>
   <span class="spacer"></span>
   <button class="tbtn" id="btn-mode">Present <kbd>P</kbd></button>
   <button class="tbtn" id="btn-notes" hidden>Notes <kbd>N</kbd></button>
@@ -122,6 +127,14 @@
 <section class="slide titleslide" id="s-title" data-title="Title" style="--c: var(--accent-2)">
   <div class="inner titlegrid">
     <div>
+      <!-- Breadcrumb + series + date. Series must match the gallery series; date = companion post date. -->
+      <p class="deckmeta rv">
+        <a href="/presentations/">Decks</a>
+        <span class="sep" aria-hidden="true">›</span>
+        <span class="ser">Series Name</span>
+        <span class="sep" aria-hidden="true">·</span>
+        <time datetime="YYYY-MM-DD">DD Mon YYYY</time>
+      </p>
       <p class="kicker rv"><span class="snum"></span>KICKER TEXT</p>
       <h1 class="rv" style="--d:.06s">Presentation <em>Title.</em></h1>
       <p class="sub rv" style="--d:.14s">A subtitle that explains what this presentation covers

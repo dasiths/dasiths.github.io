@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Errand — Agentic Delegation, Explained</title>
 <meta name="description" content="What sending a kid to the corner shop teaches us about agentic delegation and the AAuth protocol.">
+<script src="/presentations/shared/analytics.js" defer></script>
 <!--
   ═══════════════════════════════════════════════════════════════════════════
   THE ERRAND — A SLIDE DECK
@@ -104,6 +105,13 @@
     white-space: nowrap;
   }
   .wordmark b { color: var(--green); font-weight: 700; }
+  .crumb {
+    font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .22em;
+    text-transform: uppercase; color: var(--muted); text-decoration: none; white-space: nowrap;
+    transition: color .25s;
+  }
+  .crumb:hover { color: var(--green); }
+  .crumb-sep { font-family: var(--mono); font-size: 10px; color: var(--faint); pointer-events: none; }
   .topbar .spacer { flex: 1; pointer-events: none; }
   .tbtn {
     font-family: var(--mono);
@@ -795,6 +803,16 @@
 
   /* ════════════════════════ TITLE SLIDE ════════════════════════ */
   .titlegrid { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(20px, 4vw, 60px); align-items: center; }
+  .deckmeta {
+    font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .2em;
+    text-transform: uppercase; color: var(--muted);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-bottom: 18px;
+  }
+  .deckmeta a { color: var(--muted); text-decoration: none; transition: color .25s; }
+  .deckmeta a:hover { color: var(--c, var(--green)); }
+  .deckmeta .sep { color: var(--faint); }
+  .deckmeta .ser { color: var(--c, var(--green)); font-weight: 700; }
+  .deckmeta time { color: var(--faint); font-weight: 600; }
   .titleslide h1 {
     font-size: clamp(44px, 7vw, 92px);
     max-width: none;
@@ -1384,7 +1402,9 @@
 </div>
 
 <header class="topbar">
-  <a class="wordmark" href="#s-title">Patel's Corner Shop · <b>The Errand</b></a>
+  <a class="crumb" href="/presentations/">Decks</a>
+  <span class="crumb-sep" aria-hidden="true">›</span>
+  <a class="wordmark" href="#s-title">Agentic IAM · <b>The Errand</b></a>
   <span class="spacer"></span>
   <button class="tbtn" id="btn-mode">Present <kbd>P</kbd></button>
   <button class="tbtn" id="btn-notes" hidden>Notes <kbd>N</kbd></button>
@@ -1412,6 +1432,13 @@
 <section class="slide titleslide" id="s-title" data-title="Title" style="--c: var(--green)">
   <div class="inner titlegrid">
     <div>
+      <p class="deckmeta rv">
+        <a href="/presentations/">Decks</a>
+        <span class="sep" aria-hidden="true">›</span>
+        <span class="ser">Agentic IAM</span>
+        <span class="sep" aria-hidden="true">·</span>
+        <time datetime="2026-06-10">10 Jun 2026</time>
+      </p>
       <p class="kicker rv"><span class="snum"></span>Agentic delegation, explained</p>
       <h1 class="rv" style="--d:.06s">The Errand<span class="dot">.</span></h1>
       <p class="sub rv" style="--d:.14s">What sending a kid to the corner shop teaches us about
