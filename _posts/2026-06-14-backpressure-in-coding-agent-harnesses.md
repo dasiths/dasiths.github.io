@@ -15,6 +15,7 @@ toc_sticky: true
 
 > This is the first of a short series. Here I lay out the concepts: backpressure, sensors, and gates, and when each one is useful. A follow-up will cover how to define and run them in practice.
 **Prefer to click through it?** There's an [interactive presentation of this post](https://dasith.me/presentations/backpressure/) that walks through the same ideas slide by slide.
+
 <img src="/assets/images/back-pressure.png" alt="Back Pressure" style="max-width: 800px; width: 100%;" />
 
 ## The server version
