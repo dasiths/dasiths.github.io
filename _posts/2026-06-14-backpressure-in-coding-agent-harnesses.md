@@ -14,7 +14,7 @@ toc_sticky: true
 *Coding agents can produce a lot of code quickly. That is useful, but it also creates a simple problem: how do you know the work is correct before the agent moves on? Backpressure gives the harness a way to slow the agent down when the work has not been proven yet.*
 
 > This is the first of a short series. Here I lay out the concepts: backpressure, sensors, and gates, and when each one is useful. A follow-up will cover how to define and run them in practice.
-
+**Prefer to click through it?** There's an [interactive presentation of this post](https://dasith.me/presentations/backpressure/) that walks through the same ideas slide by slide.
 <img src="/assets/images/back-pressure.png" alt="Back Pressure" style="max-width: 800px; width: 100%;" />
 
 ## The server version
@@ -65,28 +65,28 @@ Those properties need something that takes a reading. This is where the human's 
 
 ## Sensors
 
-A sensor is a tool that returns a verdict about a property of the work. All sensors are tools, but not all tools are sensors. Tools divide by what they do.
+A sensor is a tool that returns an assessment of a property of the work. All sensors are tools, but not all tools are sensors. Tools divide by what they do.
 
 | Tool kind | Purpose | Example | Sensor |
 |-------------------|----------------------------------------------|----------------------------------------|--------|
 | Effector | change the world | write, edit, run a migration | no |
 | Native perception | read directly-visible state | read file, grep, list dir | no |
-| Sensor | measure a hidden property and return a verdict | build, test, lint, type check, reviewer subagent | yes |
+| Sensor | measure a hidden property and return an assessment | build, test, lint, type check, reviewer subagent | yes |
 
-The same raw mechanism can be either. `bash` running `rm` is an effector. `bash` running `npm test` is a sensor. What makes it a sensor is that its output is a judgment about correctness or quality, not data and not a change.
+The same raw mechanism can be either. `bash` running `rm` is an effector. `bash` running `npm test` is a sensor. What makes it a sensor is that its output is an assessment of correctness or quality, not data and not a change.
 
 Sensors come in two classes.
 
 * A deterministic sensor runs a repeatable tool. Build, test, lint, and type check sit here. It yields proof.
-* An inferential sensor applies judgment against a rubric you wrote. A reviewer subagent checking an architecture pattern is this kind. It yields a useful but fallible opinion.
+* An inferential sensor assesses the work against a rubric you wrote. A reviewer subagent checking an architecture pattern is this kind. It yields a useful but fallible opinion.
 
 ## What a sensor reports
 
-A sensor answers a question about the work that the agent cannot answer by looking at the code: does it build, do the tests pass, does it hold to the architecture? It takes a reading and reports back a verdict together with the evidence behind it.
+A sensor answers a question about the work that the agent cannot answer by looking at the code: does it build, do the tests pass, does it hold to the architecture? It takes a reading and reports back an assessment together with the evidence behind it.
 
-The verdict is the pass-or-fail answer. The evidence is what makes that answer useful, because a bare "it failed" tells the agent nothing it can act on. Often the evidence comes for free: a build that fails prints compiler diagnostics with file, line, and message. That is usually enough for the agent to find and fix the error. Where a sensor's raw output is poor, such as a cryptic stack trace or an opaque assertion, the team's job is to improve it into something the agent can act on. A sensor is only useful if its reading can lead to a correction.
+The assessment is the pass-or-fail answer. The evidence is what makes that answer useful, because a bare "it failed" tells the agent nothing it can act on. Often the evidence comes for free: a build that fails prints compiler diagnostics with file, line, and message. That is usually enough for the agent to find and fix the error. Where a sensor's raw output is poor, such as a cryptic stack trace or an opaque assertion, the team's job is to improve it into something the agent can act on. A sensor is only useful if its reading can lead to a correction.
 
-The two classes differ in how the verdict is produced and how far to trust it.
+The two classes differ in how the assessment is produced and how far to trust it.
 
 | Aspect | Deterministic | Inferential |
 |----------------------|------------------------------------------|----------------------------------------------|
@@ -114,7 +114,7 @@ The strength of the backpressure depends on three things: how much you check, ho
 flowchart LR
     Human[Human or team] -->|builds sensors and gates| Kit[Sensors and gates]
     Agent[Agent harness] -->|runs sensors| Kit
-    Kit -->|reading: verdict and evidence| Agent
+    Kit -->|reading: assessment and evidence| Agent
     Kit --> Gate{Gate: may it proceed}
     Gate -->|no: not yet, here is why| Agent
     Gate -->|yes| Done[Proven and done]
