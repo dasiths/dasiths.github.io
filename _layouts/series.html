@@ -1,0 +1,43 @@
+---
+layout: archive
+---
+
+{{ content }}
+
+{% comment %}
+  Group posts by their `series` front matter. Posts without a series fall into
+  an empty-named group, which is skipped. Metadata (title/description) comes
+  from _data/series.yml, keyed by the series slug.
+{% endcomment %}
+{% assign series_groups = site.posts | group_by: "series" %}
+
+<ul class="taxonomy__index">
+  {% for series_group in series_groups %}
+    {% unless series_group.name == "" %}
+      {% assign series_meta = site.data.series[series_group.name] %}
+      <li>
+        <a href="#{{ series_group.name | slugify }}">
+          <strong>{{ series_meta.title | default: series_group.name }}</strong> <span class="taxonomy__count">{{ series_group.items | size }}</span>
+        </a>
+      </li>
+    {% endunless %}
+  {% endfor %}
+</ul>
+
+{% assign entries_layout = page.entries_layout | default: 'list' %}
+{% for series_group in series_groups %}
+  {% unless series_group.name == "" %}
+    {% assign series_meta = site.data.series[series_group.name] %}
+    {% assign series_posts = series_group.items | sort: "series_part" %}
+    <section id="{{ series_group.name | slugify }}" class="taxonomy__section">
+      <h2 class="archive__subtitle">{{ series_meta.title | default: series_group.name }}</h2>
+      {% if series_meta.description %}<p class="series__description">{{ series_meta.description }}</p>{% endif %}
+      <div class="entries-{{ entries_layout }}">
+        {% for post in series_posts %}
+          {% include archive-single.html type=entries_layout %}
+        {% endfor %}
+      </div>
+      <a href="#page-title" class="back-to-top">{{ site.data.ui-text[site.locale].back_to_top | default: 'Back to Top' }} &uarr;</a>
+    </section>
+  {% endunless %}
+{% endfor %}

@@ -1,0 +1,14 @@
+{% comment %}
+  Renders a highlighted "series" pill for a post (when it belongs to a series).
+  Works in archive loops (where `post` is defined) and on single pages (`page`).
+  Links to the matching section on the /series/ archive page.
+{% endcomment %}
+{% assign series_doc = post | default: page %}
+{% if series_doc.series %}
+  {% assign series_meta = site.data.series[series_doc.series] %}
+  {% assign series_title = series_meta.title | default: series_doc.series %}
+  <p class="archive__item-series">
+    <i class="fas fa-layer-group" aria-hidden="true"></i><span class="sr-only">Series: </span>
+    <a href="{{ '/series/' | relative_url }}#{{ series_doc.series | slugify }}" class="page__taxonomy-item page__taxonomy-item--series" rel="tag" title="Part of the {{ series_title }} series">{{ series_title }}</a>
+  </p>
+{% endif %}

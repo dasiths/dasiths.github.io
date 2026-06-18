@@ -3,6 +3,8 @@ title: "Event Sourcing Examined Part 1 of 3"
 date: 2016-12-02 15:23
 comments: true
 categories: [Event Sourcing, CQRS]
+series: event-sourcing-examined
+series_part: 1
 tags: [.net, aggregates, bounded context, CQRS, domain driven design, eventual consistency, greg young, neventlite]
 header:
   teaser: /assets/images/event-sourcing.jpg

@@ -72,3 +72,75 @@
     color: mix(#000, $primary-color, 25%);
   }
 }
+
+// Series: same as a tag pill, differentiated only by an accent border.
+.page__taxonomy-item--series {
+  border-color: $primary-color;
+
+  &:hover {
+    border-color: mix(#000, $primary-color, 20%);
+  }
+}
+
+.series-nav {
+  margin: 1.5em 0 2em;
+  padding: 1em 1.25em;
+  border: 1px solid $border-color;
+  border-left: 4px solid $primary-color;
+  border-radius: $border-radius;
+  background-color: mix($primary-color, $background-color, 6%);
+  font-size: 0.8em;
+
+  &__intro {
+    margin: 0 0 0.5em;
+    font-weight: bold;
+
+    .fa-layer-group {
+      margin-right: 0.35em;
+      color: $primary-color;
+    }
+  }
+
+  &__list {
+    margin: 0;
+    padding-left: 1.5em;
+
+    li {
+      margin-bottom: 0.25em;
+    }
+
+    .is-current {
+      font-weight: bold;
+      color: $primary-color;
+    }
+  }
+}
+
+.series__description {
+  margin: 0 0 1em;
+  color: $muted-text-color;
+  font-size: 0.9em;
+}
+
+// Compact taxonomy pills inside archive cards (recent list + series page) so
+// posts with many tags stay tidy. Applies to both tag and series pills.
+.archive__item-tags,
+.archive__item-series {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+
+  > .fas {
+    margin-right: 0.4em;
+    font-size: 0.75em;
+    color: $muted-text-color;
+  }
+}
+
+.archive__item {
+  .page__taxonomy-item {
+    margin-right: 4px;
+    margin-bottom: 5px;
+    padding: 2px 8px;
+    font-size: 0.65em;
+  }
+}

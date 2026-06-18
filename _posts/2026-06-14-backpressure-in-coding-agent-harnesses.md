@@ -5,6 +5,8 @@ comments: true
 header:
     teaser: /assets/images/back-pressure.png
 categories: [AI, Agents, Software Engineering]
+series: ai-assisted-engineering
+series_part: 3
 tags: [agents, AI, backpressure, coding agents, feedback loops, github copilot, harness engineering, sensors, verification]
 toc: true
 toc_label: "Content"

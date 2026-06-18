@@ -1,0 +1,26 @@
+{% comment %}
+  In-post series navigation box. Lists every post in the current page's series
+  in order (by `series_part`) and highlights the one being read.
+{% endcomment %}
+{% if page.series %}
+  {% assign series_meta = site.data.series[page.series] %}
+  {% assign series_title = series_meta.title | default: page.series %}
+  {% assign series_posts = site.posts | where: "series", page.series | sort: "series_part" %}
+  <aside class="series-nav" aria-label="{{ series_title }} series navigation">
+    <p class="series-nav__intro">
+      <i class="fas fa-layer-group" aria-hidden="true"></i>
+      This post is {% if page.series_part %}part {{ page.series_part }} of {% endif %}the <a href="{{ '/series/' | relative_url }}#{{ page.series | slugify }}">{{ series_title }}</a> series:
+    </p>
+    <ol class="series-nav__list">
+      {% for series_post in series_posts %}
+        <li{% if series_post.url == page.url %} class="is-current" aria-current="true"{% endif %}>
+          {% if series_post.url == page.url %}
+            {{ series_post.title }}
+          {% else %}
+            <a href="{{ series_post.url | relative_url }}">{{ series_post.title }}</a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </aside>
+{% endif %}

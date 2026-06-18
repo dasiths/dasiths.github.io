@@ -5,6 +5,8 @@ comments: true
 header:
   teaser: /assets/images/dddmelb2026.png
 categories: [Conference, AI, Software Engineering, Context Engineering]
+series: ai-assisted-engineering
+series_part: 2
 tags: [agents, AI, context engineering, context management, dddmelbourne, github copilot, LLM, public speaking, software engineering, vibe coding]
 toc: true
 toc_label: "Content"

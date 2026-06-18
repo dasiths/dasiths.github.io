@@ -27,5 +27,19 @@
     </div>
     {% endif %}
     {% if post.excerpt %}<p class="archive__item-excerpt" itemprop="description">{{ post.excerpt | markdownify | strip_html | truncate: 512 }}</p>{% endif %}
+    {% include series-label.html %}
+    {% if post.tags.size > 0 and site.tag_archive.path %}
+      {% case site.tag_archive.type %}
+        {% when "liquid" %}{% assign tag_path_type = "#" %}
+        {% when "jekyll-archives" %}{% assign tag_path_type = nil %}
+      {% endcase %}
+      <p class="archive__item-tags">
+        <i class="fas fa-tags" aria-hidden="true"></i><span class="sr-only">Tags: </span>
+        {% assign post_tags_sorted = post.tags | sort_natural %}
+        {% for post_tag in post_tags_sorted %}
+          <a href="{{ post_tag | slugify | prepend: tag_path_type | prepend: site.tag_archive.path | relative_url }}" class="page__taxonomy-item" rel="tag">{{ post_tag }}</a>
+        {% endfor %}
+      </p>
+    {% endif %}
   </article>
 </div>

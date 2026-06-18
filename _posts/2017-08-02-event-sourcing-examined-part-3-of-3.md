@@ -3,6 +3,8 @@ title: "Event Sourcing Examined Part 3 Of 3"
 date: 2017-08-02 19:48
 comments: true
 categories: [Event Sourcing, CQRS]
+series: event-sourcing-examined
+series_part: 3
 tags: [.net, aggregates, bounded context, CQRS, domain driven design, neventlite, read models]
 header:
   teaser: /assets/images/photomania-b5c3d9f9e76bc97df7c24d959af9e133.jpg

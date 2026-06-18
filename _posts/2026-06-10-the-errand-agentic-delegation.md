@@ -5,6 +5,8 @@ comments: true
 header:
   teaser: /assets/images/aauth_errand_teaser.png
 categories: [AI, Agents, Security, Software Engineering]
+series: agentic-iam
+series_part: 1
 tags: [AAuth, agents, AI, authorization, delegation, identity, OAuth, security, software engineering]
 toc: true
 toc_label: "Content"

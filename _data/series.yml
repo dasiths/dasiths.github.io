@@ -1,0 +1,12 @@
+# Blog post series metadata.
+# Each key matches the `series:` value in a post's front matter.
+# `title` and `description` drive the series pill and the /series/ archive page.
+event-sourcing-examined:
+  title: "Event Sourcing Examined"
+  description: "A three-part deep dive into event sourcing and CQRS, from the core concepts through to a working implementation with NEventLite."
+ai-assisted-engineering:
+  title: "AI-Assisted Engineering"
+  description: "Practical patterns for getting reliable results out of AI coding agents, covering context engineering and manufacturing backpressure in agent harnesses."
+agentic-iam:
+  title: "Agentic IAM"
+  description: "Identity, authorization, and delegation for AI agents, explored from first principles through real-world scenarios."

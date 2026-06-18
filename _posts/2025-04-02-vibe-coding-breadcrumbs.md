@@ -5,6 +5,8 @@ header:
   teaser: /assets/images/breadcrumb-protocol-teaser.png
 comments: true
 categories: [Software Engineering, AI, Agents, Vibe Coding]
+series: ai-assisted-engineering
+series_part: 1
 tags: [agents, AI, context management, documentation, github copilot, LLM, vibe coding]
 toc: true
 toc_label: "Content"
