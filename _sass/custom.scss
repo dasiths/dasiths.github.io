@@ -2,6 +2,52 @@
    Custom overrides (shared by light and dark stylesheets)
    ========================================================================== */
 
+// Modern layered page background: a soft diagonal wash, two low-opacity accent
+// "aurora" glows, and a faint dot grid. Built from theme variables so it adapts
+// to both the light (air) and dark skins. Applied site-wide.
+body {
+  background-color: $background-color;
+  background-image:
+    radial-gradient(rgba($primary-color, 0.12) 1px, transparent 1px),
+    radial-gradient(40rem 40rem at 110% -10%, rgba($primary-color, 0.10), transparent 60%),
+    radial-gradient(35rem 35rem at -10% 110%, rgba($primary-color, 0.08), transparent 60%),
+    linear-gradient(135deg, $background-color 0%, mix($primary-color, $background-color, 8%) 100%);
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+  background-size: 22px 22px, auto, auto, cover;
+  background-position: 0 0, center, center, center;
+  background-attachment: fixed;
+}
+
+// Sticky, edge-to-edge frosted-glass masthead. Staying pinned with a translucent
+// background plus blur lets the layered page background and scrolling content
+// show through softly, so the nav reads as a floating surface rather than a box.
+.masthead {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  background: rgba($background-color, 0.7);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(12px) saturate(140%);
+}
+
+// Let the frosted masthead show through edge to edge instead of the nav's own
+// solid fill. The overflow dropdown keeps its own background, so it stays legible.
+.greedy-nav {
+  background: transparent;
+}
+
+// Because the masthead is now sticky, the sticky author sidebar and TOC must
+// start below it instead of their default `top: 2em` (which tucks them under the
+// masthead). The masthead is ~ $nav-height tall plus 1em padding top and bottom;
+// add a 1em breathing gap below it.
+.sidebar.sticky,
+.sidebar__right.sticky,
+.sticky {
+  @include breakpoint($large) {
+    top: calc(#{$nav-height} + 3em);
+  }
+}
+
 // Reduce the default post/page body text size (theme default is 1em).
 .page__content {
   p,
