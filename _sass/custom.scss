@@ -2,19 +2,24 @@
    Custom overrides (shared by light and dark stylesheets)
    ========================================================================== */
 
-// Modern layered page background: a soft diagonal wash, two low-opacity accent
-// "aurora" glows, and a faint dot grid. Built from theme variables so it adapts
-// to both the light (air) and dark skins. Applied site-wide.
+// Modern aurora "mesh" page background: bold, multi-hue accent glows over a soft
+// wash, with a faint dot grid for texture. The first glow uses the theme accent
+// (so it adapts to light/dark); the violet and pink add depth and read well on
+// both skins. Fixed so the glows stay put like stage lighting as you scroll.
+$aurora-violet: #7b5cff;
+$aurora-pink: #ff5c8a;
+
 body {
   background-color: $background-color;
   background-image:
-    radial-gradient(rgba($primary-color, 0.12) 1px, transparent 1px),
-    radial-gradient(40rem 40rem at 110% -10%, rgba($primary-color, 0.10), transparent 60%),
-    radial-gradient(35rem 35rem at -10% 110%, rgba($primary-color, 0.08), transparent 60%),
-    linear-gradient(135deg, $background-color 0%, mix($primary-color, $background-color, 8%) 100%);
-  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
-  background-size: 22px 22px, auto, auto, cover;
-  background-position: 0 0, center, center, center;
+    radial-gradient(rgba($primary-color, 0.06) 1px, transparent 1px),
+    radial-gradient(52rem 52rem at 100% -5%, rgba($primary-color, 0.38), transparent 55%),
+    radial-gradient(46rem 46rem at -8% 22%, rgba($aurora-violet, 0.30), transparent 55%),
+    radial-gradient(50rem 50rem at 78% 108%, rgba($aurora-pink, 0.24), transparent 55%),
+    linear-gradient(160deg, $background-color 0%, mix($primary-color, $background-color, 12%) 100%);
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  background-size: 26px 26px, auto, auto, auto, cover;
+  background-position: 0 0, center, center, center, center;
   background-attachment: fixed;
 }
 
