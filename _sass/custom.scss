@@ -35,53 +35,55 @@ body {
   backdrop-filter: blur(12px) saturate(140%);
 }
 
-// Subtle "rain on frosted glass": small water beads drift down the masthead and
-// fade out, sitting on the glass surface behind the nav links (pointer-events
-// off so they never interfere). Each bead reads on both light and dark via a
-// bright highlight plus a soft shadow rim. Disabled for reduced-motion users.
+// A few large water droplets that slide down the masthead. They live *behind*
+// the frosted masthead (a fixed layer with a lower z-index), so the masthead's
+// own backdrop blur softens them — we see the drops through the frost. Disabled
+// for reduced-motion users.
 .masthead__rain {
-  position: absolute;
-  inset: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(#{$nav-height} + 2em); // matches the masthead height
   overflow: hidden;
   pointer-events: none;
-  z-index: 1;
+  z-index: 19; // behind the masthead (z-index 20) so the frost blurs the drops
 
   span {
     position: absolute;
     top: 0;
-    width: 6px;
-    height: 6px;
-    background: radial-gradient(circle at 50% 42%,
-      rgba(#fff, 0.9) 0%,
-      rgba(#fff, 0.18) 40%,
-      rgba(#000, 0.05) 70%,
-      transparent 73%);
-    // Classic teardrop: a rounded square with a single sharp corner. The
-    // rotation (applied in the keyframes) turns that corner into the point at
-    // the top, so the round bulb leads as the drop slides down.
+    width: 60px;
+    height: 60px;
+    // Teardrop shape (rotation applied in the keyframes puts the point up).
     border-radius: 0 50% 50% 50%;
-    box-shadow: 0 0 2px rgba(#000, 0.14), inset 0 0 1px rgba(#fff, 0.5);
+    // Translucent water bead — no backdrop-filter of its own; the masthead frost
+    // in front does the blurring, so it reads as a drop seen *through* the frost.
+    background: radial-gradient(circle at 40% 32%,
+      rgba(#fff, 0.9) 0%,
+      rgba(#fff, 0.3) 36%,
+      rgba(#fff, 0.08) 62%,
+      transparent 73%);
+    box-shadow: inset 2px 4px 10px rgba(#fff, 0.35), inset -3px -6px 16px rgba(#000, 0.18);
     opacity: 0;
     animation: masthead-drip linear infinite;
     will-change: transform, opacity;
   }
 
-  // Stagger position, size, speed and start time so the rain feels random.
-  span:nth-child(1) { left: 9%;  animation-duration: 6.5s;  animation-delay: 0s; }
-  span:nth-child(2) { left: 21%; width: 5px; height: 5px; animation-duration: 8s;   animation-delay: 1.8s; }
-  span:nth-child(3) { left: 34%; width: 4px; height: 4px; animation-duration: 9.5s; animation-delay: 3.2s; }
-  span:nth-child(4) { left: 47%; animation-duration: 7s;   animation-delay: 4.6s; }
-  span:nth-child(5) { left: 58%; width: 5px; height: 5px; animation-duration: 8.8s; animation-delay: 1s; }
-  span:nth-child(6) { left: 69%; width: 4px; height: 4px; animation-duration: 10s;  animation-delay: 5.5s; }
-  span:nth-child(7) { left: 81%; animation-duration: 6.8s; animation-delay: 2.6s; }
-  span:nth-child(8) { left: 92%; width: 5px; height: 5px; animation-duration: 9s;   animation-delay: 3.9s; }
+  // Only a handful, spread out, at different sizes and speeds. The JS randomises
+  // these further; these are the no-JS fallback.
+  span:nth-child(1) { left: 12%; animation-duration: 15s;   animation-delay: 0s; }
+  span:nth-child(2) { left: 40%; width: 44px; height: 44px; animation-duration: 19s; animation-delay: 6s; }
+  span:nth-child(3) { left: 64%; width: 76px; height: 76px; animation-duration: 13s; animation-delay: 3s; }
+  span:nth-child(4) { left: 84%; width: 52px; height: 52px; animation-duration: 17s; animation-delay: 9s; }
 }
 
 @keyframes masthead-drip {
-  0%   { transform: translateY(-1.5em) rotate(45deg); opacity: 0; }
-  12%  { opacity: 0.7; }
-  80%  { opacity: 0.45; }
-  100% { transform: translateY(6em) rotate(45deg); opacity: 0; }
+  // Accelerate down under "gravity" then fade. Travel is a multiple of the drop's
+  // own size so big and small drops both fall clear of the strip.
+  0%   { transform: translateY(-120%) rotate(45deg); opacity: 0; animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.4); }
+  22%  { opacity: 0.9; }
+  80%  { opacity: 0.9; }
+  100% { transform: translateY(240%) rotate(45deg); opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

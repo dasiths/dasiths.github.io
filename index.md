@@ -20,7 +20,7 @@ header:
 excerpt: "“We can only see a short distance ahead, but we can see plenty there that needs to be done.” ~ *Alan Turing*, [Computing machinery and intelligence](https://www.goodreads.com/book/show/17697774-computing-machinery-and-intelligence)"
 feature_tabs:
   - "Conference Talks"
-  - "Open Source & Contributions"
+  - "Side Quests & Hacks"
   - "Series"
 feature_row:
   - image_path: assets/images/dddmelb2026.png
@@ -125,7 +125,7 @@ feature_row:
   - image_path: /assets/images/simple-endpoints-banner.png
     alt: "SimpleEndpoints"
     title: "SimpleEndpoints"
-    tab: "Open Source & Contributions"
+    tab: "Side Quests & Hacks"
     excerpt: "A simple, convention-based, endpoint per action pattern implementation for AspNetCore 3.0+"
     url: "https://dasith.me/2020/03/21/simple-endpoints/"
     date: "2020-03-21"
@@ -134,7 +134,7 @@ feature_row:
   - image_path: /assets/images/assassin-3690300_960_720-e1538485050283.jpg
     alt: "NimbleConfig"
     title: "NimbleConfig"
-    tab: "Open Source & Contributions"
+    tab: "Side Quests & Hacks"
     excerpt: "NimbleConfig is an open source configuration injection library for .NET with full support for ASP.NET CORE. It allows you to inject configuration settings in a very simple and testable way."
     url: "https://dasith.me/2018/10/02/nimbleconfig-a-simple-config-injector-for-net/"
     date: "2018-10-02"
@@ -142,7 +142,7 @@ feature_row:
     btn_class: "btn--primary"
   - image_path: /assets/images/cqrs1.png
     title: "NEventLite"
-    tab: "Open Source & Contributions"
+    tab: "Side Quests & Hacks"
     excerpt: "NEventLite is an open source Event Sourcing library for .NET that can get your ES+CQRS project up and running quickly and hassle free. It helps you manage the aggregate lifecycle and supports many event storage providers."
     url: "https://github.com/dasiths/NEventLite"
     date: "2017-08-02"
@@ -178,7 +178,7 @@ feature_row:
   - image_path: /assets/images/oss/aauth-dotnet-samples.png
     alt: "AAuth .NET SDK"
     title: "AAuth .NET SDK"
-    tab: "Open Source & Contributions"
+    tab: "Side Quests & Hacks"
     date: "2026-06-09"
     excerpt: "The .NET SDK for AAuth — a four-party authorization protocol for AI agents where every HTTP request is cryptographically signed (RFC 9421) instead of using bearer tokens."
     url: "https://github.com/aauth-dev/dotnet-samples"
@@ -187,7 +187,7 @@ feature_row:
   - image_path: /assets/images/oss/ai_generated_vex.png
     alt: "AI-Powered VEX Generation"
     title: "AI-Powered VEX Generation"
-    tab: "Open Source & Contributions"
+    tab: "Side Quests & Hacks"
     date: "2025-10-28"
     excerpt: "A GitHub Copilot–driven security workflow that scans for CVEs, analyses real exploitability, and generates OpenVEX-compliant documents using MCP tools."
     url: "https://github.com/dasiths/ai_generated_vex"
@@ -196,16 +196,16 @@ feature_row:
   - image_path: /assets/images/oss/macro_data_refinement.png
     alt: "Macro Data Refinement"
     title: "Macro Data Refinement"
-    tab: "Open Source & Contributions"
+    tab: "Side Quests & Hacks"
     date: "2025-04-21"
     excerpt: "A browser-based puzzle game inspired by the \"mysterious and important\" refinement work from the TV show Severance."
     url: "https://github.com/dasiths/macro_data_refinement_severence"
     btn_label: "View on GitHub"
     btn_class: "btn--primary"
   - image_path: /assets/images/oss/mcp-oauth-resource-server.png
-    alt: "MCP as an OAuth Resource Server"
-    title: "MCP as an OAuth Resource Server"
-    tab: "Open Source & Contributions"
+    alt: "MCP Server as an OAuth Resource Server"
+    title: "MCP Server as an OAuth Resource Server"
+    tab: "Side Quests & Hacks"
     date: "2025-03-17"
     excerpt: "An influential proposal — adopted into the 2025-06-18 MCP spec — to treat MCP servers as OAuth resource servers so they plug into existing identity providers instead of rolling their own."
     url: "https://github.com/modelcontextprotocol/modelcontextprotocol/issues/205"
@@ -214,7 +214,7 @@ feature_row:
   - image_path: /assets/images/oss/promptflow-serve-benchmarking.png
     alt: "PromptFlow Serve benchmarking"
     title: "PromptFlow Serve Benchmarking"
-    tab: "Open Source & Contributions"
+    tab: "Side Quests & Hacks"
     date: "2024-09-27"
     excerpt: "A Microsoft ISE engineering blog comparing WSGI/sync vs ASGI/async PromptFlow Serve runners — backpressure, throughput, and practical recommendations."
     url: "https://devblogs.microsoft.com/ise/promptflow-performance-testing-analysis/"
@@ -223,7 +223,7 @@ feature_row:
   - image_path: /assets/images/oss/oci-artifact-guidance.png
     alt: "OCI artifact guidance contribution"
     title: "OCI Artifact Guidance"
-    tab: "Open Source & Contributions"
+    tab: "Side Quests & Hacks"
     date: "2023-08-04"
     excerpt: "A contribution to the OCI image-spec refining guidance for the new top-level artifactType field introduced in OCI v1.1."
     url: "https://github.com/opencontainers/image-spec/pull/1100"
@@ -232,7 +232,7 @@ feature_row:
   - image_path: /assets/images/oss/mdns-demo.png
     alt: ".NET mDNS demo"
     title: ".NET mDNS Demo"
-    tab: "Open Source & Contributions"
+    tab: "Side Quests & Hacks"
     date: "2021-12-01"
     excerpt: "A small .NET example of Multicast DNS (mDNS) service discovery."
     url: "https://github.com/dasiths/MulticastDNS_MDNS_Demo"
@@ -241,7 +241,7 @@ feature_row:
   - image_path: /assets/images/oss/hyperledger-aks.png
     alt: "Hyperledger Fabric on AKS"
     title: "Hyperledger Fabric on AKS"
-    tab: "Open Source & Contributions"
+    tab: "Side Quests & Hacks"
     date: "2021-06-01"
     excerpt: "An automated approach to deploying Hyperledger Fabric 2.x on Azure Kubernetes Service via reusable Azure DevOps pipelines and ARM templates."
     url: "https://github.com/dasiths/Hyperledger-Fabric-on-Azure-Kubernetes-Cluster"
@@ -250,7 +250,7 @@ feature_row:
   - image_path: /assets/images/oss/otel-distributed-tracing.png
     alt: "OpenTelemetry distributed tracing samples"
     title: "OpenTelemetry Distributed Tracing"
-    tab: "Open Source & Contributions"
+    tab: "Side Quests & Hacks"
     date: "2021-01-11"
     excerpt: ".NET and Python samples for distributed tracing with W3C trace-context and RabbitMQ/MQTT context propagation; companion to a conference talk."
     url: "https://github.com/dasiths/OpenTelemetryDistributedTracingSample"
@@ -259,7 +259,7 @@ feature_row:
   - image_path: /assets/images/oss/promptydumpty.png
     alt: "PromptyDumpty"
     title: "PromptyDumpty"
-    tab: "Open Source & Contributions"
+    tab: "Side Quests & Hacks"
     date: "2025-12-02"
     excerpt: "A lightweight, universal package manager (on PyPI) for AI coding-assistant artifacts — prompts, instructions, rules and workflows — across Copilot, Claude, Cursor, Gemini and more."
     url: "https://github.com/dasiths/PromptyDumpty"
@@ -268,7 +268,7 @@ feature_row:
   - image_path: /assets/images/oss/llm-planning-mesh.png
     alt: "Agentic workflows with planners"
     title: "LLM Planning & Knowledge Providers"
-    tab: "Open Source & Contributions"
+    tab: "Side Quests & Hacks"
     date: "2025-03-26"
     excerpt: "Four approaches to agentic planning workflows — LangChain Plan-and-Execute, AutoGen group chat, and Dapr virtual actors/workflows — connecting LLMs to external \"knowledge providers\" via APIs and MCP."
     url: "https://github.com/dasiths/llm-plan-and-execute-knowledge-provider-mesh"
@@ -277,7 +277,7 @@ feature_row:
   - image_path: /assets/images/oss/neasyauthmiddleware.png
     alt: "NEasyAuthMiddleware"
     title: "NEasyAuthMiddleware"
-    tab: "Open Source & Contributions"
+    tab: "Side Quests & Hacks"
     date: "2024-08-15"
     excerpt: "ASP.NET Core middleware (on NuGet) for Azure App Service Authentication (EasyAuth) — hydrates HttpContext.User from EasyAuth headers, with customizable claim mapping and local-debug mocking."
     url: "https://github.com/dasiths/NEasyAuthMiddleware"
@@ -286,7 +286,7 @@ feature_row:
   - image_path: /assets/images/oss/modern-ros2-workspace.png
     alt: "Modern ROS2 Workspace"
     title: "Modern ROS2 Workspace"
-    tab: "Open Source & Contributions"
+    tab: "Side Quests & Hacks"
     date: "2022-12-01"
     excerpt: "An opinionated, modern ROS2 (Humble) development environment in a devcontainer — integrated VS Code debugging, linting, testing, SROS2 security and CI."
     url: "https://github.com/dasiths/Modern_ROS2_Workspace"
@@ -295,7 +295,7 @@ feature_row:
   - image_path: /assets/images/oss/simplemediator.png
     alt: "SimpleMediator"
     title: "SimpleMediator"
-    tab: "Open Source & Contributions"
+    tab: "Side Quests & Hacks"
     date: "2019-01-07"
     excerpt: "A .NET/C# implementation of the mediator pattern with first-class support for queries, commands, events, middleware pipelines and mediation contexts."
     url: "https://github.com/dasiths/SimpleMediator"

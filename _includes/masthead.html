@@ -1,9 +1,9 @@
 {% capture logo_path %}{{ site.logo }}{% endcapture %}
 
+<div class="masthead__rain" aria-hidden="true">
+  <span></span><span></span><span></span><span></span>
+</div>
 <div class="masthead">
-  <div class="masthead__rain" aria-hidden="true">
-    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-  </div>
   <div class="masthead__inner-wrap">
     <div class="masthead__menu">
       <nav id="site-nav" class="greedy-nav">
@@ -80,20 +80,23 @@
     var drops = document.querySelectorAll(".masthead__rain span");
     if (!drops.length) return;
 
-    var MIN_SIZE = 3; // px
-    var MAX_SIZE = 8; // px
+    var MIN_SIZE = 30; // px
+    var MAX_SIZE = 80; // px
 
     function rand(min, max) { return Math.random() * (max - min) + min; }
 
     for (var i = 0; i < drops.length; i++) {
       var d = drops[i];
-      var size = rand(MIN_SIZE, MAX_SIZE).toFixed(1);
-      d.style.width = size + "px";
-      d.style.height = size + "px";
+      var size = rand(MIN_SIZE, MAX_SIZE);
+      d.style.width = size.toFixed(1) + "px";
+      d.style.height = size.toFixed(1) + "px";
       d.style.left = rand(4, 94).toFixed(1) + "%";
-      d.style.animationDuration = rand(6, 11).toFixed(1) + "s";
-      // Negative delay so droplets start mid-fall instead of all at the top.
-      d.style.animationDelay = "-" + rand(0, 8).toFixed(1) + "s";
+      // Bigger droplets are heavier, so they fall (and cycle) faster.
+      var heaviness = (size - MIN_SIZE) / (MAX_SIZE - MIN_SIZE); // 0 small .. 1 large
+      var duration = 20 - heaviness * 6 + rand(-1.5, 1.5);      // ~20s small, ~14s large
+      d.style.animationDuration = duration.toFixed(1) + "s";
+      // Negative delay so droplets are already mid-cycle on load.
+      d.style.animationDelay = "-" + rand(0, 10).toFixed(1) + "s";
     }
   })();
 </script>
