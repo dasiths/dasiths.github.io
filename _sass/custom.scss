@@ -35,6 +35,61 @@ body {
   backdrop-filter: blur(12px) saturate(140%);
 }
 
+// Subtle "rain on frosted glass": small water beads drift down the masthead and
+// fade out, sitting on the glass surface behind the nav links (pointer-events
+// off so they never interfere). Each bead reads on both light and dark via a
+// bright highlight plus a soft shadow rim. Disabled for reduced-motion users.
+.masthead__rain {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+
+  span {
+    position: absolute;
+    top: 0;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(circle at 50% 42%,
+      rgba(#fff, 0.9) 0%,
+      rgba(#fff, 0.18) 40%,
+      rgba(#000, 0.05) 70%,
+      transparent 73%);
+    // Classic teardrop: a rounded square with a single sharp corner. The
+    // rotation (applied in the keyframes) turns that corner into the point at
+    // the top, so the round bulb leads as the drop slides down.
+    border-radius: 0 50% 50% 50%;
+    box-shadow: 0 0 2px rgba(#000, 0.14), inset 0 0 1px rgba(#fff, 0.5);
+    opacity: 0;
+    animation: masthead-drip linear infinite;
+    will-change: transform, opacity;
+  }
+
+  // Stagger position, size, speed and start time so the rain feels random.
+  span:nth-child(1) { left: 9%;  animation-duration: 6.5s;  animation-delay: 0s; }
+  span:nth-child(2) { left: 21%; width: 5px; height: 5px; animation-duration: 8s;   animation-delay: 1.8s; }
+  span:nth-child(3) { left: 34%; width: 4px; height: 4px; animation-duration: 9.5s; animation-delay: 3.2s; }
+  span:nth-child(4) { left: 47%; animation-duration: 7s;   animation-delay: 4.6s; }
+  span:nth-child(5) { left: 58%; width: 5px; height: 5px; animation-duration: 8.8s; animation-delay: 1s; }
+  span:nth-child(6) { left: 69%; width: 4px; height: 4px; animation-duration: 10s;  animation-delay: 5.5s; }
+  span:nth-child(7) { left: 81%; animation-duration: 6.8s; animation-delay: 2.6s; }
+  span:nth-child(8) { left: 92%; width: 5px; height: 5px; animation-duration: 9s;   animation-delay: 3.9s; }
+}
+
+@keyframes masthead-drip {
+  0%   { transform: translateY(-1.5em) rotate(45deg); opacity: 0; }
+  12%  { opacity: 0.7; }
+  80%  { opacity: 0.45; }
+  100% { transform: translateY(6em) rotate(45deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .masthead__rain {
+    display: none;
+  }
+}
+
 // Let the frosted masthead show through edge to edge instead of the nav's own
 // solid fill. The overflow dropdown keeps its own background, so it stays legible.
 .greedy-nav {
@@ -121,6 +176,69 @@ body {
 
   &:hover {
     color: mix(#000, $primary-color, 25%);
+  }
+}
+
+// Home page highlight gallery tabs: a centered horizontal pill bar that filters
+// the feature cards. The active tab is filled with the accent colour.
+.feature-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  justify-content: center;
+  margin: 0 0 1.5em;
+
+  &__tab {
+    padding: 0.4em 1.1em;
+    border: 1px solid $border-color;
+    border-radius: 999px;
+    background: rgba($background-color, 0.55);
+    color: $text-color;
+    font-family: $sans-serif-narrow;
+    font-size: 0.85em;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+      border-color: $primary-color;
+      color: $primary-color;
+    }
+
+    &.is-active {
+      border-color: $primary-color;
+      background: $primary-color;
+      color: #fff;
+    }
+  }
+}
+
+// Lay the filtered gallery out as a clean responsive grid. The theme's default
+// feature layout floats the cards and uses :nth-child(3n) rules to form rows,
+// which break once cards are hidden (nth-child still counts the hidden ones),
+// leaving ragged rows of one or two. CSS grid ignores display:none items, so
+// the visible cards always reflow into full rows.
+.feature-tabs__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5em;
+
+  @include breakpoint($small) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .feature__item,
+  .feature__item--left,
+  .feature__item--center,
+  .feature__item--right {
+    float: none;
+    width: auto;
+    margin: 0;
+    clear: none;
+  }
+
+  .feature__item.is-hidden {
+    display: none;
   }
 }
 

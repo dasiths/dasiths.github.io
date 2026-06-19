@@ -1,6 +1,9 @@
 {% capture logo_path %}{{ site.logo }}{% endcapture %}
 
 <div class="masthead">
+  <div class="masthead__rain" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
   <div class="masthead__inner-wrap">
     <div class="masthead__menu">
       <nav id="site-nav" class="greedy-nav">
@@ -66,5 +69,31 @@
       try { localStorage.setItem("theme", next); } catch (e) {}
       apply(next);
     });
+  })();
+</script>
+
+<script>
+  // Randomise the masthead rain: each droplet gets a random size (within a
+  // limit) plus a random position, speed and start offset, so the rain looks
+  // different on every load. CSS nth-child values act as the no-JS fallback.
+  (function () {
+    var drops = document.querySelectorAll(".masthead__rain span");
+    if (!drops.length) return;
+
+    var MIN_SIZE = 3; // px
+    var MAX_SIZE = 8; // px
+
+    function rand(min, max) { return Math.random() * (max - min) + min; }
+
+    for (var i = 0; i < drops.length; i++) {
+      var d = drops[i];
+      var size = rand(MIN_SIZE, MAX_SIZE).toFixed(1);
+      d.style.width = size + "px";
+      d.style.height = size + "px";
+      d.style.left = rand(4, 94).toFixed(1) + "%";
+      d.style.animationDuration = rand(6, 11).toFixed(1) + "s";
+      // Negative delay so droplets start mid-fall instead of all at the top.
+      d.style.animationDelay = "-" + rand(0, 8).toFixed(1) + "s";
+    }
   })();
 </script>

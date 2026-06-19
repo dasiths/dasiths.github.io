@@ -1,0 +1,83 @@
+{% comment %}
+  Tabbed version of the home feature gallery. Cards come straight from the
+  page's `feature_row`, and each card declares its own `tab`. The tab bar is
+  driven by the page's `feature_tabs` list (plus an "All" tab). Filtering is
+  client-side so it works as a single grid with no page reloads.
+{% endcomment %}
+{% assign feature_row = page.feature_row | sort: 'date' | reverse %}
+{% assign default_tab = page.feature_tabs | first | slugify %}
+
+<div class="feature-tabs" role="tablist" aria-label="Highlights filter">
+  {% for tab in page.feature_tabs %}
+    <button class="feature-tabs__tab{% if forloop.first %} is-active{% endif %}" type="button" data-filter="{{ tab | slugify }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">{{ tab }}</button>
+  {% endfor %}
+</div>
+
+<div class="feature__wrapper feature-tabs__grid">
+  {% for f in feature_row %}
+    {% assign card_tab = f.tab | slugify %}
+    <div class="feature__item{% if include.type %}--{{ include.type }}{% endif %}{% unless card_tab == default_tab %} is-hidden{% endunless %}" data-tab="{{ card_tab }}">
+      <div class="archive__item">
+        {% if f.image_path %}
+          <div class="archive__item-teaser">
+            <img src="{{ f.image_path | relative_url }}"
+                 alt="{% if f.alt %}{{ f.alt }}{% endif %}">
+            {% if f.image_caption %}
+              <span class="archive__item-caption">{{ f.image_caption | markdownify | remove: "<p>" | remove: "</p>" }}</span>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <div class="archive__item-body">
+          {% if f.title %}
+            <h2 class="archive__item-title">{{ f.title }}</h2>
+          {% endif %}
+
+          {% if f.excerpt %}
+            <div class="archive__item-excerpt">
+              {{ f.excerpt | markdownify }}
+            </div>
+          {% endif %}
+
+          {% if f.url %}
+            <p><a href="{{ f.url | relative_url }}" class="btn {{ f.btn_class }}">{{ f.btn_label | default: site.data.ui-text[site.locale].more_label | default: "Learn More" }}</a></p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<div>
+  <p>Continue to read my recent <a href="https://dasiths.github.io/recent/">posts here.</a></p>
+</div>
+
+<script>
+  // Filter the feature gallery by the active tab. "All" shows everything; any
+  // other tab shows only the cards whose data-tab matches.
+  (function () {
+    var tabs = document.querySelectorAll(".feature-tabs__tab");
+    var items = document.querySelectorAll(".feature-tabs__grid .feature__item");
+    if (!tabs.length) return;
+
+    function activate(filter, active) {
+      for (var i = 0; i < tabs.length; i++) {
+        var on = tabs[i] === active;
+        tabs[i].classList.toggle("is-active", on);
+        tabs[i].setAttribute("aria-pressed", on ? "true" : "false");
+      }
+      for (var j = 0; j < items.length; j++) {
+        var show = items[j].getAttribute("data-tab") === filter;
+        items[j].classList.toggle("is-hidden", !show);
+      }
+    }
+
+    for (var k = 0; k < tabs.length; k++) {
+      (function (btn) {
+        btn.addEventListener("click", function () {
+          activate(btn.getAttribute("data-filter"), btn);
+        });
+      })(tabs[k]);
+    }
+  })();
+</script>
