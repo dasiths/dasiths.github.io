@@ -137,7 +137,7 @@ var result = Types.InAssembly(typeof(OrdersController).Assembly)
     .ShouldNot().HaveDependencyOn("Shop.Infrastructure")
     .GetResult();
 
-var offenders = result.FailingTypes?.Select(t => t.FullName)
+var offenders = result.FailingTypeNames
                 ?? Enumerable.Empty<string>();
 
 Assert.True(
@@ -177,7 +177,7 @@ Typed languages make this kind of sensor easier because the program already carr
 
 The compiled output knows about assemblies, namespaces, types, signatures, inheritance, attributes, and references. NetArchTest and ArchUnitNET can read that directly. The model does not need to infer it from text.
 
-Dynamic languages can still have architecture tests. [PyTestArch](https://zyskarch.github.io/pytestarch/) does this for Python by parsing source files and building an import graph. That is useful, but it is a thinner reading. Import edges are not the same as type relationships, signatures, or call targets.
+Dynamic languages can still have architecture tests. [PyTestArch](https://github.com/zyskarch/pytestarch) does this for Python by parsing source files and building an import graph. That is useful, but it is a thinner reading. Import edges are not the same as type relationships, signatures, or call targets.
 
 This is the broader point. Typed languages give the harness more surface area for deterministic sensors. More of the architecture can be measured by tools, which means more of the backpressure can be cheap and repeatable.
 
