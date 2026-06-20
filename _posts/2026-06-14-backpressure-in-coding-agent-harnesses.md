@@ -5,8 +5,8 @@ comments: true
 header:
     teaser: /assets/images/back-pressure.png
 categories: [AI, Agents, Software Engineering]
-series: ai-assisted-engineering
-series_part: 3
+series: harness-engineering
+series_part: 1
 tags: [agents, AI, backpressure, coding agents, feedback loops, github copilot, harness engineering, sensors, verification]
 toc: true
 toc_label: "Content"
@@ -15,7 +15,7 @@ toc_sticky: true
 
 *Coding agents can produce a lot of code quickly. That is useful, but it also creates a simple problem: how do you know the work is correct before the agent moves on? Backpressure gives the harness a way to slow the agent down when the work has not been proven yet.*
 
-> This is the first of a short series. Here I lay out the concepts: backpressure, sensors, and gates, and when each one is useful. A follow-up will cover how to define and run them in practice.
+> This is the first of a series. Here I lay out the concepts: backpressure, sensors, and gates, and when each one is useful. The next post goes deeper on sensors: what makes a good one, and how to shift more of its work from opinion to proof, so the checks cost less and vary less. A later post covers how to define, run, and enforce them in practice.
 **Prefer to click through it?** There's an [interactive presentation of this post](https://dasith.me/presentations/backpressure/) that walks through the same ideas slide by slide.
 
 <img src="/assets/images/back-pressure.png" alt="Back Pressure" style="max-width: 800px; width: 100%;" />
@@ -125,11 +125,11 @@ flowchart LR
 
 Two composition rules follow. Run the cheap deterministic sensors first, such as type check, lint, and unit tests. Run the expensive inferential ones later, such as a review subagent. That catches most wrong work at low cost before it reaches a costly reading. Also make sure important paths to "done" have checks on them. If the agent can declare a risky step complete on its own, it can route around every sensor.
 
-How a sensor and a gate are actually defined and run, the file shape, where they live, and how enforcement is wired, is the subject of a follow-up post. The ideas here, sensor versus gate and the separation between them, stand on their own.
+How a sensor and a gate are actually defined and run, the file shape, where they live, and how enforcement is wired, is the subject of a later post in this series. The ideas here, sensor versus gate and the separation between them, stand on their own.
 
 ## The lifecycle of a sensor and a gate
 
-A sensor is created and matured through a lifecycle run by humans: identify the property worth measuring, formalize it into a sensor and a gate, execute it inside the agent loop, and improve it over time. This section covers the first stage: what prompts a sensor or a gate at all. The rest is the subject of the next post.
+A sensor is created and matured through a lifecycle run by humans: identify the property worth measuring, formalize it into a sensor and a gate, execute it inside the agent loop, and improve it over time. This section covers the first stage: what prompts a sensor or a gate at all. The later stages, formalizing a reading and then running and maturing it, run through the rest of this series.
 
 A sensor and a gate are different objects, so they are prompted by different failures. A sensor is perception; a gate is policy. You need a sensor when you could not see a problem, a perception gap. You need a gate when you could see it but nothing stopped it, an enforcement gap. A sensor answers "did we know?", a gate answers "did knowing change anything?" Most confusion about a harness comes from conflating the two.
 
@@ -178,7 +178,7 @@ Add a gate when the reading already exists but ignored failures are still gettin
 
 Start by sensing. Gate only when the signal is trusted and the cost of letting the issue through is high enough.
 
-A gate also tells you something about the harness itself. Its false positives and false negatives are a reading on sensor quality. A gate that keeps crying wolf is telling you to fix or retire the sensor behind it, not to tighten the gate. That is where the lifecycle loops back on itself. The team process for running that loop, formalizing a reading into a sensor, wiring its gate, and improving or retiring it as trust shifts and models change, is the subject of the next post.
+A gate also tells you something about the harness itself. Its false positives and false negatives are a reading on sensor quality. A gate that keeps crying wolf is telling you to fix or retire the sensor behind it, not to tighten the gate. That is where the lifecycle loops back on itself. Formalizing a reading into a sensor, and in particular shifting more of its work from opinion to proof, is the subject of the next post. The team process for running that loop, wiring a gate, and improving or retiring it as trust shifts and models change, comes later in the series.
 
 ## Concept lineage
 

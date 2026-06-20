@@ -9,3 +9,5 @@ search: false
 @import "minimal-mistakes/skins/dark"; // dark skin
 @import "minimal-mistakes"; // main partials
 @import "custom"; // shared custom overrides
+@import "code-blocks"; // GitHub-style code blocks (defines the mixin)
+@include code-blocks("dark"); // dark syntax palette + copy button + gutter

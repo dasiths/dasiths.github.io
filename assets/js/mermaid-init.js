@@ -57,8 +57,24 @@
         });
 
         function render() {
-          mermaid.initialize({ startOnLoad: false, theme: currentTheme() });
-          return mermaid.run();
+          // Render labels as native SVG <text> rather than HTML foreignObject
+          // boxes. The HTML boxes get sized against one font metric but painted
+          // with the page/site font, which clips long labels (and that clipping
+          // is then carried into the zoom lightbox). SVG text has no box to clip
+          // against, so labels stay intact and scale cleanly when zoomed.
+          mermaid.initialize({
+            startOnLoad: false,
+            theme: currentTheme(),
+            htmlLabels: false,
+            flowchart: { htmlLabels: false }
+          });
+          return mermaid.run().then(function () {
+            // Re-attach the zoom affordances once the SVGs exist (and again
+            // after every theme re-render, which replaces the diagram nodes).
+            if (window.mermaidZoom && window.mermaidZoom.decorate) {
+              window.mermaidZoom.decorate();
+            }
+          });
         }
 
         // Expose a re-render hook for the theme toggle. Resets each diagram

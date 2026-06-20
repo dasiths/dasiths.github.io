@@ -164,6 +164,137 @@ body {
   }
 }
 
+// Mermaid zoom: a hover/focus "expand" button on each rendered diagram plus a
+// full-screen pan/zoom lightbox (markup injected by assets/js/mermaid-zoom.js).
+.mermaid.mz-enabled {
+  position: relative;
+  cursor: zoom-in;
+}
+
+.mz-expand {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2em;
+  height: 2em;
+  padding: 0;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  background: rgba($background-color, 0.8);
+  color: $text-color;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  svg {
+    width: 1.15em;
+    height: 1.15em;
+  }
+
+  &:hover {
+    color: $primary-color;
+    border-color: $primary-color;
+  }
+
+  &:focus-visible {
+    opacity: 1;
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+}
+
+.mermaid.mz-enabled:hover .mz-expand,
+.mermaid.mz-enabled:focus-within .mz-expand {
+  opacity: 1;
+}
+
+// Lock background scroll while the lightbox is open.
+html.mz-open,
+html.mz-open body {
+  overflow: hidden;
+}
+
+.mz-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  background: rgba(#0b0f14, 0.82);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.mz-toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.6em 0.8em;
+}
+
+.mz-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.2em;
+  height: 2.2em;
+  padding: 0 0.7em;
+  border: 1px solid rgba(#fff, 0.25);
+  border-radius: $border-radius;
+  background: rgba(#fff, 0.08);
+  color: #fff;
+  font-size: 1em;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+
+  svg {
+    width: 1.1em;
+    height: 1.1em;
+  }
+
+  &:hover {
+    background: rgba(#fff, 0.18);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+}
+
+.mz-stage {
+  flex: 1 1 auto;
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+}
+
+.mz-overlay.is-dragging .mz-stage {
+  cursor: grabbing;
+}
+
+.mz-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+
+  svg {
+    display: block;
+  }
+}
+
 // Dark/light theme toggle button in the masthead. Mirrors .search__toggle.
 .theme-toggle {
   margin-left: 0.5rem;

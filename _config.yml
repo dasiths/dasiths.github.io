@@ -75,6 +75,8 @@ google:
 # Custom scripts loaded after the theme's footer scripts
 after_footer_scripts:
   - /assets/js/mermaid-init.js # renders ```mermaid fenced code blocks as diagrams
+  - /assets/js/mermaid-zoom.js # click-to-zoom lightbox for rendered diagrams
+  - /assets/js/code-copy.js # adds copy button + line numbers to code blocks
 
 # SEO Related
 google_site_verification : 5Fb-UZxtHNEsTwTGjm2rp1kDo0_cKplvYlMXwBdIsiM

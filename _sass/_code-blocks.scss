@@ -1,0 +1,389 @@
+/* ==========================================================================
+   GitHub-style code blocks
+   --------------------------------------------------------------------------
+   Richer syntax colours, a header bar (language label + copy button) and an
+   optional line-number gutter for Rouge-highlighted fenced code blocks.
+
+   The DOM chrome (.cb-header / .cb-body / .cb-gutter / .cb-copy) is injected at
+   runtime by assets/js/code-copy.js. The token colours below override the
+   theme's _sass/minimal-mistakes/_syntax.scss purely on source order, so this
+   partial must be @included *after* `@import "minimal-mistakes"`.
+
+   `code-blocks($mode)` is called once per compiled stylesheet ("light" from
+   main.scss, "dark" from main-dark.scss) so each build gets the matching
+   GitHub light/dark palette.
+   ========================================================================== */
+
+// GitHub "light default" (Primer) syntax palette.
+$cb-light: (
+  bg: #f6f8fa,
+  header-bg: #eaeef2,
+  border: #d0d7de,
+  fg: #1f2328,
+  gutter: #8c959f,
+  comment: #6e7781,
+  keyword: #cf222e,
+  string: #0a3069,
+  entity: #8250df,
+  constant: #0550ae,
+  variable: #953800,
+  tag: #116329,
+  heading: #0550ae,
+  ins-fg: #116329,
+  ins-bg: #dafbe1,
+  del-fg: #82071e,
+  del-bg: #ffebe9,
+  err-fg: #82071e,
+  err-bg: #ffebe9,
+  hl-bg: #fff8c5,
+  btn-fg: #57606a,
+  btn-hover: #1f2328
+);
+
+// GitHub "dark default" (Primer) syntax palette.
+$cb-dark: (
+  bg: #161b22,
+  header-bg: #21262d,
+  border: #30363d,
+  fg: #e6edf3,
+  gutter: #6e7681,
+  comment: #8b949e,
+  keyword: #ff7b72,
+  string: #a5d6ff,
+  entity: #d2a8ff,
+  constant: #79c0ff,
+  variable: #ffa657,
+  tag: #7ee787,
+  heading: #58a6ff,
+  ins-fg: #aff5b4,
+  ins-bg: rgba(46, 160, 67, 0.15),
+  del-fg: #ffdcd7,
+  del-bg: rgba(248, 81, 73, 0.15),
+  err-fg: #ffa198,
+  err-bg: rgba(248, 81, 73, 0.1),
+  hl-bg: rgba(187, 128, 9, 0.15),
+  btn-fg: #8b949e,
+  btn-hover: #e6edf3
+);
+
+@mixin code-blocks($mode) {
+  $p: if($mode == "dark", $cb-dark, $cb-light);
+
+  /* Block shell ---------------------------------------------------------- */
+  div.highlighter-rouge,
+  figure.highlight {
+    background: map-get($p, bg);
+    color: map-get($p, fg);
+    border: 1px solid map-get($p, border);
+    border-radius: $border-radius;
+    overflow: hidden;
+  }
+
+  /* Header bar: language label (left) + copy button (right) -------------- */
+  .cb-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1em;
+    min-height: 2.2em;
+    padding: 0.3em 0.5em 0.3em 0.9em;
+    background: map-get($p, header-bg);
+    border-bottom: 1px solid map-get($p, border);
+    font-family: $monospace;
+    font-size: 0.72em;
+  }
+
+  .cb-lang {
+    color: map-get($p, comment);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .cb-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    margin-left: auto;
+    padding: 0.25em 0.55em;
+    border: 1px solid transparent;
+    border-radius: $border-radius;
+    background: transparent;
+    color: map-get($p, btn-fg);
+    font: inherit;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.15s ease, background-color 0.15s ease,
+      border-color 0.15s ease;
+
+    &:hover {
+      color: map-get($p, btn-hover);
+      border-color: map-get($p, border);
+    }
+
+    &:focus-visible {
+      outline: 2px solid map-get($p, constant);
+      outline-offset: 1px;
+    }
+
+    &.is-copied {
+      color: map-get($p, ins-fg);
+      border-color: transparent;
+    }
+
+    .cb-copy-icon {
+      display: inline-flex;
+    }
+
+    svg {
+      width: 1.1em;
+      height: 1.1em;
+      fill: currentColor;
+    }
+  }
+
+  /* Editor-style titlebar (multi-line blocks): macOS window controls on the
+     left, a centered title, and the copy button on the right. -------------- */
+  .cb-header--editor {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    column-gap: 1em;
+
+    .cb-lang {
+      justify-self: center;
+      color: map-get($p, fg);
+      text-transform: none;
+      letter-spacing: 0;
+      opacity: 0.85;
+    }
+
+    .cb-copy {
+      justify-self: end;
+    }
+  }
+
+  .cb-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    span {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+    }
+
+    .cb-dot-red {
+      background: #ff5f56;
+    }
+    .cb-dot-yellow {
+      background: #ffbd2e;
+    }
+    .cb-dot-green {
+      background: #27c93f;
+    }
+  }
+
+  /* Body: optional line-number gutter + horizontally-scrolling code ------ */
+  .cb-body {
+    display: flex;
+    align-items: stretch;
+
+    > pre,
+    pre.highlight {
+      flex: 1 1 auto;
+      min-width: 0;
+      margin: 0;
+      padding: 1em;
+      overflow-x: auto;
+    }
+  }
+
+  .cb-gutter {
+    flex: 0 0 auto;
+    padding: 1em 0.6em 1em 1em;
+    color: map-get($p, gutter);
+    text-align: right;
+    white-space: pre;
+    line-height: inherit;
+    user-select: none;
+    -webkit-user-select: none;
+    border-right: 1px solid map-get($p, border);
+  }
+
+  /* Console / terminal theme for single-line blocks: a prompt glyph, the
+     command, and an inline (icon-only) copy button — no titlebar. ---------- */
+  .cb-console {
+    .cb-body {
+      align-items: center;
+    }
+
+    .cb-prompt {
+      flex: 0 0 auto;
+      padding-left: 1em;
+      color: map-get($p, tag);
+      font-family: $monospace;
+      font-weight: 600;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .cb-body > pre,
+    pre.highlight {
+      padding-left: 0.5em;
+    }
+
+    .cb-copy {
+      flex: 0 0 auto;
+      align-self: center;
+      margin-right: 0.4em;
+    }
+
+    .cb-copy-label {
+      display: none;
+    }
+  }
+
+  /* Syntax tokens (GitHub palette). Selectors match Rouge's output and are
+     declared after the theme defaults, so they win on source order. -------- */
+  .highlight {
+    color: map-get($p, fg);
+
+    .hll {
+      background-color: map-get($p, hl-bg);
+    }
+
+    // Comments
+    .c,
+    .cd,
+    .cm,
+    .cp,
+    .c1,
+    .cs,
+    .cpf,
+    .sd {
+      color: map-get($p, comment);
+    }
+
+    // Keywords
+    .k,
+    .kc,
+    .kd,
+    .kn,
+    .kp,
+    .kr,
+    .kv,
+    .ow,
+    .bp {
+      color: map-get($p, keyword);
+    }
+
+    // Entities: functions, classes, types, namespaces, decorators
+    .kt,
+    .nc,
+    .nn,
+    .ne,
+    .nf,
+    .fm,
+    .nx,
+    .nd {
+      color: map-get($p, entity);
+    }
+
+    // Markup / template tags
+    .nt {
+      color: map-get($p, tag);
+    }
+
+    // Constants: numbers, attributes, escapes, named constants
+    .na,
+    .no,
+    .m,
+    .mf,
+    .mh,
+    .mi,
+    .mo,
+    .mb,
+    .il,
+    .se,
+    .l {
+      color: map-get($p, constant);
+    }
+
+    // Variables
+    .nv,
+    .vc,
+    .vg,
+    .vi {
+      color: map-get($p, variable);
+    }
+
+    // Strings
+    .s,
+    .s1,
+    .s2,
+    .sa,
+    .sb,
+    .sc,
+    .dl,
+    .sh,
+    .si,
+    .sx,
+    .sr,
+    .ss,
+    .ld {
+      color: map-get($p, string);
+    }
+
+    // Default foreground: operators, punctuation, plain names, builtins
+    .o,
+    .p,
+    .pi,
+    .n,
+    .nl,
+    .ni,
+    .nb,
+    .py,
+    .w {
+      color: map-get($p, fg);
+    }
+
+    // Diff / generic output
+    .gp {
+      color: map-get($p, comment);
+    }
+
+    .gt {
+      color: map-get($p, keyword);
+    }
+
+    .gh,
+    .gu {
+      color: map-get($p, heading);
+      font-weight: 600;
+    }
+
+    .gi {
+      color: map-get($p, ins-fg);
+      background-color: map-get($p, ins-bg);
+    }
+
+    .gd {
+      color: map-get($p, del-fg);
+      background-color: map-get($p, del-bg);
+    }
+
+    .ge {
+      font-style: italic;
+    }
+
+    .gs {
+      font-weight: 600;
+    }
+
+    .err {
+      color: map-get($p, err-fg);
+      background-color: map-get($p, err-bg);
+    }
+  }
+}
