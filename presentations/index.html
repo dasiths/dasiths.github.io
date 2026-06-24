@@ -357,6 +357,21 @@
     background: radial-gradient(circle at 40% 35%, #2a3b5f, #081026); border: 2px solid var(--line);
   }
 
+  /* ════════════════════════ THUMB: AGENT IDENTITY (ID badge) ════════════════════════ */
+  .th-badge .bdg { width: min(58%, 172px); filter: drop-shadow(0 16px 30px rgba(0,0,0,.5)); animation: floatup 6s ease-in-out infinite; }
+  .th-badge .lan { width: 32px; height: 46px; margin: 0 auto; clip-path: polygon(36% 0, 64% 0, 100% 100%, 0 100%); opacity: .92;
+    background: repeating-linear-gradient(180deg, var(--c, var(--accent-4)) 0 7px, color-mix(in srgb, var(--c, var(--accent-4)) 55%, #fff) 7px 14px); }
+  .th-badge .crd { margin-top: 3px; background: linear-gradient(180deg, #fff, #eceef3); border-radius: 12px; padding: 13px 13px 12px; display: grid; gap: 10px; }
+  .th-badge .top { display: flex; align-items: center; gap: 10px; }
+  .th-badge .ph { width: 34px; height: 34px; border-radius: 50%; flex: none; border: 2px solid #fff; box-shadow: 0 0 0 1px #d7dbe2;
+    background: radial-gradient(circle at 50% 36%, var(--c, var(--accent-4)), color-mix(in srgb, var(--c, var(--accent-4)) 45%, #fff)); }
+  .th-badge .lines { display: grid; gap: 6px; flex: 1; }
+  .th-badge .ln { height: 6px; border-radius: 3px; background: #d7dbe2; }
+  .th-badge .ln.s { width: 62%; }
+  .th-badge .tag2 { justify-self: start; font-family: var(--mono); font-size: 7.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--c, var(--accent-4)); border: 1px solid color-mix(in srgb, var(--c, var(--accent-4)) 40%, transparent); border-radius: 5px; padding: 3px 7px;
+    background: color-mix(in srgb, var(--c, var(--accent-4)) 10%, #fff); }
+
   /* ── footer ── */
   footer { margin-top: 64px; padding-top: 26px; border-top: 1px dashed var(--line); }
   footer p { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); }
@@ -434,6 +449,36 @@
                 <span class="chip">Agents</span>
                 <span class="chip">Identity</span>
                 <span class="chip">Security</span>
+              </div>
+              <span class="go">Open deck →</span>
+            </div>
+          </a>
+        </article>
+
+        <!-- ── DECK · WHO'S CALLING (AGENT IDENTITY) ── -->
+        <article>
+          <a class="deck" href="/presentations/agent-identity/" style="--c: var(--accent-4); --th-bg: #0c0f1a;" aria-label="Open: Who's Calling? Identity for the Age of Agents">
+            <div class="thumb th-badge" aria-hidden="true">
+              <div class="bdg">
+                <div class="lan"></div>
+                <div class="crd">
+                  <div class="top">
+                    <div class="ph"></div>
+                    <div class="lines"><div class="ln"></div><div class="ln s"></div></div>
+                  </div>
+                  <span class="tag2">aauth:agent</span>
+                </div>
+              </div>
+            </div>
+            <div class="meta">
+              <span class="tag">Agent Identity <span class="yr">· OAuth &amp; AAuth</span><time class="date" datetime="2026-06-25">25 Jun 2026</time></span>
+              <h2>Who's Calling? <em>Identity</em> for the Age of Agents</h2>
+              <p>Why autonomous agents are a new kind of principal, why that breaks the assumptions
+                baked into OAuth, and how the industry, AAuth included, is responding.</p>
+              <div class="chips">
+                <span class="chip">Agents</span>
+                <span class="chip">OAuth</span>
+                <span class="chip">AAuth</span>
               </div>
               <span class="go">Open deck →</span>
             </div>

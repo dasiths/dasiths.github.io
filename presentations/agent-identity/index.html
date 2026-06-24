@@ -1,0 +1,1776 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who's Calling? — Identity for the Age of Agents</title>
+<meta name="description" content="Why autonomous agents are a new kind of principal, and why that means rethinking our auth protocols. A classroom-style walk from OAuth to agent identity and AAuth.">
+<script src="/presentations/shared/analytics.js" defer></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=JetBrains+Mono:wght@400;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ════════════════════════ TOKENS — classroom / notebook theme ════════════════════════ */
+  :root {
+    --bg: #fbfaf3;            /* warm paper */
+    --panel: #ffffff;         /* index card */
+    --panel-2: #f5f1e6;       /* manila */
+    --ink-bg: #243a2e;        /* chalkboard green */
+    --ink-bg-2: #2d473a;
+    --text: #20242e;          /* dark ink */
+    --muted: #515a68;         /* pencil grey */
+    --faint: #8c897c;         /* faint caption */
+    --line: #e3ded0;          /* paper rule */
+    --accent-1: #2f5fb0;      /* pen blue */
+    --accent-2: #2e8b57;      /* green tick */
+    --accent-3: #d99a2b;      /* pencil amber */
+    --accent-4: #8a55c8;      /* crayon purple */
+    --accent-5: #d24a3d;      /* red pen */
+    --term-bg: #fcfbf5;
+    --term-text: #2a2f3a;
+    --term-green: #2e8b57;
+    --term-faint: #8c897c;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --display: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --serif: "Newsreader", Georgia, "Times New Roman", serif;
+    --marker: "Caveat", "Comic Sans MS", cursive;
+    --ease: cubic-bezier(.16, 1, .3, 1);
+  }
+
+  /* ════════════════════════ RESET & BODY ════════════════════════ */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--display);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  ::selection { background: color-mix(in srgb, var(--accent-3) 28%, transparent); }
+
+  /* ════════════════════════ CHROME ════════════════════════ */
+  .topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 90; display: flex; align-items: center; gap: 14px; padding: 12px 18px; pointer-events: none; }
+  .topbar > * { pointer-events: auto; }
+  .wordmark { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); text-decoration: none; white-space: nowrap; }
+  .wordmark b { color: var(--accent-2); font-weight: 700; }
+  .crumb { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); text-decoration: none; white-space: nowrap; transition: color .25s; }
+  .crumb:hover { color: var(--accent-2); }
+  .crumb-sep { font-family: var(--mono); font-size: 10px; color: var(--faint); pointer-events: none; }
+  .topbar .spacer { flex: 1; pointer-events: none; }
+  .tbtn { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); background: color-mix(in srgb, var(--panel) 82%, transparent); border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer; backdrop-filter: blur(8px); transition: color .25s, border-color .25s, background .25s; }
+  .tbtn:hover { color: var(--accent-1); border-color: color-mix(in srgb, var(--accent-1) 50%, transparent); }
+  .tbtn.on { color: var(--accent-1); border-color: var(--accent-1); background: color-mix(in srgb, var(--accent-1) 8%, var(--panel)); }
+  .tbtn kbd { font-family: inherit; font-size: 8.5px; color: var(--faint); border: 1px solid var(--line); border-radius: 4px; padding: 1px 4px; margin-left: 7px; }
+
+  .progress { position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: linear-gradient(90deg, var(--accent-3), var(--accent-2)); z-index: 95; transition: width .35s var(--ease); }
+
+  .navc { position: fixed; bottom: 22px; right: 22px; z-index: 90; display: none; align-items: center; gap: 10px; }
+  body.present .navc { display: flex; }
+  body.read .navc { display: flex; }
+  body.read .navc .count { display: none; }
+  body.read .nbtn { width: 38px; height: 38px; font-size: 14px; }
+  .navc .count { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; color: var(--faint); margin-right: 4px; }
+  .navc .count b { color: var(--text); font-weight: 700; }
+  .nbtn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 88%, transparent); backdrop-filter: blur(8px); color: var(--text); font-size: 17px; cursor: pointer; display: grid; place-items: center; transition: border-color .25s, color .25s, transform .15s; }
+  .nbtn:hover { border-color: var(--accent-1); color: var(--accent-1); }
+  .nbtn:active { transform: scale(.92); }
+  .nbtn:disabled { opacity: .3; cursor: default; }
+
+  .hint { position: fixed; bottom: 26px; left: 26px; z-index: 90; font-family: var(--mono); font-size: 9.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--faint); display: none; }
+  body.present .hint { display: block; }
+  @media (max-width: 760px) { .hint { display: none !important; } }
+
+  .menu { position: fixed; inset: 0; z-index: 120; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(14px); display: none; overflow-y: auto; padding: 90px 24px 60px; }
+  .menu.open { display: block; }
+  .menu ol { max-width: 680px; margin: 0 auto; list-style: none; counter-reset: m; }
+  .menu li { counter-increment: m; }
+  .menu a { display: flex; align-items: baseline; gap: 18px; padding: 11px 14px; border-radius: 10px; text-decoration: none; color: var(--text); font-size: clamp(16px, 2vw, 21px); font-weight: 550; letter-spacing: -.01em; transition: background .2s, color .2s; }
+  .menu a::before { content: counter(m, decimal-leading-zero); font-family: var(--mono); font-size: 11px; color: var(--faint); }
+  .menu a:hover { background: color-mix(in srgb, var(--accent-1) 7%, transparent); color: var(--accent-1); }
+  .menu a.here { color: var(--accent-1); }
+  .menu a.here::after { content: '●'; font-size: 8px; color: var(--accent-1); margin-left: auto; }
+
+  .npanel { position: fixed; top: 0; right: 0; bottom: 0; width: min(400px, 88vw); z-index: 100; background: var(--panel); border-left: 1px solid var(--line); box-shadow: -18px 0 50px rgba(0,0,0,.08); transform: translateX(102%); transition: transform .4s var(--ease); display: flex; flex-direction: column; }
+  body.present.notes-open .npanel { transform: none; }
+  .npanel header { padding: 18px 22px 14px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-1); display: flex; justify-content: space-between; align-items: center; }
+  .npanel header span { color: var(--faint); font-weight: 400; }
+  .npanel .nbody { padding: 20px 24px 40px; overflow-y: auto; font-size: 14.5px; color: var(--muted); font-weight: 380; }
+  .npanel .nbody p { margin-bottom: 14px; }
+  .npanel .nbody b { color: var(--text); font-weight: 650; }
+  body.present.notes-open .deckwrap { margin-right: min(400px, 88vw); }
+
+  /* ════════════════════════ SLIDE LAYOUT ════════════════════════ */
+  .deckwrap { transition: margin-right .4s var(--ease); }
+  .slide { position: relative; }
+  .slide .inner { max-width: 1140px; margin: 0 auto; padding: 0 clamp(22px, 5vw, 64px); width: 100%; }
+
+  body.present { overflow: hidden; height: 100dvh; }
+  body.present .deckwrap { height: 100dvh; position: relative; }
+  body.present .slide { position: absolute; inset: 0; display: flex; visibility: hidden; opacity: 0; transform: translateY(14px) scale(.985); transition: opacity .5s var(--ease), transform .5s var(--ease), visibility 0s .5s; overflow-y: auto; padding: 76px 0 70px; }
+  body.present .slide .inner { margin: auto; }
+  body.present .slide.active { visibility: visible; opacity: 1; transform: none; transition: opacity .5s var(--ease), transform .5s var(--ease), visibility 0s 0s; z-index: 2; }
+  body.present .talk { display: none; }
+
+  body.read .slide { min-height: 58vh; display: flex; align-items: center; padding: clamp(64px, 10vh, 120px) 0; border-bottom: 1px solid var(--line); }
+  body.read .slide:last-child { border-bottom: 0; }
+  body.read .npanel { display: none; }
+
+  .slide::before { content: ''; position: absolute; top: 8%; right: -12%; width: 50vw; height: 70%; background: radial-gradient(closest-side, color-mix(in srgb, var(--c, var(--accent-1)) 8%, transparent), transparent 70%); pointer-events: none; }
+  .slide:nth-child(even)::before { right: auto; left: -12%; }
+
+  .slide.dark { background: var(--ink-bg); color: #e8ead9; }
+  .slide.dark::before { background: radial-gradient(closest-side, color-mix(in srgb, var(--c, var(--accent-3)) 16%, transparent), transparent 70%); }
+  body.read .slide.dark { border-bottom-color: #34433a; }
+
+  /* ════════════════════════ REVEAL SYSTEM ════════════════════════ */
+  .rv, [data-step] { opacity: 0; transform: translateY(22px); transition: opacity .65s var(--ease), transform .65s var(--ease); transition-delay: var(--d, 0s); }
+  .rv.in, [data-step].in { opacity: 1; transform: none; }
+  body.present [data-step] { transform: translateY(26px) scale(.99); transition-delay: 0s; }
+  body.present [data-step].in { transform: none; }
+
+  /* ════════════════════════ COMPONENTS ════════════════════════ */
+  .kicker { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .26em; text-transform: uppercase; color: var(--c, var(--accent-1)); display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .kicker::before { content: ''; width: 30px; height: 11px; background: repeating-linear-gradient(90deg, var(--c, var(--accent-1)) 0 2px, transparent 2px 4px, var(--c, var(--accent-1)) 4px 5px, transparent 5px 8px); }
+  .kicker .snum { color: var(--faint); font-weight: 400; letter-spacing: .14em; }
+
+  .slide h1 { font-size: clamp(34px, 5vw, 66px); font-weight: 750; line-height: 1.04; letter-spacing: -.028em; margin: 14px 0 16px; max-width: 16em; }
+  .slide h1 em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--c, var(--accent-2)); letter-spacing: 0; }
+  .slide.dark h1 { color: #f4efe2; }
+
+  .lede { font-size: clamp(15.5px, 1.7vw, 19px); color: var(--muted); max-width: 38em; font-weight: 380; margin-bottom: 10px; }
+  .lede strong { color: var(--text); font-weight: 620; }
+  .slide.dark .lede { color: #c6cdc3; }
+  .slide.dark .lede strong { color: #f0ece0; }
+
+  .bullets { list-style: none; margin-top: 18px; max-width: 46em; }
+  .bullets li { position: relative; padding: 7px 0 7px 26px; font-size: clamp(14.5px, 1.5vw, 17px); color: var(--muted); font-weight: 400; }
+  .bullets li::before { content: '▸'; position: absolute; left: 2px; color: var(--c, var(--accent-2)); font-size: 13px; }
+  .bullets li b, .bullets li strong { color: var(--text); font-weight: 650; }
+  .slide.dark .bullets li { color: #d4dcd3; }
+  .slide.dark .bullets li b, .slide.dark .bullets li strong { color: #f4efe2; }
+  .slide.dark .bullets li::before { color: color-mix(in srgb, var(--c, var(--accent-3)) 55%, #d4dcd3); }
+  .bullets li code, .lede code, .card code, .duo code, .stat code { font-family: var(--mono); font-size: .82em; background: color-mix(in srgb, var(--c, var(--accent-1)) 8%, white); border: 1px solid color-mix(in srgb, var(--c, var(--accent-1)) 22%, transparent); border-radius: 5px; padding: 1px 6px; color: var(--c, var(--accent-1)); }
+  .bullets .sub { display: block; font-size: .88em; color: var(--faint); margin-top: 3px; }
+
+  .cols { display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(24px, 4vw, 56px); align-items: start; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+  .card { border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(180deg, var(--panel), var(--panel-2)); padding: 22px 24px; box-shadow: 0 2px 10px rgba(0,0,0,.05); transition: transform .3s, border-color .3s, box-shadow .3s; }
+  .card:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--c, var(--accent-2)) 45%, transparent); box-shadow: 0 14px 36px rgba(0,0,0,.11); }
+  .card .glyph { font-size: 20px; color: var(--c, var(--accent-2)); display: block; margin-bottom: 10px; }
+  .card h3 { font-size: 16.5px; font-weight: 700; letter-spacing: -.012em; margin-bottom: 7px; }
+  .card h3 em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--c, var(--accent-2)); }
+  .card p { font-size: 13.5px; color: var(--muted); line-height: 1.62; font-weight: 380; }
+  .card p b { color: var(--text); font-weight: 620; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 20px; }
+  .chip { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; border: 1px solid color-mix(in srgb, var(--c, var(--accent-1)) 40%, transparent); color: var(--c, var(--accent-1)); background: color-mix(in srgb, var(--c, var(--accent-1)) 6%, white); border-radius: 999px; padding: 6px 13px; }
+
+  .statement { font-family: var(--serif); font-style: italic; font-size: clamp(28px, 4.6vw, 58px); line-height: 1.22; letter-spacing: -.01em; max-width: 18em; color: var(--text); }
+  .statement b { color: var(--c, var(--accent-2)); font-weight: 400; }
+  .slide.dark .statement { color: #f4efe2; }
+
+  .quote { border-left: 2.5px solid var(--c, var(--accent-2)); padding: 4px 0 4px 22px; font-family: var(--serif); font-style: italic; font-size: clamp(17px, 2vw, 23px); color: var(--text); max-width: 30em; margin-top: 26px; }
+  .quote b { color: var(--c, var(--accent-2)); font-weight: 400; }
+  .quote .attr { display: block; font-family: var(--mono); font-style: normal; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin-top: 8px; }
+  .slide.dark .quote { color: #f0ece0; }
+
+  /* clickable reference / source link icon */
+  .reflink { display: inline-flex; align-items: center; vertical-align: baseline; margin-left: 6px; color: var(--c, var(--accent-2)); text-decoration: none; transition: opacity .2s, transform .2s; }
+  .reflink:hover { opacity: .6; transform: translate(1px, -1px); }
+  .reflink:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; border-radius: 3px; }
+  .reflink svg { width: 11px; height: 11px; display: block; }
+
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 26px; }
+  .duo .half { border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(180deg, var(--panel), var(--panel-2)); padding: 24px 26px; }
+  .duo .num { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--c, var(--accent-5)); display: block; margin-bottom: 10px; }
+  .duo h3 { font-size: clamp(17px, 1.9vw, 22px); font-weight: 720; letter-spacing: -.018em; margin-bottom: 8px; }
+  .duo p { font-size: 14px; color: var(--muted); font-weight: 380; line-height: 1.65; }
+  .duo p b { color: var(--text); font-weight: 620; }
+
+  .abc { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 28px; }
+  .abc .aff { border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(180deg, var(--panel), var(--panel-2)); padding: 24px; transition: transform .3s, border-color .3s; }
+  .abc .aff:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--c, var(--accent-2)) 50%, transparent); }
+  .abc .letter { width: 32px; height: 32px; display: grid; place-items: center; border: 1.5px solid color-mix(in srgb, var(--c, var(--accent-2)) 55%, transparent); border-radius: 50%; background: color-mix(in srgb, var(--c, var(--accent-2)) 7%, white); font-family: var(--mono); font-size: 12.5px; font-weight: 700; color: var(--c, var(--accent-2)); margin-bottom: 14px; }
+  .abc h3 { font-size: 17px; font-weight: 720; letter-spacing: -.015em; margin-bottom: 7px; }
+  .abc h3 em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--c, var(--accent-2)); }
+  .abc p { font-size: 13.5px; color: var(--muted); line-height: 1.62; font-weight: 380; }
+  .abc p b { color: var(--text); font-weight: 620; }
+
+  .term { background: var(--term-bg); color: var(--term-text); font-family: var(--mono); font-size: clamp(13px, 1.5vw, 16px); line-height: 1.4; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; box-shadow: 0 12px 28px rgba(0,0,0,.12); margin-top: 22px; }
+  .term-bar { padding: 12px 16px 10px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; }
+  .term-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+  .term-bar i:first-child { background: var(--accent-5); }
+  .term-bar i:nth-child(2) { background: var(--accent-3); }
+  .term-bar i:nth-child(3) { background: var(--accent-2); }
+  .term-bar span { margin-left: 8px; font-family: var(--mono); font-size: 8.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); }
+  .term-body { padding: 14px 18px 18px; display: grid; gap: 4px; }
+  .t-row { display: flex; flex-wrap: wrap; gap: 2px 16px; align-items: baseline; justify-content: space-between; }
+  .t-cmd { color: var(--term-text); font-weight: 400; }
+  .t-cmd::before { content: '> '; color: var(--accent-2); }
+  .t-ok { color: var(--term-green); }
+  .t-dim { color: var(--term-faint); }
+  .t-out { color: var(--term-text); white-space: pre-wrap; line-height: 1.28; }
+  .t-out b { color: var(--accent-1); font-weight: 600; }
+
+  .stats { display: flex; gap: clamp(20px, 4vw, 56px); flex-wrap: wrap; margin: 26px 0 6px; }
+  .stat .big { font-size: clamp(38px, 5vw, 64px); font-weight: 780; letter-spacing: -.04em; line-height: 1; color: var(--text); }
+  .stat .big em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--c, var(--accent-2)); }
+  .stat .cap { font-family: var(--mono); font-size: 9.5px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--faint); margin-top: 8px; max-width: 22em; }
+  .slide.dark .stat .big { color: #f4efe2; }
+
+  .loop { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-top: 26px; }
+  .loop .step { font-family: var(--mono); font-size: clamp(9px, 1vw, 11px); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 9px 15px; background: rgba(255,255,255,.7); transition: color .3s, border-color .3s; }
+  .loop .step:hover { color: var(--accent-1); border-color: color-mix(in srgb, var(--accent-1) 55%, transparent); }
+  .loop .larr { color: var(--faint); font-family: var(--mono); font-size: 11px; }
+
+  .thread { display: flex; align-items: baseline; gap: 14px; margin-top: clamp(26px, 4vh, 44px); max-width: 52em; }
+  .thread::before { content: '. . .'; font-family: var(--mono); font-size: 13px; letter-spacing: .2em; color: var(--c, var(--accent-2)); white-space: nowrap; flex: none; }
+  .thread p { font-size: 13.5px; color: var(--muted); font-weight: 400; }
+  .thread p b { font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--c, var(--accent-2)); margin-right: 6px; }
+  .slide.dark .thread p { color: #c6cdc3; }
+
+  .talk { margin-top: clamp(30px, 5vh, 48px); border-top: 1px dashed var(--line); padding-top: 22px; max-width: 52em; }
+  .talk .ttag { font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--accent-3); display: block; margin-bottom: 12px; }
+  .talk p { font-size: 14.5px; color: var(--muted); font-weight: 380; line-height: 1.75; margin-bottom: 12px; }
+  .talk p b { color: var(--text); font-weight: 650; }
+  .slide.dark .talk { border-top-color: #34433a; }
+  .slide.dark .talk p { color: #b6beb4; }
+  .slide.dark .talk p b { color: #f0ece0; }
+
+  .maptbl { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: clamp(12.5px, 1.3vw, 15px); }
+  .maptbl th, .maptbl td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .maptbl thead th { font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); }
+  .maptbl tbody td { color: var(--muted); font-weight: 380; }
+  .maptbl tbody td:first-child { color: var(--text); font-weight: 560; }
+  .maptbl tbody td b { color: var(--c, var(--accent-2)); font-family: var(--mono); font-size: .82em; font-weight: 700; letter-spacing: .04em; }
+  .slide.dark .maptbl th, .slide.dark .maptbl td { border-bottom-color: #34433a; }
+  .slide.dark .maptbl tbody td { color: #c6cdc3; }
+  .slide.dark .maptbl tbody td:first-child { color: #f0ece0; }
+
+  .cta { margin-top: 44px; max-width: 44em; border: 1px solid var(--line); border-left: 3px solid var(--c, var(--accent-2)); border-radius: 12px; background: var(--panel); padding: 20px 24px 18px; }
+  .cta .ctag { font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--c, var(--accent-2)); display: block; margin-bottom: 10px; }
+  .cta p { font-size: 14px; color: var(--muted); font-weight: 380; margin-bottom: 12px; }
+  .cta a { color: var(--c, var(--accent-2)); }
+  .slide.dark .cta { background: var(--ink-bg-2); border-color: #34433a; border-left-color: var(--c, var(--accent-3)); }
+  .slide.dark .cta p { color: #c6cdc3; }
+
+  .merframe { margin-top: 22px; background: var(--term-bg); border: 2px solid var(--line); border-radius: 12px; padding: 16px 16px 12px; overflow: auto; max-height: 56vh; box-shadow: 0 12px 28px rgba(0,0,0,.12); }
+  body.present .merframe { max-height: 60vh; }
+  .merframe .mermaid { text-align: center; }
+  .merframe .mermaid svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+  .mercap { font-family: var(--mono); font-size: 9.5px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); margin-top: 10px; }
+
+  .keys { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 34px; }
+  .keys .k { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 7px 12px; }
+  .keys .k b { color: var(--c, var(--accent-2)); font-weight: 700; }
+  a.k { text-decoration: none; transition: color .25s, border-color .25s; }
+  a.k:hover { color: var(--accent-1) !important; border-color: var(--accent-1) !important; }
+
+  /* ════════════════════════ TITLE SLIDE ════════════════════════ */
+  .titlegrid { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(20px, 4vw, 60px); align-items: center; }
+  .deckmeta { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-bottom: 18px; }
+  .deckmeta a { color: var(--muted); text-decoration: none; transition: color .25s; }
+  .deckmeta a:hover { color: var(--c, var(--accent-2)); }
+  .deckmeta .sep { color: var(--faint); }
+  .deckmeta .ser { color: var(--c, var(--accent-2)); font-weight: 700; }
+  .deckmeta time { color: var(--faint); font-weight: 600; }
+  .titleslide h1 { font-size: clamp(44px, 7vw, 92px); max-width: none; line-height: .98; }
+  .titleslide .sub { font-family: var(--serif); font-style: italic; font-size: clamp(19px, 2.4vw, 28px); color: var(--muted); margin-top: 14px; max-width: 22em; }
+
+  /* ════════════════════════ THEME MOTIFS — notebook + chalkboard ════════════════════════ */
+  /* ruled-paper backdrop with red margin line */
+  .paperbg { position: fixed; inset: 0; z-index: -2; pointer-events: none;
+    background-image: repeating-linear-gradient(180deg, transparent 0 33px, color-mix(in srgb, var(--accent-1) 8%, transparent) 33px 34px);
+    -webkit-mask: linear-gradient(180deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+    mask: linear-gradient(180deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+    opacity: .5; }
+  .paperbg::before { content: ''; position: absolute; top: 0; bottom: 0; left: clamp(18px, 7vw, 92px); width: 2px; background: color-mix(in srgb, var(--accent-5) 32%, transparent); }
+  @media (max-width: 760px) { .paperbg::before { display: none; } }
+
+  /* chalkboard divider slides */
+  .slide.board { background:
+      radial-gradient(circle at 50% 36%, color-mix(in srgb, #fff 4%, var(--ink-bg)), var(--ink-bg) 72%); }
+  .slide.board .inner { position: relative; }
+  .slide.board::after { content: ''; position: absolute; inset: clamp(16px, 3vw, 40px); border: 1.5px dashed rgba(255,255,255,.16); border-radius: 12px; pointer-events: none; }
+  .slide.board h1 { font-family: var(--marker); font-weight: 700; letter-spacing: .005em; font-size: clamp(40px, 6vw, 78px); }
+  .slide.board h1 em { font-family: var(--marker); font-style: normal; color: var(--c, var(--accent-3)); text-decoration: underline; text-decoration-style: wavy; text-underline-offset: 8px; text-decoration-thickness: 2px; }
+  .slide.board .kicker { color: color-mix(in srgb, var(--c, var(--accent-3)) 78%, #fff); }
+
+  /* index-card paper tint on cards */
+  .card, .duo .half, .abc .aff { background-image: linear-gradient(180deg, var(--panel), var(--panel-2)), repeating-linear-gradient(180deg, transparent 0 25px, color-mix(in srgb, var(--accent-1) 5%, transparent) 25px 26px); background-blend-mode: normal; }
+
+  /* ════════════════════════ SCENES ════════════════════════ */
+  .scene { position: relative; display: grid; place-items: center; min-height: clamp(240px, 40vh, 420px); }
+  @keyframes cardRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  @keyframes sway { 0%, 100% { transform: rotate(-1.4deg); } 50% { transform: rotate(1.4deg); } }
+
+  /* ID badge on a lanyard — agent identity */
+  .badge { width: min(74%, 270px); animation: cardRise .7s var(--ease) both; }
+  .badge .lanyard { width: 40px; height: 66px; margin: 0 auto; background: repeating-linear-gradient(180deg, var(--accent-1) 0 8px, color-mix(in srgb, var(--accent-1) 62%, #fff) 8px 16px); clip-path: polygon(36% 0, 64% 0, 100% 100%, 0 100%); opacity: .9; }
+  .badge .clip { width: 30px; height: 11px; margin: -2px auto 0; background: #b9bcc4; border-radius: 3px; box-shadow: inset 0 -2px 0 rgba(0,0,0,.18); }
+  .badge .card2 { margin-top: 4px; background: linear-gradient(180deg, #fff, #f4f1e8); border: 1px solid var(--line); border-radius: 13px; padding: 16px 17px 15px; box-shadow: 0 18px 40px rgba(0,0,0,.16); animation: sway 7.5s ease-in-out infinite; transform-origin: top center; }
+  .badge .row1 { display: flex; align-items: center; gap: 12px; }
+  .badge .photo { width: 46px; height: 46px; border-radius: 50%; flex: none; background: radial-gradient(circle at 50% 36%, var(--accent-3), color-mix(in srgb, var(--accent-3) 45%, #fff)); border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); position: relative; overflow: hidden; }
+  .badge .photo::after { content: ''; position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%); width: 30px; height: 22px; border-radius: 50% 50% 0 0; background: color-mix(in srgb, var(--accent-1) 55%, #fff); }
+  .badge .who b { display: block; font-family: var(--display); font-size: 13.5px; font-weight: 750; letter-spacing: .02em; color: var(--text); }
+  .badge .who span { font-family: var(--mono); font-size: 8px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-1); }
+  .badge .id { margin-top: 12px; font-family: var(--mono); font-size: 9px; letter-spacing: .02em; color: var(--muted); background: color-mix(in srgb, var(--accent-1) 7%, #fff); border: 1px solid color-mix(in srgb, var(--accent-1) 22%, transparent); border-radius: 6px; padding: 5px 8px; word-break: break-all; }
+  .badge .sig { margin-top: 11px; height: 26px; border-bottom: 1.5px solid var(--line); position: relative; }
+  .badge .sig .ink { font-family: var(--marker); font-size: 21px; color: var(--accent-1); position: absolute; left: 4px; bottom: 1px; transform: rotate(-4deg); }
+  .badge .sig .pop { position: absolute; right: 0; bottom: 4px; font-family: var(--mono); font-size: 7px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-2); }
+
+  /* identity-layer spectrum (five cards) */
+  .spectrum { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 22px; }
+  .sp { border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(180deg, var(--panel), var(--panel-2)); padding: 15px 15px 16px; display: flex; flex-direction: column; gap: 7px; position: relative; overflow: hidden; }
+  .sp::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--c, var(--accent-1)); opacity: .55; }
+  .sp .pos { font-family: var(--mono); font-size: 8px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--c, var(--accent-1)); }
+  .sp h3 { font-size: 14.5px; font-weight: 720; letter-spacing: -.012em; line-height: 1.08; }
+  .sp p { font-size: 11.5px; color: var(--muted); line-height: 1.5; font-weight: 380; }
+  .sp.hl { border-color: color-mix(in srgb, var(--accent-2) 55%, transparent); box-shadow: 0 12px 28px color-mix(in srgb, var(--accent-2) 16%, transparent); }
+  .sp.hl::before { opacity: 1; background: var(--accent-2); }
+  .spaxis { display: flex; justify-content: space-between; margin-top: 12px; font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); }
+  @media (max-width: 900px) { .spectrum { grid-template-columns: repeat(2, 1fr); } }
+
+  /* ════════════════════════ RESPONSIVE ════════════════════════ */
+  @media (max-width: 980px) {
+    .cols, .titlegrid, .grid-3, .abc { grid-template-columns: 1fr; }
+    .titlegrid .scene { order: -1; height: clamp(240px, 34vh, 320px); min-height: 0; }
+  }
+  @media (max-width: 640px) {
+    .grid-2, .duo { grid-template-columns: 1fr; }
+    body.present .slide { padding: 64px 0 86px; }
+    .maptbl thead { display: none; }
+    .maptbl, .maptbl tbody, .maptbl tr, .maptbl td { display: block; width: 100%; }
+    .maptbl tr { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; padding: 6px 10px; }
+    .maptbl td { border: 0; padding: 4px 4px; }
+  }
+
+  /* ════════════════════════ ACCESSIBILITY ════════════════════════ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .rv, [data-step] { opacity: 1; transform: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* ════════════════════════ PRINT ════════════════════════ */
+  @media print {
+    .topbar, .navc, .hint, .progress, .menu, .npanel, .paperbg { display: none !important; }
+    body.present .slide { position: static; visibility: visible; opacity: 1; transform: none; }
+    .slide { page-break-after: always; border: 0; }
+    .rv, [data-step] { opacity: 1 !important; transform: none !important; }
+    .talk { display: block !important; }
+  }
+</style>
+</head>
+<body class="read">
+
+<div class="progress" id="progress"></div>
+<div class="paperbg" aria-hidden="true"></div>
+
+<header class="topbar">
+  <a class="crumb" href="/presentations/">Decks</a>
+  <span class="crumb-sep" aria-hidden="true">›</span>
+  <a class="wordmark" href="#s-title">Agentic IAM · <b>Who's Calling?</b></a>
+  <span class="spacer"></span>
+  <button class="tbtn" id="btn-mode">Present <kbd>P</kbd></button>
+  <button class="tbtn" id="btn-notes" hidden>Notes <kbd>N</kbd></button>
+  <button class="tbtn" id="btn-menu">Menu <kbd>M</kbd></button>
+  <button class="tbtn" id="btn-full" hidden>Full <kbd>F</kbd></button>
+</header>
+
+<nav class="menu" id="menu" aria-label="Slide menu"><ol id="menu-list"></ol></nav>
+
+<aside class="npanel" aria-label="Speaker notes">
+  <header>Notes <span id="np-count"></span></header>
+  <div class="nbody" id="np-body"></div>
+</aside>
+
+<div class="navc">
+  <span class="count" id="counter"></span>
+  <button class="nbtn" id="btn-prev" aria-label="Previous">←</button>
+  <button class="nbtn" id="btn-next" aria-label="Next">→</button>
+</div>
+<span class="hint">← → navigate · N notes · M menu · P read mode</span>
+
+<main class="deckwrap" id="deck">
+
+<!-- ═══════════════════════ SLIDE · TITLE ═══════════════════════ -->
+<section class="slide titleslide" id="s-title" data-title="Title" style="--c: var(--accent-1)">
+  <div class="inner titlegrid">
+    <div>
+      <p class="deckmeta rv">
+        <a href="/presentations/">Decks</a>
+        <span class="sep" aria-hidden="true">›</span>
+        <span class="ser">Agentic IAM</span>
+        <span class="sep" aria-hidden="true">·</span>
+        <time datetime="2026-06-25">25 Jun 2026</time>
+      </p>
+      <p class="kicker rv"><span class="snum"></span>Agent identity</p>
+      <h1 class="rv" style="--d:.06s">Who's <em>calling?</em></h1>
+      <p class="sub rv" style="--d:.14s">Identity for the age of agents. Why autonomous agents are a
+        new kind of principal, and why that means rethinking our auth protocols.</p>
+      <div class="keys rv" style="--d:.24s">
+        <span class="k"><b>scroll</b> to read</span>
+        <span class="k"><b>P</b> to present</span>
+        <span class="k"><b>M</b> contents</span>
+      </div>
+    </div>
+    <div class="scene" aria-hidden="true">
+      <div class="badge">
+        <div class="lanyard"></div>
+        <div class="clip"></div>
+        <div class="card2">
+          <div class="row1">
+            <div class="photo"></div>
+            <div class="who"><b>Travel Bot</b><span>AI Agent · Instance</span></div>
+          </div>
+          <div class="id">aauth:travel-bot@acme.example</div>
+          <div class="sig"><span class="ink">approved</span><span class="pop">PoP key</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · THE HOOK ═══════════════════════ -->
+<section class="slide" id="s-hook" data-title="The question" style="--c: var(--accent-5)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>The question</p>
+    <p class="lede rv" style="--d:.04s">You hand an AI agent one job: <em>"book my Sydney conference
+      trip under $2,000."</em> It plans the flights and hotels and calls a travel <strong>Booking
+      API</strong> to make it happen.</p>
+    <div class="statement rv" style="--d:.1s">
+      Now it is about to <b>charge $9,000.</b> Who said it could?
+    </div>
+    <div class="term rv" style="--d:.18s; max-width: 36em;">
+      <div class="term-bar"><i></i><i></i><i></i><span>agent · travel booking api</span></div>
+      <div class="term-body">
+        <div class="t-row"><span class="t-cmd">POST /bookings  fare=BIZ-SYD  amount=9000  refundable=false</span></div>
+        <div class="t-row"><span class="t-dim"># authorized by… the user? the app? the agent?</span></div>
+      </div>
+    </div>
+    <p class="lede rv" style="--d:.3s; margin-top: 18px;"><strong>Who is calling, on whose behalf, and
+      can they prove it?</strong> Hold that for the next 40 minutes; by the end you will have three
+      answers.</p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Open with a concrete scene, not theory. You delegate one job to an AI agent: book a work trip
+        under a budget. It plans the trip and calls a travel Booking API. Then it tries to charge nine
+        thousand dollars to the corporate card, far over the budget you set. Ask the room out loud: who
+        authorized this, and could anyone prove it after the fact? This booking agent is the one example
+        we follow for the whole talk. Promise three answers by the close: who is calling, on whose
+        behalf, and can they prove it.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · ROADMAP ═══════════════════════ -->
+<section class="slide" id="s-roadmap" data-title="What you'll leave with" style="--c: var(--accent-3)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Roadmap</p>
+    <h1 class="rv" style="--d:.06s">Three things to <em>take home.</em></h1>
+    <div class="abc">
+      <div class="aff" data-step="1">
+        <span class="letter">A</span>
+        <h3>What agent identity <em>is</em></h3>
+        <p>Not a human, not quite a workload. A new kind of <b>principal</b> with its own identity.</p>
+      </div>
+      <div class="aff" data-step="1">
+        <span class="letter">B</span>
+        <h3>Why today's patterns <em>fall short</em></h3>
+        <p>OAuth bakes in assumptions that quietly stop being true the moment an agent is the caller.</p>
+      </div>
+      <div class="aff" data-step="2">
+        <span class="letter">C</span>
+        <h3>The shape of the <em>answers</em></h3>
+        <p>How the industry is responding, with AAuth as one concrete, instructive example.</p>
+      </div>
+    </div>
+    <div class="thread" data-step="2"><p><b>First</b> a quick refresher on the world OAuth was built for.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Set expectations so the audience knows where the talk is going. This is a concept talk, not a
+        product pitch: we will define agent identity, show where the familiar model breaks, then survey
+        the responses. Keep this slide fast. It is a promise, not content.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · OAUTH CLIENT-SERVER ═══════════════════════ -->
+<section class="slide" id="s-oauth-cs" data-title="OAuth's home turf" style="--c: var(--accent-1)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>The world we built auth for</p>
+    <h1 class="rv" style="--d:.06s">OAuth's home turf: a person <em>delegates</em> to an app.</h1>
+    <p class="lede rv" style="--d:.12s">A human signs in, consents once, and the app gets a token to
+      act <strong>on their behalf</strong>. This is the flow OAuth was designed around.</p>
+    <div class="merframe rv" style="--d:.2s">
+      <div class="mermaid">
+sequenceDiagram
+  autonumber
+  actor U as User
+  participant A as App (client)
+  participant AS as Auth Server
+  participant RS as Resource Server
+  U->>A: use the app
+  A->>AS: redirect to authorize
+  U->>AS: log in and consent
+  AS-->>A: access token
+  A->>RS: call API with token
+  RS-->>A: data
+      </div>
+      <p class="mercap">Authorization-code flow: the user consents, the app carries the token.</p>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Re-teach the basics kindly for newcomers. There are four parties: the user who owns the data,
+        the app acting for them, the authorization server that issues tokens, and the resource server
+        that holds the data. The user consents once and the app gets a token. Note the shape: a
+        <b>human is in the loop at the start</b>, and the app is something a developer registered ahead
+        of time. Both of those quietly stop being true for agents.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · SERVICE-TO-SERVICE ═══════════════════════ -->
+<section class="slide" id="s-oauth-ss" data-title="Service to service" style="--c: var(--accent-2)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>The world we built auth for</p>
+    <h1 class="rv" style="--d:.06s">No human at all: one back-end <em>calls another.</em></h1>
+    <p class="lede rv" style="--d:.12s">The pattern we have refined for fifteen years:
+      <strong>Service&nbsp;A calls Service&nbsp;B</strong> through a gateway that checks a token. With the
+      <strong>client-credentials</strong> grant the service speaks for itself; proper workload identity
+      (<strong>SPIFFE, WIMSE</strong>) does it better, with no shared secret to leak.</p>
+    <ul class="bullets" data-step="1">
+      <li>The service proves who it is with a <b>client id and secret</b> (or a certificate).</li>
+      <li>That identity was <b>registered ahead of time</b>, by a developer, at each server.</li>
+      <li>The token it gets is a <b>bearer token</b>: hold it, and you can use it.</li>
+    </ul>
+    <div class="thread" data-step="2"><p><b>It is tempting to file an agent right here</b> just another service-to-service call. It is not that simple, and the next act is about why.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This is the slide people reach for when they say "an agent is just another back-end service."
+        For fifteen years we have built exactly this: one service calls another through a gateway that
+        checks a token, with the caller proving itself by client credentials or, better, workload
+        identity like SPIFFE or WIMSE. Plant the three assumptions out loud: pre-registration, a shared
+        secret or key, and a bearer token. Then make the promise: it is tempting to drop an agent into
+        this picture as just another service-to-service call, and the whole next act is about why that
+        is wrong.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · WHAT'S BAKED IN ═══════════════════════ -->
+<section class="slide" id="s-baked-in" data-title="What's baked in" style="--c: var(--accent-4)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>What's baked in &nbsp;⚑</p>
+    <h1 class="rv" style="--d:.06s">Six quiet <em>assumptions.</em> Watch them.</h1>
+    <p class="lede rv" style="--d:.12s">Every one was the right call in 2012. We will knock each one
+      down in a few slides, once an agent is the caller.</p>
+    <div class="grid-3" style="margin-top: 20px;">
+      <div class="card" data-step="1"><span class="glyph">⚑</span><h3>Pre-registered client</h3><p>The caller is <b>known ahead of time</b>, registered at each server.</p></div>
+      <div class="card" data-step="1"><span class="glyph">⚑</span><h3>Bearer tokens</h3><p>Hold the token, use the token. <b>Nothing binds it</b> to who carries it.</p></div>
+      <div class="card" data-step="1"><span class="glyph">⚑</span><h3>Scopes as permission</h3><p>A scope is a <b>standing grant</b>, not the intent of one call.</p></div>
+      <div class="card" data-step="2"><span class="glyph">⚑</span><h3>Redirect and consent</h3><p>A <b>human at a browser</b> is there to click approve.</p></div>
+      <div class="card" data-step="2"><span class="glyph">⚑</span><h3>TLS does the securing</h3><p>No signatures. The <b>channel</b> is the security, not the message.</p></div>
+      <div class="card" data-step="2"><span class="glyph">⚑</span><h3>Build-time integrations</h3><p>The app <b>knows its APIs</b> before it runs.</p></div>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This is the anchor slide for the whole first half. Read the six out loud and tell the audience
+        to remember the flag. Do not argue with any of them yet; just plant them. Every one was correct
+        for software a developer registered ahead of time. In Act 3, when an agent becomes the caller,
+        we will come back and knock each one over.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · OAUTH 1.0 SIGNED ═══════════════════════ -->
+<section class="slide" id="s-oauth1" data-title="OAuth 1.0 signed" style="--c: var(--accent-1)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>A short history</p>
+    <h1 class="rv" style="--d:.06s">Plot twist: OAuth 1.0 <em>signed</em> every request.</h1>
+    <p class="lede rv" style="--d:.12s">Proof-of-possession is not a new idea. In 1.0, each request
+      carried a <strong>signature proving you held the key</strong>. A stolen token was not enough.</p>
+    <div class="term rv" style="--d:.2s; max-width: 36em;">
+      <div class="term-bar"><i></i><i></i><i></i><span>oauth 1.0 · signed request</span></div>
+      <div class="term-body">
+        <div class="t-row"><span class="t-cmd">GET /api/photos</span></div>
+        <div class="t-row"><span class="t-out">Authorization: OAuth oauth_signature="<b>tR3k…</b>", oauth_nonce=…</span></div>
+        <div class="t-row"><span class="t-dim"># the signature proves possession of the secret</span></div>
+      </div>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Correct a common belief before it trips you up later. People say OAuth never had
+        proof-of-possession. Not true. OAuth 1.0 signed every request with an HMAC. The capability
+        existed and worked. That matters, because the story of OAuth 2.0 is a story of deliberately
+        <b>giving that up</b>, for reasons that made sense at the time.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · 2.0 TRADED SIGNATURES ═══════════════════════ -->
+<section class="slide" id="s-oauth2" data-title="2.0 dropped signatures" style="--c: var(--accent-3)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>A short history</p>
+    <h1 class="rv" style="--d:.06s">2.0 traded signatures for <em>TLS and bearer tokens.</em></h1>
+    <p class="lede rv" style="--d:.12s">Signing was painful, browser crypto was weak, and certificates
+      were costly. So 2.0 dropped signatures and leaned on the secure channel instead.</p>
+    <div class="duo">
+      <div class="half" data-step="1">
+        <span class="num">OAuth 1.0</span>
+        <h3>Sign the message</h3>
+        <p>Security at the <b>application layer</b>. Every request proves possession. Powerful, but
+          fiddly to implement.</p>
+      </div>
+      <div class="half" data-step="1">
+        <span class="num">OAuth 2.0</span>
+        <h3>Secure the channel</h3>
+        <p>Security moves to the <b>transport layer</b> (TLS). The token becomes a bearer credential.
+          Simpler to adopt, weaker by default.</p>
+      </div>
+    </div>
+    <p class="quote" data-step="2">"OAuth 2.0 is a bad protocol. <b>WS-* bad.</b>"
+      <span class="attr">Eran Hammer, lead editor, on resigning from the spec · 2012<a class="reflink" href="https://gist.github.com/nckroy/dd2d4dfc86f7d13045ad715377b6a48f" target="_blank" rel="noopener" aria-label="Open the source: Eran Hammer, OAuth 2.0 and the Road to Hell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a></span></p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This is the fork in the road. To get broad adoption, the working group shifted the security
+        burden from signing the message to securing the channel, and shipped bearer tokens. It also got
+        renamed from a protocol to a framework. The lead editor was so unhappy he resigned and called it
+        the road to hell. The TLS bet largely paid off. The bearer-token bet is the one that bites
+        agents.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · BEARER = CASH ═══════════════════════ -->
+<section class="slide" id="s-bearer" data-title="Bearer access tokens" style="--c: var(--accent-5)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>A short history</p>
+    <div class="statement rv" style="--d:.06s">
+      A stolen access token still <b>works.</b> Nothing binds it to who holds it.
+    </div>
+    <p class="lede rv" style="--d:.18s; margin-top: 24px;">Intercept the booking API's access token, or
+      find it in a log, and you can book flights and charge the card on the user's account. Fine for a
+      fixed backend; the <strong>core liability</strong> for an agent that carries tokens across
+      services &nbsp;⚑</p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>A bearer access token has no idea who is holding it. Steal it, copy it, or leak it in a log,
+        and it still authorizes calls to the booking API. We accepted that risk because backends sit
+        behind firewalls with short token lifetimes. Agents break that calm: they are numerous,
+        ephemeral, and they carry tokens across services. This is the assumption that matters most once
+        an agent is the caller.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · FRAMEWORK COST ═══════════════════════ -->
+<section class="slide" id="s-framework" data-title="The framework cost" style="--c: var(--accent-4)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>A short history</p>
+    <h1 class="rv" style="--d:.06s">A framework needs <em>profiles.</em> A protocol does not.</h1>
+    <p class="lede rv" style="--d:.12s">OAuth 2.0 is a base that only becomes usable once you bolt on
+      extensions <strong>and</strong> pin the choices with a profile.</p>
+    <div class="chips rv" style="--d:.18s">
+      <span class="chip">PKCE</span><span class="chip">DPoP</span><span class="chip">PAR</span>
+      <span class="chip">RAR</span><span class="chip">JAR</span><span class="chip">JARM</span>
+      <span class="chip">Token Exchange</span><span class="chip">mTLS</span><span class="chip">OIDC</span>
+      <span class="chip">FAPI</span><span class="chip">Device Flow</span>
+    </div>
+    <ul class="bullets" data-step="1" style="margin-top: 22px;">
+      <li><b>OpenID Connect</b>, the identity layer almost everyone uses, is itself a profile on top of OAuth.</li>
+      <li>"We use OAuth2" is never enough. You must also name the flow, PKCE, the endpoints, the profile.</li>
+      <li>A <b>framework</b> is hard to conformance-test. A <b>protocol</b> is not.</li>
+      <li><b>Guardrail:</b> OAuth <i>is</i> conformance-tested, but only its profiles (OIDC, FAPI). You test the profile, not bare OAuth.</li>
+    </ul>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This is Dick Hardt's framing from his recent interview. A framework leaves so much open that
+        you cannot meaningfully conformance-test it; a prescriptive protocol you can. That is why two
+        "OAuth-compliant" systems rarely interoperate without a profile and a vendor SDK to hide the
+        gaps. Keep the guardrail handy: an expert will point out OIDC and FAPI have conformance suites.
+        Exactly: you test the profile, not bare OAuth. Flexibility was the feature, and also why it
+        sprawled, and why it cannot simply be patched into something agent-shaped.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · DIVIDER · ENTER AGENTS ═══════════════════════ -->
+<section class="slide dark board" id="s-act-agents" data-title="Enter agents" style="--c: var(--accent-2)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Part two · the new caller</p>
+    <h1 class="rv" style="--d:.06s">Now an <em>agent</em> is calling.</h1>
+    <p class="lede rv" style="--d:.14s">Everything so far assumed software a person registered ahead of
+      time. Agents break that assumption on nearly every axis.</p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>A breath, and a turn. We have set up the world OAuth was built for and the assumptions it
+        carries. Now we change one thing: the caller is an autonomous agent. Watch how much shifts from
+        that single change.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · WHAT IS AN AGENT ═══════════════════════ -->
+<section class="slide" id="s-what-agent" data-title="What is an agent" style="--c: var(--accent-1)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Enter agents</p>
+    <h1 class="rv" style="--d:.06s">An agent is not a <em>pre-programmed</em> app.</h1>
+    <p class="lede rv" style="--d:.12s">It decides what to do, and what to call, <strong>in the
+      moment</strong>. The developer wrote the goal, not the path.</p>
+    <ul class="bullets" data-step="1">
+      <li><b>Autonomous:</b> it acts toward a goal without a coded script.</li>
+      <li><b>Reasons about context:</b> it interprets, plans, and adapts.</li>
+      <li><b>Picks its tools at runtime:</b> the next call is chosen as the task unfolds.</li>
+      <li><b>Long-running:</b> tasks can span minutes, hours, or days.</li>
+      <li><b>Spawns sub-agents:</b> it delegates pieces of the work to others.</li>
+    </ul>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Define the new actor plainly for newcomers. The crucial difference from a normal app is that a
+        developer programmed a traditional app's decisions in advance. An agent makes its decisions at
+        runtime: it chooses tools, chains calls, and can spawn helpers. Hold that picture; it is why a
+        pre-registered, build-time identity model does not fit.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · NOT A MICROSERVICE ══════════════════════ -->
+<section class="slide" id="s-not-microservice" data-title="Not a microservice with an LLM" style="--c: var(--accent-3)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Enter agents</p>
+    <h1 class="rv" style="--d:.06s">Not a <em>microservice</em> with an LLM.</h1>
+    <p class="lede rv" style="--d:.12s">It is tempting to file an agent under <em>Service A calls
+      Service B</em>. But a <strong>model, not code, decides what it does</strong>, and that quietly
+      breaks four assumptions the service world was built on.</p>
+    <div class="grid-2" style="margin-top: 14px; gap: 12px;">
+      <div class="card" data-step="1" style="padding: 15px 20px;">
+        <span class="glyph" style="font-size: 12px; font-family: var(--mono); letter-spacing: .03em; margin-bottom: 6px;">declared → interpreted</span>
+        <h3>Intent</h3>
+        <p>A service encodes intent in <b>code you can test</b>. An agent <b>interprets a goal at runtime</b>, so the same prompt can act differently each run.</p>
+      </div>
+      <div class="card" data-step="1" style="padding: 15px 20px;">
+        <span class="glyph" style="font-size: 12px; font-family: var(--mono); letter-spacing: .03em; margin-bottom: 6px;">fixed → explored</span>
+        <h3>Paths</h3>
+        <p>A service's branches are <b>baked in</b>. An agent <b>explores tools and APIs</b> to find a path, sometimes one no one coded.</p>
+      </div>
+      <div class="card" data-step="2" style="padding: 15px 20px;">
+        <span class="glyph" style="font-size: 12px; font-family: var(--mono); letter-spacing: .03em; margin-bottom: 6px;">known → discovered</span>
+        <h3>Dependencies</h3>
+        <p>A service integrates with <b>known APIs</b>. An agent <b>discovers tools and authority live</b>; its reach is unknown until it reaches.</p>
+      </div>
+      <div class="card" data-step="2" style="padding: 15px 20px;">
+        <span class="glyph" style="font-size: 12px; font-family: var(--mono); letter-spacing: .03em; margin-bottom: 6px;">service-to-service → on your behalf</span>
+        <h3>Delegation</h3>
+        <p>A service runs with <b>its own account</b>. An agent carries <b>a human's authority</b> down a chain, attributed to every hop.</p>
+      </div>
+    </div>
+    <p class="mercap rv" style="--d:.36s; margin-top: 12px;">Framing after Christian Posta · "The Differences Between Microservices and AI Agents"<a class="reflink" href="https://www.linkedin.com/pulse/differences-between-microservices-ai-agents-christian-posta-k6xgc/" target="_blank" rel="noopener" aria-label="Open the source: Christian Posta, The Differences Between Microservices and AI Agents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a></p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This pays off the promise from the service-to-service slide. The comforting mental model is
+        "an agent is a microservice with an LLM attached," because it lets us reuse two decades of
+        gateways, scopes, and service accounts. But a service that merely calls an LLM still has every
+        path pre-defined in code. A real agent lets the model drive the behaviour, and four assumptions
+        break: intent moves from declared to interpreted, paths from fixed to explored, dependencies
+        from known to discovered, and delegation from service-to-service to acting on a human's behalf.
+        The Codex sudo story lands the paths point: it found a workaround it was never handed, not
+        maliciously, just by exploring further than a person would. Posta's conclusion is our whole
+        thesis: gateways, OAuth scopes, and service accounts stay necessary, but they are no longer
+        sufficient.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · THE REFRAMING ═══════════════════════ -->
+<section class="slide" id="s-reframing" data-title="Human, workload, or new layer" style="--c: var(--accent-2)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>The reframing</p>
+    <h1 class="rv" style="--d:.06s">Human? Workload? Or a <em>new layer?</em></h1>
+    <div class="abc">
+      <div class="aff" data-step="1">
+        <span class="letter">H</span>
+        <h3>Not <em>human</em></h3>
+        <p>Give it a human identity and it gets the <b>standing of a person</b> without any of the
+          built-in constraints.</p>
+      </div>
+      <div class="aff" data-step="1">
+        <span class="letter">W</span>
+        <h3>Not quite a <em>workload</em></h3>
+        <p>It runs somewhere, so workload identity fits at first. But agents are <b>bursty, ephemeral,
+          and pause and resume</b> across clusters.</p>
+      </div>
+      <div class="aff" data-step="2">
+        <span class="letter">A</span>
+        <h3>A new <em>layer</em></h3>
+        <p>It behaves like an <b>actor</b>. Agent identity sits on top of workload identity, and can
+          collapse into it inside one trust domain, until it cannot.</p>
+      </div>
+    </div>
+    <div class="thread" data-step="2"><p><b>Keep this</b> it sets up the whole industry comparison later.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This is the conceptual on-ramp, and the strongest single idea to land for newcomers. An agent
+        is not a human and not really a workload. It is a new layer, an actor. Inside one trust domain
+        you own, you can collapse that layer into workload identity. The moment an agent crosses into
+        territory its issuing platform does not reach, the layer becomes its own thing. We will return
+        to exactly this when we compare the industry's options.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · DELEGATION VS IMPERSONATION ═══════════════════════ -->
+<section class="slide" id="s-delegation" data-title="Delegation not impersonation" style="--c: var(--accent-4)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>The reframing</p>
+    <h1 class="rv" style="--d:.06s">Delegation is not <em>impersonation.</em></h1>
+    <p class="lede rv" style="--d:.12s">Do not hand the agent the user's identity. You need
+      <strong>both</strong> the user and the agent in the picture.</p>
+    <div class="duo">
+      <div class="half" data-step="1">
+        <span class="num" style="--c: var(--accent-5)">Impersonation</span>
+        <h3>Reuses your token</h3>
+        <p>It calls the booking API with the <b>user's own access token</b>. Every booking is logged as
+          the user, and the agent inherits <b>everything the user can do</b>, not just travel.</p>
+      </div>
+      <div class="half" data-step="1">
+        <span class="num" style="--c: var(--accent-2)">Delegation</span>
+        <h3>Acts on your behalf</h3>
+        <p>It calls with <b>its own identity</b>, on the user's behalf (on-behalf-of). Both principals
+          are visible, so you can trace, scope, and revoke the agent on its own.</p>
+      </div>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This distinction is the conceptual key to why agents need their own identity. If the agent just
+        borrows the user's token, every action looks like the user did it, and the agent inherits the
+        user's full reach. Delegation keeps two identities in play: the user who asked, and the agent
+        who acted. That is what makes attribution, least privilege, and revocation possible.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · REGISTRY TO PRINCIPAL ═══════════════════════ -->
+<section class="slide" id="s-principal" data-title="Registry to principal" style="--c: var(--accent-3)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>The reframing</p>
+    <h1 class="rv" style="--d:.06s">From a rich <em>registry</em> to a runtime principal.</h1>
+    <p class="lede rv" style="--d:.12s">An agent is described in detail somewhere: name, tools,
+      permissions, policy. But at runtime you need one <strong>stable, verifiable principal</strong>.</p>
+    <div class="loop rv" style="--d:.2s">
+      <span class="step">Registry: name · tools · permissions</span>
+      <span class="larr">→</span>
+      <span class="step">Runtime principal</span>
+      <span class="larr">→</span>
+      <span class="step">Authorize</span>
+      <span class="larr">·</span>
+      <span class="step">Attribute</span>
+      <span class="larr">·</span>
+      <span class="step">Revoke</span>
+    </div>
+    <p class="lede rv" style="--d:.3s; margin-top: 24px;">That principal is what you use to make an
+      authorization decision, to attribute an action after the fact, and to revoke the agent.</p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Bridge from "what is an agent" to "what does its identity have to be." The registry entry is
+        useful for humans and catalogs, but it is not what shows up on the wire. At runtime you need a
+        crisp, verifiable principal that answers three operational questions: can it do this, who did
+        it, and how do I turn it off. Keep this short; it is the setup for everything that breaks next.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · ASSUMPTIONS FALL ═══════════════════════ -->
+<section class="slide" id="s-assumptions-fall" data-title="The assumptions fall" style="--c: var(--accent-5)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>The reframing &nbsp;⚑ callback</p>
+    <h1 class="rv" style="--d:.06s">Every flag just <em>fell.</em></h1>
+    <table class="maptbl rv" style="--d:.14s">
+      <thead><tr><th>What we assumed ⚑</th><th>What's true once an agent calls</th></tr></thead>
+      <tbody>
+        <tr><td>Pre-registered client</td><td>Resources are <b>discovered at runtime</b>; client ids do not travel</td></tr>
+        <tr><td>Bearer tokens</td><td>Copied secrets <b>leak</b> somewhere they shouldn't</td></tr>
+        <tr><td>Scopes as permission</td><td>A scope is <b>not the intent</b> of a single call</td></tr>
+        <tr><td>Redirect and consent</td><td>Decisions happen <b>mid-task</b>, with no human at a browser</td></tr>
+        <tr><td>TLS does the securing</td><td>The channel is safe, but <b>who is calling</b> is still unproven</td></tr>
+        <tr><td>Build-time integrations</td><td>Tool chains <b>assemble live</b>, one call at a time</td></tr>
+      </tbody>
+    </table>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Pay off slide six. Walk the table top to bottom and let the audience feel the pattern: this is
+        not a list of bugs to patch, it is a different world. Land the line: every assumption we flagged
+        is now false. That sets up the next act, where we make the failures concrete.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · BREAK 1 · CAPABILITY GAP ═══════════════════════ -->
+<section class="slide" id="s-break-capability" data-title="Break 1: capability gap" style="--c: var(--accent-1)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Where it breaks · 1 of 5</p>
+    <h1 class="rv" style="--d:.06s">The booking agent needs <em>more</em> than you.</h1>
+    <p class="lede rv" style="--d:.12s">You can request a trip, but charging the <strong>corporate
+      card</strong> and pulling <strong>negotiated corporate fares</strong> needs authority your own
+      access token does not carry.</p>
+    <div class="duo">
+      <div class="half" data-step="1">
+        <span class="num" style="--c: var(--accent-5)">Use your token</span>
+        <h3>Fails, or over-grants</h3>
+        <p>Either the booking <b>fails at the charge</b>, or you are handed <b>broad finance rights</b>
+          you should never personally hold.</p>
+      </div>
+      <div class="half" data-step="1">
+        <span class="num" style="--c: var(--accent-2)">Give the agent its own</span>
+        <h3>Scoped to the job</h3>
+        <p>The agent holds <b>its own scoped authority</b> (<code>payments:charge</code>, corporate
+          fares), distinct from any one traveller.</p>
+      </div>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>The capability gap is the cleanest argument for agent identity. A specialized agent often needs
+        permissions the requesting user does not have, and should not have, such as charging the
+        corporate card. Propagating the user's token forces a bad choice: fail, or over-grant. The agent
+        needs its own identity and its own scoped authority.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · BREAK 2 · ACCOUNTABILITY ═══════════════════════ -->
+<section class="slide" id="s-break-accountability" data-title="Break 2: accountability" style="--c: var(--accent-3)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Where it breaks · 2 of 5</p>
+    <h1 class="rv" style="--d:.06s">Something broke. <em>Who</em> did it?</h1>
+    <p class="lede rv" style="--d:.12s">You said three words. A chain of decisions followed, and one of
+      them <strong>charged the card</strong>.</p>
+    <div class="loop rv" style="--d:.18s">
+      <span class="step">You: "book my trip"</span>
+      <span class="larr">→</span>
+      <span class="step">Agent plans</span>
+      <span class="larr">→</span>
+      <span class="step">Payment sub-agent</span>
+      <span class="larr">→</span>
+      <span class="step">Corporate card</span>
+      <span class="larr">→</span>
+      <span class="step">Non-refundable booking</span>
+    </div>
+    <p class="lede rv" style="--d:.28s; margin-top: 24px;">With only the user's token, <strong>you</strong>
+      are blamed for a decision you never made, by a system you did not directly control.</p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This is the compliance and audit angle. You gave an open-ended instruction; the agent planned
+        the trip, spawned a payment sub-agent, and that sub-agent charged the corporate card for a
+        non-refundable fare. If the only identity in the logs is yours, the whole chain is attributed to
+        you. We need to trace user intent, then agent interpretation, then sub-agent action, as
+        distinct, identified steps.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · BREAK 3 · MULTI-HOP ASYNC ═══════════════════════ -->
+<section class="slide" id="s-break-multihop" data-title="Break 3: multi-hop async" style="--c: var(--accent-4)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Where it breaks · 3 of 5</p>
+    <h1 class="rv" style="--d:.06s">The token rides a <em>chain,</em> hours later.</h1>
+    <p class="lede rv" style="--d:.12s">Agent tasks are long-running and multi-hop. The neat
+      browser-and-session shape of OAuth simply is not there anymore.</p>
+    <ul class="bullets" data-step="1">
+      <li>An access token is <b>passed down a chain</b>: agent, booking API, payment processor, across providers.</li>
+      <li>OAuth can <b>represent</b> the chain (RFC 8693 <code>act</code> claims) but the spec says prior actors are <b>informational only, never enforced</b>.</li>
+      <li>The user's browser session <b>expired hours ago</b>; the fare needs manager approval and no one is at a browser.</li>
+      <li>The agent needs an authorization decision <b>mid-task</b> (approve this fare), not at login.</li>
+    </ul>
+    <p class="mercap rv" style="--d:.34s; margin-top: 14px;">OAuth's own standard admits it does not enforce the multi-hop chain<a class="reflink" href="https://workos.com/blog/oauth-multi-hop-delegation-ai-agents" target="_blank" rel="noopener" aria-label="Open the source: WorkOS, AI agents and the multi-hop delegation problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a></p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Two things break at once here: the call graph and the clock. Authority has to travel down a
+        multi-hop chain that may cross trust domains, and it has to do so long after any human session
+        ended. Do not miss the sourced line: OAuth can carry the chain in RFC 8693 act claims, but the
+        standard itself says those prior actors are informational only, never enforced for access
+        control. That is precisely the gap AAuth closes later with one continuous cryptographic chain.
+        OAuth's model also assumes a person at a browser who can be redirected to approve; agents need
+        authorization that can pause, wait, and resume as a normal part of the protocol.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · BREAK 4 · INTENT VS SCOPE ═══════════════════════ -->
+<section class="slide" id="s-break-intent" data-title="Break 4: intent vs scope" style="--c: var(--accent-5)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Where it breaks · 4 of 5</p>
+    <h1 class="rv" style="--d:.06s">Same scope. <em>Very</em> different call.</h1>
+    <p class="lede rv" style="--d:.12s">A scope is standing permission. It cannot tell a helpful call
+      from a harmful one, and a <strong>hijacked agent</strong> stays perfectly in scope.</p>
+    <div class="term rv" style="--d:.18s; max-width: 38em;">
+      <div class="term-bar"><i></i><i></i><i></i><span>one scope · two bookings</span></div>
+      <div class="term-body">
+        <div class="t-row"><span class="t-dim">scope = "bookings:write"  # granted, valid</span></div>
+        <div class="t-row"><span class="t-out">book economy SYD  $320  <b>refundable</b></span><span class="t-ok">fine</span></div>
+        <div class="t-row"><span class="t-out">book business SYD  $9,000  <b>non-refundable</b></span><span style="color: var(--accent-5)">disaster</span></div>
+        <div class="t-row"><span class="t-dim"># scope cannot tell these apart</span></div>
+      </div>
+    </div>
+    <div class="thread" data-step="1"><p><b>Park this</b> letting the resource decide at call time is exactly how AAuth answers it later.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This is the failure the audience already fears: prompt injection. The agent holds a legitimate
+        bookings:write scope, and a poisoned search result or itinerary email makes it book a far more
+        expensive, non-refundable fare that is still inside that scope. Scope is a standing grant; it has
+        no idea about the intent of a single call. Promise that we come back to this with R3, where the
+        resource gets to weigh in on the specific call.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · BREAK 5 · SCALING ═══════════════════════ -->
+<section class="slide" id="s-break-scale" data-title="Break 5: identity is not enough" style="--c: var(--accent-2)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Where it breaks · 5 of 5</p>
+    <h1 class="rv" style="--d:.06s">A valid identity can take an <em>invalid</em> action.</h1>
+    <p class="lede rv" style="--d:.12s">Zero Trust worked when identity, device, and session were a
+      good-enough proxy for what a caller would do. For agents, <strong>identity stops being a proxy for
+      authority</strong>.</p>
+    <div class="duo">
+      <div class="half" data-step="1">
+        <span class="num" style="--c: var(--accent-1)">Zero Trust for humans</span>
+        <h3>Centred on identity</h3>
+        <p>Who is this? &nbsp;·&nbsp; Is the device healthy? &nbsp;·&nbsp; Does the session look normal?</p>
+      </div>
+      <div class="half" data-step="1">
+        <span class="num" style="--c: var(--accent-2)">Zero Trust for agents</span>
+        <h3>Centred on delegated authority</h3>
+        <p>Under whose authority? &nbsp;·&nbsp; What was approved? &nbsp;·&nbsp; What are the delegation
+          bounds? &nbsp;·&nbsp; What is the lineage across sub-agents? &nbsp;·&nbsp; Is it still valid at
+          the commit point?</p>
+      </div>
+    </div>
+    <p class="quote" data-step="2">"Identity is still necessary, but it is no longer enough. Zero Trust
+      for agents has to center on <b>delegated authority.</b>"<span class="attr">Karl McGuinness · on Harish Peri's Zero Trust thread<a class="reflink" href="https://www.linkedin.com/posts/harishperi_zero-trust-in-its-current-form-wont-share-7446926857599410176-3OVo" target="_blank" rel="noopener" aria-label="Open the source: Harish Peri Zero Trust thread on LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a></span></p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Two complementary points close out the breaks. Harish Peri: per-step validation against a
+        central identity provider does not scale to asynchronous, multi-hop agent workflows that span
+        hours and cross trust domains. Karl McGuinness goes deeper: identity is no longer a sufficient
+        proxy for authority. A valid identity can still produce an invalid action if the agent has
+        drifted from its approved mission, delegated too broadly, crossed a trust boundary, or reached a
+        commit point it was never authorized to cross. So the questions shift from who, device, session
+        to authority, approval, delegation bounds, lineage, and revalidation right before the action
+        becomes real. For humans, Zero Trust centred on identity; for agents it has to centre on
+        delegated authority.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · PIVOT · PATCH ═══════════════════════ -->
+<section class="slide dark board" id="s-pivot" data-title="Patching is not enough" style="--c: var(--accent-3)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>The transition</p>
+    <div class="statement rv" style="--d:.06s">
+      You cannot patch your way to a <b>new principal.</b>
+    </div>
+    <p class="lede rv" style="--d:.18s; margin-top: 22px;">People are already bolting fixes on: DPoP,
+      token exchange, MCP with dynamic client registration. MCP's own experience shows the ceiling:
+      agents still get a <strong>different client id per server</strong>, still hold bearer tokens, and
+      still have no portable identity, no resource identity, and no governance.</p>
+    <p class="quote rv" style="--d:.3s">Identity has to move from a build-time fact to a runtime,
+      provable, governable thing. <b>A protocol change, not a token change.</b>
+      <span class="attr">The thesis · say it here, and again at the close</span></p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This is the hinge of the whole talk. Be plain: the broken assumptions are foundational, not
+        peripheral, so bolting more onto OAuth does not get you there. MCP is the proof. It adopted
+        OAuth 2.1, immediately needed dynamic client registration, and still left agents with no
+        portable identity, no resource identity, and no governance layer. Then say the thesis slowly.
+        Identity has to become a runtime, provable, governable thing. That is a protocol change.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · DIVIDER · INDUSTRY ═══════════════════════ -->
+<section class="slide dark board" id="s-act-industry" data-title="Industry responses" style="--c: var(--accent-1)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Part three · the responses</p>
+    <h1 class="rv" style="--d:.06s">So how is the industry <em>answering?</em></h1>
+    <p class="lede rv" style="--d:.14s">Several real projects, on a spectrum. The useful question for
+      each: does agent identity collapse into workload identity, or stand as its own layer?</p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Move from problem to landscape. Stay vendor-neutral here; the goal is to orient, not to sell.
+        The lens that makes them comparable is the one from the reframing slide: collapse into workload
+        identity, or a layer above.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · SPECTRUM ═══════════════════════ -->
+<section class="slide" id="s-spectrum" data-title="The identity-layer spectrum" style="--c: var(--accent-4)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>How the industry is responding</p>
+    <h1 class="rv" style="--d:.06s">Collapse into workload identity, <em>until you can't.</em></h1>
+    <div class="spectrum rv" style="--d:.14s">
+      <div class="sp"><span class="pos">Collapsed</span><h3>kagent · Uber</h3><p>Agent per pod. Workload identity <b>is</b> the agent identity.</p></div>
+      <div class="sp"><span class="pos">Collapsible</span><h3>kagent + substrate</h3><p>Distinct actors, but holds the three invariants, so it can still collapse.</p></div>
+      <div class="sp"><span class="pos">Layer above</span><h3>AWS AgentCore</h3><p>Stable agent ARN above a churning microVM. AWS owns the stack.</p></div>
+      <div class="sp"><span class="pos">Layer above</span><h3>Entra Agent ID</h3><p>A specialized Entra service principal. Single vendor, one domain.</p></div>
+      <div class="sp hl"><span class="pos">Layer above</span><h3>AAuth</h3><p>Cloud-agnostic. Bootstraps from workload identity, no central plane.</p></div>
+    </div>
+    <div class="spaxis rv" style="--d:.24s"><span>← collapsed into workload identity</span><span>a layer of its own →</span></div>
+    <p class="mercap rv" style="--d:.3s; margin-top: 12px;">Framing after Christian Posta · "What 'is' Agent Identity? Human? Workload? A new Layer?"<a class="reflink" href="https://blog.christianposta.com/what-is-agent-identity/" target="_blank" rel="noopener" aria-label="Open the source: Christian Posta, What is Agent Identity?"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a></p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This is the orienting slide. Read left to right. When you own the infrastructure in one trust
+        domain and hold three invariants (one-to-one mapping, a registry, identity continuity), you can
+        collapse agent identity into workload identity, as Uber and kagent do. Substrate makes the layer
+        visible but still collapsible. AgentCore, Entra, and AAuth treat it as a layer above. The tell
+        we will use next: everything except AAuth assumes a single control plane in a single trust
+        domain.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · ENTRA AGENT ID ═══════════════════════ -->
+<section class="slide" id="s-entra" data-title="Entra Agent ID" style="--c: var(--accent-1)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>How the industry is responding</p>
+    <h1 class="rv" style="--d:.06s">Entra Agent ID: an agent <em>inside Entra.</em></h1>
+    <p class="lede rv" style="--d:.12s">A specialized Entra service principal, with rich enterprise
+      identity and on-behalf-of flows already in place.</p>
+    <ul class="bullets" data-step="1">
+      <li>A <b>layer above</b> the running workload, not the workload itself.</li>
+      <li><b>Single vendor</b> (Microsoft), inside one trust domain.</li>
+      <li>A <b>workload identity</b> (e.g. a K8s service account) is <em>exchanged for</em> the agent's token, but the agent <b>stays its own principal</b>.</li>
+    </ul>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Entra Agent ID gives an agent a first-class enterprise identity by extending Entra: it is a
+        specialized service principal with mature on-behalf-of support. Its strength is also its
+        boundary: it lives inside one vendor's trust domain. Great when your world is Microsoft;
+        a different problem once the agent leaves it. Precise on the federation point: the workload's
+        service-account token does not mint the agent token directly. It authenticates the agent's
+        <i>blueprint</i> (replacing that blueprint's client secret), and the blueprint runs the token
+        exchange that issues the agent's own token.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · AGENT SUBSTRATE ═══════════════════════ -->
+<section class="slide" id="s-substrate" data-title="Agent Substrate" style="--c: var(--accent-3)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>How the industry is responding</p>
+    <h1 class="rv" style="--d:.06s">Agent Substrate: <em>runtime</em> actor identity.</h1>
+    <p class="lede rv" style="--d:.12s">Google's actor-sandboxing layer. Actors run in hardened microVM
+      workers, with a registry that keeps their identity stable.</p>
+    <ul class="bullets" data-step="1">
+      <li>Actors are <b>multiplexed</b> into pre-warmed worker pods at runtime.</li>
+      <li>Identity stays <b>continuous</b> across pause, resume, and reschedule.</li>
+      <li>Mainly a <b>runtime and workload</b> identity layer, and still collapsible.</li>
+    </ul>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Substrate solves a different slice: keeping an actor's identity stable as it is scheduled,
+        suspended, and resumed across ephemeral workers. The worker pod has a workload identity, but
+        that tells you nothing about which actor is running. A registry keeps actor identity continuous.
+        It is closer to a fine-grained workload identity than a cross-domain authorization protocol.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · AAUTH INTRO ═══════════════════════ -->
+<section class="slide" id="s-aauth-intro" data-title="AAuth" style="--c: var(--accent-2)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>How the industry is responding</p>
+    <h1 class="rv" style="--d:.06s">AAuth: a <em>cross-domain</em> auth protocol.</h1>
+    <p class="lede rv" style="--d:.12s">From Dick Hardt, an author of OAuth 2.0. A layer above that
+      <strong>bootstraps from</strong> workload identity rather than replacing it.</p>
+    <ul class="bullets" data-step="1">
+      <li>Self-published identity, <code>aauth:local@domain</code>, with <b>no pre-registration</b>.</li>
+      <li>Works <b>across trust boundaries</b>, with no single central control plane.</li>
+      <li>Designed to <b>coexist with OAuth</b>, not replace it.</li>
+    </ul>
+    <div class="thread" data-step="2"><p><b>The tell</b> everything before AAuth assumed one control plane in one trust domain.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>AAuth is the one built for the open, cross-domain case. Each agent publishes its own
+        cryptographic identity at a well-known URL, verifiable by anyone, with no portal and no shared
+        secret. It does not throw away workload identity; it bootstraps from it. This is the option to
+        spend real time on, because it is the one targeting the hard problem the others assume away.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · FAIR COMPARISON ═══════════════════════ -->
+<section class="slide" id="s-compare" data-title="A fair comparison" style="--c: var(--accent-4)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>How the industry is responding</p>
+    <h1 class="rv" style="--d:.06s">Overlapping, but <em>different slices.</em></h1>
+    <table class="maptbl rv" style="--d:.14s">
+      <thead><tr><th>Approach</th><th>What layer</th><th>Trust scope</th><th>The slice it solves</th></tr></thead>
+      <tbody>
+        <tr><td>Agent Substrate</td><td><b>Runtime identity</b></td><td>Single domain</td><td>Identity continuity at runtime</td></tr>
+        <tr><td>Entra Agent ID</td><td><b>Identity provider</b></td><td>Single vendor</td><td>Enterprise agent identity and OBO</td></tr>
+        <tr><td>AAuth</td><td><b>Auth protocol</b></td><td>Cross-domain</td><td>Who, on whose behalf, across boundaries</td></tr>
+      </tbody>
+    </table>
+    <p class="lede rv" style="--d:.24s; margin-top: 22px;">They are not competitors so much as different
+      cuts of the problem. The one difference that matters: <strong>everything except AAuth assumes one
+      control plane in one trust domain.</strong></p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This slide keeps you honest, and pre-empts the expert in the room. Do not claim AAuth beats the
+        others outright; they solve overlapping but different slices. Substrate gives runtime continuity,
+        Entra gives enterprise identity and on-behalf-of, AAuth gives cross-domain authentication and
+        authorization. The differentiator is scope: the others assume a single control plane in a single
+        trust domain. AAuth is built for when that assumption fails.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · DIVIDER · AAUTH ═══════════════════════ -->
+<section class="slide dark board" id="s-act-aauth" data-title="A closer look at AAuth" style="--c: var(--accent-2)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Part four · a closer look</p>
+    <h1 class="rv" style="--d:.06s">How AAuth <em>works.</em> Then we run it live.</h1>
+    <p class="lede rv" style="--d:.14s">Four ideas first: its own identity, proof on every request, a
+      server that gets a say, and a broker that speaks for you. Then a demo.</p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Set up the deep dive and flag the demo. We will look at four ideas at a high level, then switch
+        to a live run in the .NET SDK that shows them in action. Tell the audience the demo replaces the
+        slides, so they should watch the screen, not wait for bullet points.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · PER-INSTANCE IDENTITY ═══════════════════════ -->
+<section class="slide" id="s-identity" data-title="Per-instance identity" style="--c: var(--accent-1)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>A closer look at AAuth</p>
+    <h1 class="rv" style="--d:.06s">Every agent gets its <em>own</em> identity.</h1>
+    <p class="lede rv" style="--d:.12s">A cryptographic identifier per instance, bound to a key,
+      published at a URL the agent controls. <strong>No portal, no shared secret.</strong></p>
+    <div class="term rv" style="--d:.18s; max-width: 36em;">
+      <div class="term-bar"><i></i><i></i><i></i><span>agent identity</span></div>
+      <div class="term-body">
+        <div class="t-row"><span class="t-out">id:  <b>aauth:travel-bot.7f3c@acme.example</b></span></div>
+        <div class="t-row"><span class="t-out">key: Ed25519 public key, at a well-known URL</span></div>
+        <div class="t-row"><span class="t-dim"># verifiable by anyone, no pre-registration</span></div>
+      </div>
+    </div>
+    <div class="thread" data-step="1"><p><b>Callback ⚑</b> these are the client ids that actually travel.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Pay off the first flag. In OAuth a client id is meaningless outside the server that issued it.
+        An AAuth agent identifier is self-sovereign: a name, a key, and metadata at a URL the agent
+        controls, verifiable by any party. This is what replaces API keys. Each instance has its own
+        identity and key, which is what makes per-instance authorization, revocation, and audit
+        possible.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · POP BY DEFAULT ═══════════════════════ -->
+<section class="slide" id="s-pop" data-title="Proof of possession" style="--c: var(--accent-5)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>A closer look at AAuth</p>
+    <h1 class="rv" style="--d:.06s">Every request is <em>signed.</em></h1>
+    <p class="lede rv" style="--d:.12s">HTTP Message Signatures on every call. A stolen token is
+      <strong>useless without the private key</strong>. The agent proves possession each time.</p>
+    <div class="term rv" style="--d:.18s; max-width: 38em;">
+      <div class="term-bar"><i></i><i></i><i></i><span>signed request · RFC 9421</span></div>
+      <div class="term-body">
+        <div class="t-row"><span class="t-cmd">POST /bookings</span></div>
+        <div class="t-row"><span class="t-out">Signature-Input: ("@method" "@authority" "@path" ...)</span></div>
+        <div class="t-row"><span class="t-out">Signature: <b>:k8sd…:</b></span></div>
+        <div class="t-row"><span class="t-out">Signature-Key: jwt="eyJ…"</span></div>
+      </div>
+    </div>
+    <div class="thread" data-step="1"><p><b>Callback ⚑</b> this removes the stolen-access-token problem.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Pay off the bearer-token flag. Every AAuth request is signed with the agent's key, covering the method,
+        host, and path. Intercept the token and you still cannot use it; you do not hold the key. This
+        is proof-of-possession made the default, not an optional extension you have to remember to bolt
+        on. The thing we gave up in 2012 is back, by design.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · SERVER-SIGNED CHALLENGE ═══════════════════════ -->
+<section class="slide" id="s-challenge" data-title="Server-signed challenge" style="--c: var(--accent-3)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>A closer look at AAuth</p>
+    <h1 class="rv" style="--d:.06s">The resource gets a <em>say.</em></h1>
+    <p class="lede rv" style="--d:.12s">In OAuth the resource server is a passive token reader. In AAuth
+      it <strong>signs a resource token</strong> describing exactly what it needs.</p>
+    <div class="loop rv" style="--d:.18s">
+      <span class="step">Agent calls /bookings</span>
+      <span class="larr">→</span>
+      <span class="step">401 + signed resource token</span>
+      <span class="larr">→</span>
+      <span class="step">"here is what I require"</span>
+      <span class="larr">→</span>
+      <span class="step">Agent gets authorized</span>
+    </div>
+    <p class="lede rv" style="--d:.28s; margin-top: 22px;">Because the resource signs the request, an
+      attacker cannot swap in a different resource. It also <strong>prevents the confused-deputy
+      problem</strong> and gives the resource a voice in every authorization.</p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This is the architectural inversion. Normally the resource just verifies a token someone else
+        minted. AAuth flips it: the resource cryptographically states what is being requested, binding
+        its own identity, the agent's key, and the scope into a signed token. That stops confused-deputy
+        attacks and, importantly, gives the resource a say every single time, including the chance to
+        step up requirements later.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · PERSON SERVER ═══════════════════════ -->
+<section class="slide" id="s-person-server" data-title="The Person Server" style="--c: var(--accent-2)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>A closer look at AAuth</p>
+    <h1 class="rv" style="--d:.06s">The Person Server: the user's <em>broker.</em></h1>
+    <p class="lede rv" style="--d:.12s">The user chooses it. The <strong>agent only ever talks to its
+      Person Server</strong>, which holds the agent-to-person binding and brokers consent outward.</p>
+    <div class="merframe rv" style="--d:.2s">
+      <div class="mermaid">
+sequenceDiagram
+  autonumber
+  participant Ag as Agent
+  participant R as Booking API
+  participant PS as Person Server
+  actor U as User
+  Ag->>R: signed request
+  R-->>Ag: 401 + resource token
+  Ag->>PS: present resource token
+  PS->>U: approve this?
+  U-->>PS: yes
+  PS-->>Ag: auth token (user + agent)
+  Ag->>R: signed request + auth token
+  R-->>Ag: 200 OK
+      </div>
+      <p class="mercap">Three-party flow: the booking API asks, the Person Server brokers consent.</p>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This is the answer to "on whose behalf." The Person Server represents the human. The agent
+        never has to know about every resource's identity system; it only talks to its own trusted
+        broker, which federates outward. The PS holds the one-to-one binding between an agent and the
+        person accountable for it, which is what makes the whole chain attributable.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · DEMO (placeholder) ═══════════════════════ -->
+<section class="slide dark board" id="s-demo" data-title="Demo" style="--c: var(--accent-3)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Live demo · switch to the terminal</p>
+    <h1 class="rv" style="--d:.06s">Demo: AAuth in the <em>.NET SDK.</em></h1>
+    <p class="lede rv" style="--d:.14s">Watch three things, the same three from the start.</p>
+    <ul class="bullets" data-step="1">
+      <li><b>Who is calling.</b> The agent has its own identity. No API key, no pre-registration.</li>
+      <li><b>On whose behalf.</b> A protected call pauses for consent through the Person Server.</li>
+      <li><b>Can they prove it.</b> Every request is signed. There is nothing to steal.</li>
+    </ul>
+
+    <aside class="talk">
+      <span class="ttag">Talk track · runbook (about 10 min)</span>
+      <p><b>Before you start:</b> keys generated, servers running, consent UI logged in, terminal font
+        large, a screen recording ready as a fallback. Do not debug live.</p>
+      <p><b>1. Bootstrap (1 min).</b> Generate the keypair and show the agent identity. No shared
+        secret, no registration step.</p>
+      <p><b>2. Identity-based call (3 min).</b> Call a whoami resource. Show the Signature-Input and
+        Signature-Key headers and the resource echoing who is calling from the signature alone.</p>
+      <p><b>3. Three-party call with consent (4 to 5 min).</b> Call a protected resource. It returns a
+        401 with a resource token. The agent sends it to the Person Server; the user approves; the PS
+        issues an auth token; the agent retries and succeeds. Show the auth token carrying both the
+        agent and the user.</p>
+      <p><b>4. Optional (1 min).</b> Show a captured request cannot be replayed without the key. Then
+        return to the slides. <b>Do not demo missions or R3</b> — the SDK does not cover them yet.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · MISSIONS ═══════════════════════ -->
+<section class="slide" id="s-missions" data-title="Missions" style="--c: var(--accent-4)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Beyond the demo · governance</p>
+    <h1 class="rv" style="--d:.06s">A mission is <em>context,</em> not authorization.</h1>
+    <p class="lede rv" style="--d:.12s">A natural-language, user-approved, hash-bound statement of
+      intent, like <em>book my Sydney trip under $2,000, propose before booking</em>, checked against a
+      running mission log.</p>
+    <p class="quote rv" style="--d:.18s">"A mission is not an authorization. It is just an
+      <b>agreed-upon context.</b>"<span class="attr">Dick Hardt<a class="reflink" href="https://www.youtube.com/watch?v=pn-m4YJQkqs" target="_blank" rel="noopener" aria-label="Open the source: Dick Hardt, AAuth: Moving Beyond OAuth and the Future of Agent Auth (Insecure Agents podcast, YouTube)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a></span></p>
+    <ul class="bullets" data-step="1">
+      <li>The <b>agent identity sets the ceiling</b>; the mission narrows it at runtime.</li>
+      <li>Scopes and policy <b>still authorize</b>. The mission is an additional contextual gate.</li>
+      <li>Per-call context can <b>narrow</b> what an agent does, never widen it.</li>
+    </ul>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>State this precisely so you do not overclaim. A mission is the user-approved intent, like
+        "plan and book a trip under this budget, propose before booking." It is immutable, hash-bound,
+        and the Person Server checks each request against it. But say Hardt's line verbatim: a mission
+        is not the authorization. Scopes and policy still decide access; the mission is an extra gate
+        that can only narrow, never widen.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · R3 ═══════════════════════ -->
+<section class="slide" id="s-r3" data-title="R3: decide at call time" style="--c: var(--accent-1)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Beyond the demo · governance</p>
+    <h1 class="rv" style="--d:.06s">The resource decides at <em>call time.</em></h1>
+    <p class="lede rv" style="--d:.12s">Some operations are granted outright; others are conditional and
+      get re-checked against the <strong>actual parameters</strong> of the specific call.</p>
+    <div class="term rv" style="--d:.18s; max-width: 38em;">
+      <div class="term-bar"><i></i><i></i><i></i><span>R3 · per-call decision</span></div>
+      <div class="term-body">
+        <div class="t-row"><span class="t-out">quote fare <b>SYD economy</b></span><span class="t-ok">granted, proceed</span></div>
+        <div class="t-row"><span class="t-out">charge <b>$9,000 non-refundable</b></span><span style="color: var(--accent-5)">step up: confirm</span></div>
+        <div class="t-row"><span class="t-dim"># a proposal bound to these exact parameters (amount, fare, card)</span></div>
+      </div>
+    </div>
+    <div class="thread" data-step="1"><p><b>Callback</b> this is the answer to break four: intent versus scope, and prompt injection.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Close the loop you opened in Act 4. Rich Resource Requests let a resource mark some operations
+        as conditional. When the agent invokes one, the booking API builds a proposal bound to the
+        concrete parameters, how large the charge is, which fare, which card, and that gets re-evaluated
+        before it runs. An approval to book a $320 fare cannot be replayed to charge $9,000. This is the
+        structural answer to prompt injection. Note honestly: R3 is exploratory, with no implementation
+        yet.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · COEXISTS ═══════════════════════ -->
+<section class="slide" id="s-coexists" data-title="Coexists with OAuth" style="--c: var(--accent-2)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Beyond the demo · adoption</p>
+    <h1 class="rv" style="--d:.06s">A sibling protocol, <em>not</em> a replacement.</h1>
+    <p class="lede rv" style="--d:.12s">You adopt it one mode at a time, and it wraps what you already
+      run. Your read-only flight-search API keeps its OAuth; only the booking-and-charge path needs the
+      full flow.</p>
+    <ul class="bullets" data-step="1">
+      <li>A <b>drop-in for API keys</b> (identity mode) and for <b>OAuth</b> (resource-managed mode).</li>
+      <li>It <b>wraps existing OAuth and OIDC</b>; the four modes are additive.</li>
+      <li>Existing OAuth clients stay put; AAuth onboards a <b>new class of agentic actors</b>.</li>
+    </ul>
+    <p class="quote rv" style="--d:.24s">"OAuth works great where it is deployed. <b>Why break what is
+      working?</b>"<span class="attr">Dick Hardt<a class="reflink" href="https://www.youtube.com/watch?v=pn-m4YJQkqs" target="_blank" rel="noopener" aria-label="Open the source: Dick Hardt, AAuth: Moving Beyond OAuth and the Future of Agent Auth (Insecure Agents podcast, YouTube)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a></span></p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Pre-empt the obvious question: do we throw away OAuth? No. This is coexistence, not migration.
+        AAuth deliberately uses its own header for challenges so it can run side by side with OAuth on
+        the same server. The resource-managed mode lets AAuth agents use a plain OAuth resource. Existing
+        clients keep working; agents get a protocol built for them. Use Hardt's line to land it.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · HONEST STATUS ═══════════════════════ -->
+<section class="slide" id="s-status" data-title="Honest status" style="--c: var(--accent-1)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Wrapping up</p>
+    <h1 class="rv" style="--d:.06s">An honest <em>status check.</em></h1>
+    <p class="lede rv" style="--d:.12s">Hold the enthusiasm at the right level. This is a direction, not
+      a finished standard.</p>
+    <ul class="bullets" data-step="1">
+      <li>An <b>early-stage, exploratory</b> IETF draft, moving quickly.</li>
+      <li>An <b>open debate:</b> is durable mission governance a protocol primitive, or a layer above?</li>
+      <li>It <b>coexists with OAuth</b>, by design, rather than replacing it.</li>
+      <li>A handful of <b>exploratory SDKs</b>, including the .NET one you just saw.</li>
+    </ul>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Credibility comes from naming the limits. Present AAuth as a promising, fast-moving proposal,
+        not a ratified standard. There is a genuine open question about whether durable mission
+        governance belongs in the protocol or in a layer on top, and smart people disagree. Saying this
+        out loud makes the rest of your talk more trustworthy, not less.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · CLOSE ═══════════════════════ -->
+<section class="slide dark board" id="s-close" data-title="Close" style="--c: var(--accent-3)">
+  <div class="inner" style="text-align: center;">
+    <p class="kicker rv" style="justify-content: center;"><span class="snum"></span>Wrapping up</p>
+    <div class="statement rv" style="--d:.1s; margin: 26px auto 0; max-width: 16em;">
+      Who is <b>calling.</b> On whose <b>behalf.</b> And the <b>proof</b> on every request.
+    </div>
+    <p class="lede rv" style="--d:.2s; margin: 22px auto 0;">That is how the booking agent earns the
+      call: its <strong>own identity</strong>, a <strong>bounded mission</strong> the user approved, and
+      a booking API that can still say "confirm this charge."</p>
+    <div class="cta rv" style="--d:.28s; margin: 40px auto 0; text-align: left;">
+      <span class="ctag">Learn more</span>
+      <p>The protocol, the explainer, and the .NET SDK used in the demo.</p>
+      <div class="keys" style="margin-top: 4px;">
+        <a class="k" href="https://aauth.dev" style="background: transparent; border-color: #3a4a40; color: #c6cdc3;">aauth.dev</a>
+        <a class="k" href="https://github.com/dickhardt/AAuth" style="background: transparent; border-color: #3a4a40; color: #c6cdc3;">dickhardt/AAuth</a>
+        <a class="k" href="https://github.com/aauth-dev/dotnet-samples" style="background: transparent; border-color: #3a4a40; color: #c6cdc3;">.NET SDK</a>
+      </div>
+    </div>
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Close by answering the question from slide two. <b>Who is calling</b> is the per-instance agent
+        identity. <b>On whose behalf</b> is the Person Server and the auth token. <b>Can they prove it</b>
+        is proof-of-possession on every request. Then the honest note: this is an early, exploratory
+        draft, and it is designed to sit alongside OAuth, not replace it.</p>
+    </aside>
+  </div>
+</section>
+
+</main>
+
+<script>
+(() => {
+  'use strict';
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const slides = $$('.slide');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let cur = 0;
+  let mode = 'read';
+
+  slides.forEach((s, i) => {
+    const n = $('.kicker .snum', s);
+    if (n) n.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0') + ' · ';
+  });
+
+  const menu = $('#menu'), menuList = $('#menu-list');
+  slides.forEach((s, i) => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = '#' + s.id;
+    a.textContent = s.dataset.title || s.id;
+    a.addEventListener('click', (e) => { e.preventDefault(); closeMenu(); go(i); });
+    li.appendChild(a);
+    menuList.appendChild(li);
+  });
+  const openMenu = () => { menu.classList.add('open'); markMenu(); };
+  const closeMenu = () => menu.classList.remove('open');
+  const toggleMenu = () => menu.classList.contains('open') ? closeMenu() : openMenu();
+  const markMenu = () => $$('a', menuList).forEach((a, i) => a.classList.toggle('here', i === cur));
+
+  slides.forEach((s) => {
+    s._steps = $$('[data-step]', s).sort((a, b) => (parseFloat(a.dataset.step) || 0) - (parseFloat(b.dataset.step) || 0));
+  });
+  const clearDelays = (root = document) => $$('[data-step]', root).forEach((el) => { el.style.transitionDelay = ''; });
+
+  $$('[data-type]').forEach((el) => { el.dataset.full = el.textContent; });
+  let typeRun = 0;
+  async function _typeSlide(s) {
+    const token = ++typeRun;
+    const els = $$('[data-type]', s);
+    if (!els.length) return;
+    if (reduced) { els.forEach((el) => { el.textContent = el.dataset.full; }); return; }
+    els.forEach((el) => { el.textContent = ''; });
+    for (const el of els) {
+      for (let i = 0; i <= el.dataset.full.length; i++) {
+        if (token !== typeRun) return;
+        el.textContent = el.dataset.full.slice(0, i);
+        await new Promise((r) => setTimeout(r, 16 + Math.random() * 26));
+      }
+      await new Promise((r) => setTimeout(r, 220));
+    }
+  }
+  let typedSlides = new WeakSet();
+  function typeSlide(s) {
+    if (mode === 'read') { if (typedSlides.has(s)) return; typedSlides.add(s); }
+    return _typeSlide(s);
+  }
+
+  const counter = $('#counter'), progress = $('#progress');
+  const npBody = $('#np-body'), npCount = $('#np-count');
+  function activate(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, si) => {
+      const active = si === cur;
+      s.classList.toggle('active', active);
+      if (!active) { $$('.rv, [data-step]', s).forEach((el) => el.classList.remove('in')); clearDelays(s); }
+    });
+    const s = slides[cur];
+    $$('.rv, [data-step]', s).forEach((el) => el.classList.remove('in'));
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      $$('.rv', s).forEach((el) => el.classList.add('in'));
+      s._steps.forEach((el, idx) => { el.style.transitionDelay = (.3 + idx * .09).toFixed(2) + 's'; el.classList.add('in'); });
+    }));
+    typeSlide(s);
+    counter.innerHTML = '<b>' + String(cur + 1).padStart(2, '0') + '</b> / ' + String(slides.length).padStart(2, '0');
+    progress.style.width = ((cur + 1) / slides.length * 100) + '%';
+    history.replaceState(null, '', '#' + s.id);
+    $('#btn-prev').disabled = cur === 0;
+    $('#btn-next').disabled = cur === slides.length - 1;
+    const talk = $('.talk', s);
+    npBody.innerHTML = talk ? talk.innerHTML.replace(/<span class="ttag">[\s\S]*?<\/span>/, '') : '<p>No notes for this slide.</p>';
+    npCount.textContent = (cur + 1) + ' / ' + slides.length;
+    markMenu();
+  }
+  function next() { if (cur < slides.length - 1) go(cur + 1); }
+  function prev() { if (cur > 0) go(cur - 1); }
+  function go(i) { if (mode === 'present') activate(i); else slides[i].scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }); }
+
+  let io = null;
+  function watchRead() {
+    io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          if (e.target.matches('.term') || $('[data-type]', e.target)) typeSlide(e.target.closest('.slide'));
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.14 });
+    $$('.rv, [data-step]').forEach((el) => io.observe(el));
+  }
+  function unwatchRead() { if (io) { io.disconnect(); io = null; } }
+
+  function onScroll() {
+    if (mode !== 'read') return;
+    const h = document.documentElement;
+    progress.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+    let best = 0;
+    slides.forEach((s, i) => { if (s.getBoundingClientRect().top < innerHeight * .45) best = i; });
+    cur = best;
+    $('#btn-prev').disabled = cur === 0;
+    $('#btn-next').disabled = cur === slides.length - 1;
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+
+  const btnMode = $('#btn-mode'), btnNotes = $('#btn-notes'), btnFull = $('#btn-full');
+  function setMode(m, keepPos) {
+    mode = m;
+    document.body.classList.toggle('present', m === 'present');
+    document.body.classList.toggle('read', m === 'read');
+    btnMode.innerHTML = m === 'present' ? 'Read <kbd>P</kbd>' : 'Present <kbd>P</kbd>';
+    btnNotes.hidden = m !== 'present';
+    btnFull.hidden = m !== 'present';
+    try { localStorage.setItem('agent-identity-deck-mode', m); } catch (e) {}
+    if (m === 'present') {
+      unwatchRead();
+      typedSlides = new WeakSet();
+      $$('.rv, [data-step]').forEach((el) => el.classList.remove('in'));
+      activate(keepPos ? cur : 0);
+    } else {
+      document.body.classList.remove('notes-open');
+      slides.forEach((s) => s.classList.remove('active'));
+      $$('.rv, [data-step]').forEach((el) => el.classList.remove('in'));
+      clearDelays();
+      typedSlides = new WeakSet();
+      watchRead();
+      if (keepPos) setTimeout(() => slides[cur].scrollIntoView({ behavior: 'auto', block: 'start' }), 30);
+      onScroll();
+    }
+  }
+  btnMode.addEventListener('click', () => setMode(mode === 'present' ? 'read' : 'present', true));
+  btnNotes.addEventListener('click', () => document.body.classList.toggle('notes-open'));
+  $('#btn-menu').addEventListener('click', toggleMenu);
+  btnFull.addEventListener('click', () => { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); });
+  $('#btn-prev').addEventListener('click', prev);
+  $('#btn-next').addEventListener('click', next);
+
+  addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const k = e.key.toLowerCase();
+    if (k === 'p') { setMode(mode === 'present' ? 'read' : 'present', true); return; }
+    if (k === 'm') { toggleMenu(); return; }
+    if (k === 'escape') { closeMenu(); return; }
+    if (mode !== 'present') return;
+    if (k === 'arrowright' || (k === ' ' && !e.shiftKey) || k === 'pagedown') { e.preventDefault(); next(); }
+    else if (k === 'arrowleft' || (k === ' ' && e.shiftKey) || k === 'pageup') { e.preventDefault(); prev(); }
+    else if (k === 'home') { e.preventDefault(); activate(0); }
+    else if (k === 'end') { e.preventDefault(); activate(slides.length - 1); }
+    else if (k === 'n') { document.body.classList.toggle('notes-open'); }
+    else if (k === 'f') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+  });
+
+  const qmode = new URLSearchParams(location.search).get('mode');
+  let saved = null;
+  try { saved = localStorage.getItem('agent-identity-deck-mode'); } catch (e) {}
+  const initial = (qmode === 'present' || qmode === 'read') ? qmode : (saved || 'read');
+  const hashIdx = slides.findIndex((s) => '#' + s.id === location.hash);
+  if (hashIdx > 0) cur = hashIdx;
+  setMode(initial, hashIdx > 0);
+})();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid) {
+    window.mermaid.initialize({
+      startOnLoad: true,
+      securityLevel: 'loose',
+      theme: 'base',
+      fontFamily: "Inter, system-ui, sans-serif",
+      themeVariables: {
+        background: '#fcfbf5',
+        primaryColor: '#ffffff',
+        primaryBorderColor: '#2e8b57',
+        primaryTextColor: '#20242e',
+        lineColor: '#8c897c',
+        actorBkg: '#ffffff',
+        actorBorder: '#2f5fb0',
+        actorTextColor: '#20242e',
+        actorLineColor: '#e3ded0',
+        signalColor: '#515a68',
+        signalTextColor: '#20242e',
+        noteBkgColor: '#fdf3d6',
+        noteBorderColor: '#d99a2b',
+        noteTextColor: '#20242e',
+        sequenceNumberColor: '#ffffff'
+      },
+      sequence: { useMaxWidth: true, mirrorActors: false, wrap: true, width: 150 }
+    });
+  }
+</script>
+
+</body>
+</html>
