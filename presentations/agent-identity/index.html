@@ -338,6 +338,16 @@
   .spaxis { display: flex; justify-content: space-between; margin-top: 12px; font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); }
   @media (max-width: 900px) { .spectrum { grid-template-columns: repeat(2, 1fr); } }
 
+  /* chalk-drawn section motifs — draw themselves in on slide entry (gated on .rv.in) */
+  .chalkscene { margin-top: clamp(14px, 2.8vh, 34px); display: flex; justify-content: center; }
+  .chalkscene svg { width: min(60%, 300px); height: auto; overflow: visible; }
+  .chalkscene .cd { fill: none; stroke: color-mix(in srgb, var(--c, var(--accent-3)) 36%, #eef0e0); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .95s var(--ease); transition-delay: var(--dl, 0s); }
+  .chalkscene .cd.accent { stroke: color-mix(in srgb, var(--c, var(--accent-3)) 85%, #fff); }
+  .chalkscene .cd.thin { stroke-width: 1.6; }
+  .chalkscene.in .cd { stroke-dashoffset: 0; }
+  .chalkscene .cdot { fill: color-mix(in srgb, var(--c, var(--accent-3)) 68%, #fff); opacity: 0; transition: opacity .45s var(--ease); transition-delay: var(--dl, 0s); }
+  .chalkscene.in .cdot { opacity: 1; }
+
   /* ════════════════════════ RESPONSIVE ════════════════════════ */
   @media (max-width: 980px) {
     .cols, .titlegrid, .grid-3, .abc { grid-template-columns: 1fr; }
@@ -356,6 +366,8 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
     .rv, [data-step] { opacity: 1; transform: none; }
+    .chalkscene .cd { stroke-dashoffset: 0; }
+    .chalkscene .cdot { opacity: 1; }
     html { scroll-behavior: auto; }
   }
 
@@ -505,6 +517,43 @@
   </div>
 </section>
 
+<!-- ═══════════════════════ DIVIDER · THE FAMILIAR GROUND ═══════════════════════ -->
+<section class="slide dark board" id="s-act-world" data-title="The familiar ground" style="--c: var(--accent-1)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Part one · the familiar ground</p>
+    <h1 class="rv" style="--d:.06s">The world we built auth <em>for.</em></h1>
+    <p class="lede rv" style="--d:.14s">Before agents, who was even calling? A person, and the software
+      they signed in to. Let us re-teach that ground quickly, because every assumption starts here.</p>
+    <div class="chalkscene rv" style="--d:.22s" aria-hidden="true">
+      <svg viewBox="0 0 360 176" fill="none">
+        <circle class="cd accent" cx="56" cy="60" r="17" pathLength="1" style="--dl:.10s"/>
+        <path class="cd accent" d="M32 114 q24 -28 48 0" pathLength="1" style="--dl:.20s"/>
+        <rect class="cd" x="100" y="79" width="18" height="13" rx="2.5" pathLength="1" style="--dl:.52s"/>
+        <path class="cd thin" d="M82 86 L146 86" pathLength="1" style="--dl:.45s"/>
+        <path class="cd thin" d="M140 80 L147 86 L140 92" pathLength="1" style="--dl:.60s"/>
+        <rect class="cd accent" x="150" y="52" width="84" height="66" rx="10" pathLength="1" style="--dl:.30s"/>
+        <line class="cd thin" x1="150" y1="72" x2="234" y2="72" pathLength="1" style="--dl:.68s"/>
+        <circle class="cdot" cx="162" cy="62" r="2.6" style="--dl:.80s"/>
+        <circle class="cdot" cx="171" cy="62" r="2.6" style="--dl:.82s"/>
+        <path class="cd thin" d="M238 86 L276 86" pathLength="1" style="--dl:.76s"/>
+        <path class="cd thin" d="M270 80 L277 86 L270 92" pathLength="1" style="--dl:.90s"/>
+        <ellipse class="cd" cx="306" cy="58" rx="24" ry="8.5" pathLength="1" style="--dl:.95s"/>
+        <path class="cd" d="M282 58 L282 108" pathLength="1" style="--dl:1.02s"/>
+        <path class="cd" d="M330 58 L330 108" pathLength="1" style="--dl:1.02s"/>
+        <path class="cd" d="M282 108 a24 8.5 0 0 0 48 0" pathLength="1" style="--dl:1.10s"/>
+      </svg>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Open Part one. Keep it warm and quick: we revisit OAuth not to bore the experts but to surface
+        the assumptions hiding in plain sight. The picture to plant is a person, an app they signed in
+        to, and an API behind it. Everything that breaks later breaks because the caller stops being a
+        person at a browser.</p>
+    </aside>
+  </div>
+</section>
+
 <!-- ═══════════════════════ SLIDE · OAUTH CLIENT-SERVER ═══════════════════════ -->
 <section class="slide" id="s-oauth-cs" data-title="OAuth's home turf" style="--c: var(--accent-1)">
   <div class="inner">
@@ -592,6 +641,36 @@ sequenceDiagram
         to remember the flag. Do not argue with any of them yet; just plant them. Every one was correct
         for software a developer registered ahead of time. In Act 3, when an agent becomes the caller,
         we will come back and knock each one over.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ DIVIDER · A SHORT HISTORY ═══════════════════════ -->
+<section class="slide dark board" id="s-act-history" data-title="A short history" style="--c: var(--accent-3)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>A short history · how we got here</p>
+    <h1 class="rv" style="--d:.06s">But first, a little <em>history.</em></h1>
+    <p class="lede rv" style="--d:.14s">Two of those assumptions, dropped signatures and bearer tokens,
+      were deliberate trade-offs back in 2012. Worth two minutes to see why.</p>
+    <div class="chalkscene rv" style="--d:.22s" aria-hidden="true">
+      <svg viewBox="0 0 360 150" fill="none">
+        <path class="cd" d="M28 96 L330 96" pathLength="1" style="--dl:.10s"/>
+        <path class="cd" d="M322 90 L332 96 L322 102" pathLength="1" style="--dl:.40s"/>
+        <line class="cd thin" x1="92" y1="96" x2="92" y2="66" pathLength="1" style="--dl:.46s"/>
+        <circle class="cdot" cx="92" cy="62" r="5" style="--dl:.60s"/>
+        <line class="cd accent" x1="188" y1="96" x2="188" y2="52" pathLength="1" style="--dl:.60s"/>
+        <circle class="cd accent" cx="188" cy="46" r="9" pathLength="1" style="--dl:.72s"/>
+        <line class="cd thin" x1="284" y1="96" x2="284" y2="70" pathLength="1" style="--dl:.84s"/>
+        <circle class="cdot" cx="284" cy="66" r="5" style="--dl:.96s"/>
+      </svg>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>A short interlude, not a lecture. The point of the history is empathy: the 2012 trade-offs were
+        reasonable for their world. Mark the one milestone that matters, the 2.0 jump that dropped
+        signatures and leaned on TLS. Two minutes here earns you the right to say later that the model,
+        not the people, is what has to change.</p>
     </aside>
   </div>
 </section>
@@ -719,6 +798,22 @@ sequenceDiagram
     <h1 class="rv" style="--d:.06s">Now an <em>agent</em> is calling.</h1>
     <p class="lede rv" style="--d:.14s">Everything so far assumed software a person registered ahead of
       time. Agents break that assumption on nearly every axis.</p>
+    <div class="chalkscene rv" style="--d:.22s" aria-hidden="true">
+      <svg viewBox="0 0 360 180" fill="none">
+        <rect class="cd accent" x="46" y="64" width="92" height="64" rx="13" pathLength="1" style="--dl:.10s"/>
+        <line class="cd accent" x1="92" y1="64" x2="92" y2="44" pathLength="1" style="--dl:.05s"/>
+        <circle class="cdot" cx="92" cy="39" r="4.5" style="--dl:.50s"/>
+        <circle class="cdot" cx="74" cy="96" r="5" style="--dl:.55s"/>
+        <circle class="cdot" cx="110" cy="96" r="5" style="--dl:.55s"/>
+        <path class="cd thin" d="M74 112 q18 12 36 0" pathLength="1" style="--dl:.62s"/>
+        <path class="cd" d="M138 84 C190 66 214 56 250 54" pathLength="1" style="--dl:.55s"/>
+        <path class="cd" d="M138 96 C196 96 214 96 250 96" pathLength="1" style="--dl:.68s"/>
+        <path class="cd" d="M138 108 C190 128 214 138 250 140" pathLength="1" style="--dl:.80s"/>
+        <rect class="cd thin" x="252" y="38" width="60" height="32" rx="8" pathLength="1" style="--dl:.92s"/>
+        <rect class="cd thin" x="252" y="80" width="60" height="32" rx="8" pathLength="1" style="--dl:1.02s"/>
+        <rect class="cd thin" x="252" y="124" width="60" height="32" rx="8" pathLength="1" style="--dl:1.12s"/>
+      </svg>
+    </div>
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
@@ -929,6 +1024,35 @@ sequenceDiagram
   </div>
 </section>
 
+<!-- ═══════════════════════ DIVIDER · WHERE IT BREAKS ═══════════════════════ -->
+<section class="slide dark board" id="s-act-breaks" data-title="Where it breaks" style="--c: var(--accent-5)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Where it breaks · five ways</p>
+    <h1 class="rv" style="--d:.06s">Now, watch it <em>break.</em></h1>
+    <p class="lede rv" style="--d:.14s">Same booking agent, five concrete failures. Each one is an
+      assumption from Part one collapsing under a single real call.</p>
+    <div class="chalkscene rv" style="--d:.22s" aria-hidden="true">
+      <svg viewBox="0 0 360 160" fill="none">
+        <rect class="cd" x="40" y="62" width="58" height="34" rx="17" pathLength="1" style="--dl:.10s"/>
+        <rect class="cd" x="84" y="62" width="58" height="34" rx="17" pathLength="1" style="--dl:.22s"/>
+        <rect class="cd" x="222" y="62" width="58" height="34" rx="17" pathLength="1" style="--dl:.34s"/>
+        <rect class="cd" x="266" y="62" width="58" height="34" rx="17" pathLength="1" style="--dl:.46s"/>
+        <path class="cd accent" d="M170 68 a16 16 0 0 0 0 22" pathLength="1" style="--dl:.58s"/>
+        <path class="cd accent" d="M196 68 a16 16 0 0 1 0 22" pathLength="1" style="--dl:.58s"/>
+        <path class="cd accent" d="M179 72 L185 80 L178 84 L186 93" pathLength="1" style="--dl:.74s"/>
+      </svg>
+    </div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>Turn the energy up. We have named the assumptions; now we snap the chain. Five breaks, all on
+        the same booking agent, so the audience never loses the thread. Promise that each break is a
+        specific assumption from Part one failing, not a vague worry. Then go straight into the
+        capability gap.</p>
+    </aside>
+  </div>
+</section>
+
 <!-- ═══════════════════════ SLIDE · BREAK 1 · CAPABILITY GAP ═══════════════════════ -->
 <section class="slide" id="s-break-capability" data-title="Break 1: capability gap" style="--c: var(--accent-1)">
   <div class="inner">
@@ -1124,6 +1248,17 @@ sequenceDiagram
     <h1 class="rv" style="--d:.06s">So how is the industry <em>answering?</em></h1>
     <p class="lede rv" style="--d:.14s">Several real projects, on a spectrum. The useful question for
       each: does agent identity collapse into workload identity, or stand as its own layer?</p>
+    <div class="chalkscene rv" style="--d:.22s" aria-hidden="true">
+      <svg viewBox="0 0 360 180" fill="none">
+        <line class="cd" x1="36" y1="148" x2="326" y2="148" pathLength="1" style="--dl:.10s"/>
+        <rect class="cd thin" x="52" y="124" width="30" height="24" pathLength="1" style="--dl:.34s"/>
+        <rect class="cd thin" x="112" y="108" width="30" height="40" pathLength="1" style="--dl:.48s"/>
+        <rect class="cd thin" x="172" y="90" width="30" height="58" pathLength="1" style="--dl:.62s"/>
+        <rect class="cd thin" x="232" y="70" width="30" height="78" pathLength="1" style="--dl:.76s"/>
+        <rect class="cd accent" x="292" y="48" width="30" height="100" pathLength="1" style="--dl:.90s"/>
+        <path class="cd accent" d="M44 64 C140 44 244 40 322 32" pathLength="1" style="--dl:.20s"/>
+      </svg>
+    </div>
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
@@ -1269,6 +1404,17 @@ sequenceDiagram
     <h1 class="rv" style="--d:.06s">How AAuth <em>works.</em> Then we run it live.</h1>
     <p class="lede rv" style="--d:.14s">Four ideas first: its own identity, proof on every request, a
       server that gets a say, and a broker that speaks for you. Then a demo.</p>
+    <div class="chalkscene rv" style="--d:.22s" aria-hidden="true">
+      <svg viewBox="0 0 360 180" fill="none">
+        <circle class="cd accent" cx="160" cy="80" r="52" pathLength="1" style="--dl:.10s"/>
+        <line class="cd accent" x1="198" y1="118" x2="244" y2="162" pathLength="1" style="--dl:.55s"/>
+        <line class="cd accent" x1="192" y1="124" x2="238" y2="168" pathLength="1" style="--dl:.60s"/>
+        <circle class="cd thin" cx="144" cy="80" r="13" pathLength="1" style="--dl:.82s"/>
+        <line class="cd thin" x1="157" y1="80" x2="190" y2="80" pathLength="1" style="--dl:.92s"/>
+        <line class="cd thin" x1="178" y1="80" x2="178" y2="91" pathLength="1" style="--dl:1.00s"/>
+        <line class="cd thin" x1="190" y1="80" x2="190" y2="94" pathLength="1" style="--dl:1.06s"/>
+      </svg>
+    </div>
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
@@ -1746,7 +1892,7 @@ sequenceDiagram
 <script>
   if (window.mermaid) {
     window.mermaid.initialize({
-      startOnLoad: true,
+      startOnLoad: false,
       securityLevel: 'loose',
       theme: 'base',
       fontFamily: "Inter, system-ui, sans-serif",
@@ -1769,6 +1915,30 @@ sequenceDiagram
       },
       sequence: { useMaxWidth: true, mirrorActors: false, wrap: true, width: 150 }
     });
+    // Namespace each rendered diagram's marker IDs. Mermaid gives every sequence
+    // diagram the same marker ids (#arrowhead, #crosshead, ...), so a second
+    // diagram's url(#arrowhead) resolves to the FIRST diagram's marker. In present
+    // mode the first diagram is visibility:hidden, so the second diagram's
+    // arrowheads disappear. Renaming markers per-svg makes each self-contained.
+    const dedupeMermaidMarkers = () => {
+      document.querySelectorAll('.mermaid svg').forEach((svg, i) => {
+        const ns = 'mmk' + i + '-';
+        svg.querySelectorAll('marker[id]').forEach((m) => {
+          const oldId = m.id;
+          const newId = ns + oldId;
+          m.id = newId;
+          svg.querySelectorAll('[marker-start], [marker-mid], [marker-end]').forEach((el) => {
+            ['marker-start', 'marker-mid', 'marker-end'].forEach((attr) => {
+              const v = el.getAttribute(attr);
+              if (v && v.indexOf('#' + oldId + ')') !== -1) {
+                el.setAttribute(attr, 'url(#' + newId + ')');
+              }
+            });
+          });
+        });
+      });
+    };
+    window.mermaid.run().then(dedupeMermaidMarkers).catch(() => {});
   }
 </script>
 
