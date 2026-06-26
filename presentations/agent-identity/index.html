@@ -251,6 +251,8 @@
   .maptbl tbody td:first-child { color: var(--text); font-weight: 560; }
   .maptbl tbody td b { color: var(--c, var(--accent-2)); font-family: var(--mono); font-size: .82em; font-weight: 700; letter-spacing: .04em; }
   .slide.dark .maptbl th, .slide.dark .maptbl td { border-bottom-color: #34433a; }
+  /* s-pivot: tighter rows so the thesis line stays above the fold */
+  #s-pivot .maptbl th, #s-pivot .maptbl td { padding-top: 7px; padding-bottom: 7px; }
   .slide.dark .maptbl tbody td { color: #c6cdc3; }
   .slide.dark .maptbl tbody td:first-child { color: #f0ece0; }
 
@@ -294,6 +296,66 @@
   .paperbg::before { content: ''; position: absolute; top: 0; bottom: 0; left: clamp(18px, 7vw, 92px); width: 2px; background: color-mix(in srgb, var(--accent-5) 32%, transparent); }
   @media (max-width: 760px) { .paperbg::before { display: none; } }
 
+  /* metal spiral-binder spine down the left edge */
+  .binder { position: fixed; top: 0; bottom: 0; left: 0; width: clamp(44px, 4vw, 60px); z-index: -2; pointer-events: none; opacity: .92;
+    -webkit-mask: linear-gradient(180deg, transparent 0, #000 4%, #000 96%, transparent 100%);
+    mask: linear-gradient(180deg, transparent 0, #000 4%, #000 96%, transparent 100%); }
+  .binder svg { width: 100%; height: 100%; display: block; }
+  .binder::after { content: ''; position: absolute; top: 0; bottom: 0; left: 100%; width: 16px; background: linear-gradient(90deg, color-mix(in srgb, var(--text) 9%, transparent), transparent); }
+  @media (max-width: 760px) { .binder { display: none; } }
+
+  /* very faint pencil scribbles + eraser smudges on the paper */
+  .scribbles { position: fixed; inset: 0; z-index: -2; pointer-events: none; overflow: hidden;
+    -webkit-mask: linear-gradient(180deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+    mask: linear-gradient(180deg, transparent 0, #000 6%, #000 94%, transparent 100%); }
+  .scribbles .doodle { position: absolute; opacity: .17; }
+  .scribbles .eraser { position: absolute; border-radius: 50%; opacity: .6; filter: blur(2.5px);
+    background: radial-gradient(ellipse at center, color-mix(in srgb, var(--faint) 26%, transparent) 0%, transparent 70%); }
+  @media (max-width: 760px) { .scribbles { display: none; } }
+
+  /* aged-paper overlay: yellowed vignette, foxing spots, fine grain (multiply, so text stays crisp) */
+  .aged { position: fixed; inset: 0; z-index: -2; pointer-events: none; mix-blend-mode: multiply;
+    background:
+      radial-gradient(135% 120% at 50% 48%, transparent 52%, color-mix(in srgb, #6f4f24 17%, transparent) 100%),
+      radial-gradient(72% 60% at 1% 3%, color-mix(in srgb, #8a6a39 14%, transparent), transparent 46%),
+      radial-gradient(72% 60% at 99% 97%, color-mix(in srgb, #8a6a39 13%, transparent), transparent 48%),
+      radial-gradient(42% 32% at 90% 10%, color-mix(in srgb, #97713c 16%, transparent), transparent 60%); }
+  .aged::before { content: ''; position: absolute; inset: 0; mix-blend-mode: multiply; opacity: .55;
+    background-image:
+      radial-gradient(circle at 18% 30%, color-mix(in srgb, #9c7038 32%, transparent) 0 1px, transparent 2.6px),
+      radial-gradient(circle at 73% 21%, color-mix(in srgb, #9c7038 28%, transparent) 0 1.5px, transparent 3.2px),
+      radial-gradient(circle at 41% 72%, color-mix(in srgb, #9c7038 24%, transparent) 0 1px, transparent 2.6px),
+      radial-gradient(circle at 87% 63%, color-mix(in srgb, #9c7038 28%, transparent) 0 1.6px, transparent 3.4px),
+      radial-gradient(circle at 61% 89%, color-mix(in srgb, #9c7038 22%, transparent) 0 1px, transparent 2.2px),
+      radial-gradient(circle at 30% 54%, color-mix(in srgb, #9c7038 20%, transparent) 0 1px, transparent 2.2px),
+      radial-gradient(circle at 8% 80%, color-mix(in srgb, #9c7038 22%, transparent) 0 1.2px, transparent 2.6px); }
+  .aged::after { content: ''; position: absolute; inset: 0; mix-blend-mode: multiply; opacity: .05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 160px 160px; }
+  @media (max-width: 760px) { .aged::before { display: none; } }
+
+  /* stacked page edges on the right (book fore-edge) with depth + a curled corner */
+  .pages { position: fixed; top: 0; bottom: 0; right: 0; width: clamp(16px, 1.8vw, 26px); z-index: -2; pointer-events: none;
+    background: linear-gradient(90deg,
+      #f7f2e6 0 4px,
+      rgba(116,96,56,.30) 4px 4.8px,
+      #efe9d8 4.8px 9px,
+      rgba(116,96,56,.27) 9px 9.8px,
+      #e7e0cd 9.8px 14px,
+      rgba(116,96,56,.25) 14px 14.8px,
+      #ded6c0 14.8px 19px,
+      rgba(116,96,56,.23) 19px 19.8px,
+      #d6cdb5 19.8px 100%);
+    -webkit-mask: linear-gradient(180deg, transparent 0, #000 3%, #000 97%, transparent 100%);
+    mask: linear-gradient(180deg, transparent 0, #000 3%, #000 97%, transparent 100%); }
+  .pages::before { content: ''; position: absolute; top: 0; bottom: 0; right: 100%; width: 22px;
+    background: linear-gradient(270deg, rgba(40,34,20,.16), transparent); }
+  .pagecurl { position: fixed; right: 0; bottom: 0; width: clamp(34px, 3.4vw, 54px); height: clamp(34px, 3.4vw, 54px); z-index: -2; pointer-events: none;
+    clip-path: polygon(0 100%, 100% 100%, 100% 0);
+    background: linear-gradient(315deg, #ddd3ba 0 30%, #f8f3e6 50%, rgba(248,243,230,0) 50%);
+    filter: drop-shadow(-3px -3px 4px rgba(40,34,20,.20)); }
+  @media (max-width: 760px) { .pages, .pagecurl { display: none; } }
+
   /* chalkboard divider slides */
   .slide.board { background:
       radial-gradient(circle at 50% 36%, color-mix(in srgb, #fff 4%, var(--ink-bg)), var(--ink-bg) 72%); }
@@ -327,7 +389,7 @@
   .badge .sig .pop { position: absolute; right: 0; bottom: 4px; font-family: var(--mono); font-size: 7px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-2); }
 
   /* identity-layer spectrum (five cards) */
-  .spectrum { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 22px; }
+  .spectrum { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 22px; }
   .sp { border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(180deg, var(--panel), var(--panel-2)); padding: 15px 15px 16px; display: flex; flex-direction: column; gap: 7px; position: relative; overflow: hidden; }
   .sp::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--c, var(--accent-1)); opacity: .55; }
   .sp .pos { font-family: var(--mono); font-size: 8px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--c, var(--accent-1)); }
@@ -373,7 +435,7 @@
 
   /* ════════════════════════ PRINT ════════════════════════ */
   @media print {
-    .topbar, .navc, .hint, .progress, .menu, .npanel, .paperbg { display: none !important; }
+    .topbar, .navc, .hint, .progress, .menu, .npanel, .paperbg, .binder, .scribbles, .aged, .pages, .pagecurl { display: none !important; }
     body.present .slide { position: static; visibility: visible; opacity: 1; transform: none; }
     .slide { page-break-after: always; border: 0; }
     .rv, [data-step] { opacity: 1 !important; transform: none !important; }
@@ -385,6 +447,52 @@
 
 <div class="progress" id="progress"></div>
 <div class="paperbg" aria-hidden="true"></div>
+<div class="binder" aria-hidden="true">
+  <svg xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="bindermetal" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#dcdddb"/>
+        <stop offset=".34" stop-color="#a9aaa8"/>
+        <stop offset=".55" stop-color="#6c6d6e"/>
+        <stop offset=".78" stop-color="#909190"/>
+        <stop offset="1" stop-color="#54514c"/>
+      </linearGradient>
+      <radialGradient id="binderhole" cx=".5" cy=".44" r=".62">
+        <stop offset="0" stop-color="#ada283"/>
+        <stop offset=".68" stop-color="#cdc5ac"/>
+        <stop offset="1" stop-color="#e3ddc7"/>
+      </radialGradient>
+      <pattern id="bindercoil" width="80" height="52" patternUnits="userSpaceOnUse">
+        <circle cx="26" cy="26" r="13" fill="url(#binderhole)"/>
+        <circle cx="26" cy="26" r="13" fill="none" stroke="#a89c7d" stroke-width="1.4" opacity=".55"/>
+        <path d="M15 21 A13 13 0 0 1 37 21" fill="none" stroke="#6f6750" stroke-width="2" opacity=".32"/>
+        <g transform="rotate(-14 26 26)">
+          <rect x="3" y="20" width="42" height="12" rx="6" fill="url(#bindermetal)"/>
+          <rect x="3" y="20" width="42" height="12" rx="6" fill="none" stroke="#4d5055" stroke-width=".8" opacity=".5"/>
+          <rect x="8" y="22" width="26" height="3" rx="1.5" fill="#fff" opacity=".4"/>
+        </g>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#bindercoil)"/>
+  </svg>
+</div>
+<div class="scribbles" aria-hidden="true">
+  <svg class="doodle" style="top: 8.5vh; right: 4.5vw; width: 92px;" viewBox="0 0 100 82" fill="none">
+    <path d="M72 12 C42 4 18 22 22 44 C26 66 58 70 66 50 C72 35 50 28 44 40 C40 49 53 52 55 45" stroke="#8c897c" stroke-width="1.7" stroke-linecap="round"/>
+  </svg>
+  <svg class="doodle" style="bottom: 13vh; left: 6.5vw; width: 122px;" viewBox="0 0 130 52" fill="none">
+    <path d="M4 32 q12 -11 24 0 t24 0 t24 0 t24 0" stroke="#8c897c" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M98 9 L122 28 M122 9 L98 28" stroke="#8c897c" stroke-width="1.6" stroke-linecap="round"/>
+  </svg>
+  <svg class="doodle" style="top: 31vh; left: 7vw; width: 38px;" viewBox="0 0 40 40" fill="none">
+    <path d="M20 5 V35 M7 12 L33 28 M33 12 L7 28" stroke="#8c897c" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+  <span class="eraser" style="top: 42vh; right: 9vw; width: 170px; height: 74px;"></span>
+  <span class="eraser" style="bottom: 22vh; left: 31vw; width: 130px; height: 54px; transform: rotate(6deg);"></span>
+</div>
+<div class="aged" aria-hidden="true"></div>
+<div class="pages" aria-hidden="true"></div>
+<div class="pagecurl" aria-hidden="true"></div>
 
 <header class="topbar">
   <a class="crumb" href="/presentations/">Decks</a>
@@ -558,9 +666,10 @@
 <section class="slide" id="s-oauth-cs" data-title="OAuth's home turf" style="--c: var(--accent-1)">
   <div class="inner">
     <p class="kicker rv"><span class="snum"></span>The world we built auth for</p>
-    <h1 class="rv" style="--d:.06s">OAuth's home turf: a person <em>delegates</em> to an app.</h1>
-    <p class="lede rv" style="--d:.12s">A human signs in, consents once, and the app gets a token to
-      act <strong>on their behalf</strong>. This is the flow OAuth was designed around.</p>
+    <h1 class="rv" style="--d:.06s">OAuth's home turf: the app acts <em>as you.</em></h1>
+    <p class="lede rv" style="--d:.12s">A human signs in and consents once, and the app gets a token
+      that <strong>represents them</strong>, their scopes, their standing. The app is a
+      <strong>client</strong>: a vehicle for the token, not a party in its own right.</p>
     <div class="merframe rv" style="--d:.2s">
       <div class="mermaid">
 sequenceDiagram
@@ -581,11 +690,12 @@ sequenceDiagram
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
-      <p>Re-teach the basics kindly for newcomers. There are four parties: the user who owns the data,
-        the app acting for them, the authorization server that issues tokens, and the resource server
-        that holds the data. The user consents once and the app gets a token. Note the shape: a
-        <b>human is in the loop at the start</b>, and the app is something a developer registered ahead
-        of time. Both of those quietly stop being true for agents.</p>
+      <p>Re-teach the basics kindly for newcomers. Four parties: the user who owns the data, the app
+        acting for them, the authorization server that issues tokens, and the resource server that
+        holds the data. OAuth calls this delegated authorization, but look at the shape: the token
+        represents <b>the user</b>, and the app is a <b>client</b>, a registered vehicle, not a party in
+        its own right. One principal on the wire: you. Hold the word client; the moment an agent is the
+        caller, software stops being a vehicle and becomes a principal.</p>
     </aside>
   </div>
 </section>
@@ -593,12 +703,13 @@ sequenceDiagram
 <!-- ═══════════════════════ SLIDE · SERVICE-TO-SERVICE ═══════════════════════ -->
 <section class="slide" id="s-oauth-ss" data-title="Service to service" style="--c: var(--accent-2)">
   <div class="inner">
-    <p class="kicker rv"><span class="snum"></span>The world we built auth for</p>
+    <p class="kicker rv"><span class="snum"></span>The world we built auth for · no human</p>
     <h1 class="rv" style="--d:.06s">No human at all: one back-end <em>calls another.</em></h1>
-    <p class="lede rv" style="--d:.12s">The pattern we have refined for fifteen years:
+    <p class="lede rv" style="--d:.12s">Take the human out of that flow and you get OAuth's
+      <strong>other half</strong>, the pattern we have refined for fifteen years:
       <strong>Service&nbsp;A calls Service&nbsp;B</strong> through a gateway that checks a token. With the
       <strong>client-credentials</strong> grant the service speaks for itself; proper workload identity
-      (<strong>SPIFFE, WIMSE</strong>) does it better, with no shared secret to leak.</p>
+      (<strong>SPIFFE</strong>) does it better, with no shared secret to leak.</p>
     <ul class="bullets" data-step="1">
       <li>The service proves who it is with a <b>client id and secret</b> (or a certificate).</li>
       <li>That identity was <b>registered ahead of time</b>, by a developer, at each server.</li>
@@ -608,10 +719,10 @@ sequenceDiagram
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
-      <p>This is the slide people reach for when they say "an agent is just another back-end service."
+      <p>Pivot cleanly from the last slide: same world, just with the human taken out. This is the slide people reach for when they say "an agent is just another back-end service."
         For fifteen years we have built exactly this: one service calls another through a gateway that
         checks a token, with the caller proving itself by client credentials or, better, workload
-        identity like SPIFFE or WIMSE. Plant the three assumptions out loud: pre-registration, a shared
+        identity like SPIFFE. Plant the three assumptions out loud: pre-registration, a shared
         secret or key, and a bearer token. Then make the promise: it is tempting to drop an agent into
         this picture as just another service-to-service call, and the whole next act is about why that
         is wrong.</p>
@@ -824,6 +935,49 @@ sequenceDiagram
   </div>
 </section>
 
+<!-- ═══════════════════════ SLIDE · LEVELS (APP → AGENTS) ═══════════════════════ -->
+<section class="slide" id="s-levels" data-title="From apps to agents" style="--c: var(--accent-4)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>Enter agents</p>
+    <h1 class="rv" style="--d:.06s">From an app to an agent, the <em>actor</em> changes.</h1>
+    <p class="lede rv" style="--d:.12s">An app is a <strong>client</strong> that carries your token. An
+      agent is an <strong>actor</strong> with its own identity. <strong>Agents are not clients.</strong></p>
+    <div class="grid-3" style="margin-top: 18px;">
+      <div class="card" data-step="1" style="padding: 16px 20px;">
+        <span class="glyph" style="font-size: 12px; font-family: var(--mono); letter-spacing: .03em; margin-bottom: 7px;">acts as you</span>
+        <h3>App <em>· OAuth client</em></h3>
+        <p><b>"load my dashboard."</b> The token <b>represents you</b>; the app is just a vehicle. One principal, a bearer token, a pre-registered client. <b>This is today's OAuth.</b></p>
+      </div>
+      <div class="card" data-step="1" style="padding: 16px 20px;">
+        <span class="glyph" style="font-size: 12px; font-family: var(--mono); letter-spacing: .03em; margin-bottom: 7px;">on your behalf</span>
+        <h3>Task agent</h3>
+        <p><b>"summarize my emails."</b> A <b>tightly bounded job</b>, on your behalf, with its <b>own identity</b>. Two questions: can <b>you</b> do this, and did you <b>consent</b> to the agent doing it?</p>
+      </div>
+      <div class="card" data-step="2" style="padding: 16px 20px; border-color: color-mix(in srgb, var(--accent-2) 55%, transparent); box-shadow: 0 12px 28px color-mix(in srgb, var(--accent-2) 16%, transparent);">
+        <span class="glyph" style="font-size: 12px; font-family: var(--mono); letter-spacing: .03em; margin-bottom: 7px; color: var(--accent-2);">toward your goal</span>
+        <h3>Autonomous agent</h3>
+        <p><b>"book my Sydney trip."</b> It plans its own steps and spawns sub-agents. Now an open-ended goal needs an <b>agreed bound</b>, and authority must <b>survive the whole chain</b>.</p>
+      </div>
+    </div>
+    <p class="mercap rv" style="--d:.4s; margin-top: 14px;">Each rung adds a problem the old model cannot answer. The rest of the talk is the answers.</p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This is the on-ramp and the map for the whole talk. Start from the thing we just spent two acts
+        on: an app is a client that carries your token, today's OAuth. Climb one rung and a <b>task
+        agent</b> becomes an actor with its <b>own identity</b>, so two questions appear, is the action
+        within <b>your</b> authority, and did you <b>consent</b> to this agent doing it? Even a humble
+        "summarize my emails" assistant crosses that line. Climb again and an <b>autonomous agent</b>
+        sets its own next steps from a broad goal: a fixed scope cannot bound it, so it needs an agreed
+        bound and authority that survives being handed to sub-agents. Each rung adds a problem the old
+        model cannot answer, and the rest of the talk is those answers, delegation, missions, and
+        proof-of-possession among them. Proof-of-possession, by the way, is deliberately not a rung; it
+        is an orthogonal, cross-cutting concern. Our running example, booking a trip, is that hardest,
+        top rung.</p>
+    </aside>
+  </div>
+</section>
+
 <!-- ═══════════════════════ SLIDE · WHAT IS AN AGENT ═══════════════════════ -->
 <section class="slide" id="s-what-agent" data-title="What is an agent" style="--c: var(--accent-1)">
   <div class="inner">
@@ -841,8 +995,9 @@ sequenceDiagram
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
-      <p>Define the new actor plainly for newcomers. The crucial difference from a normal app is that a
-        developer programmed a traditional app's decisions in advance. An agent makes its decisions at
+      <p>We just climbed from app to autonomous agent; now define that new actor plainly for newcomers.
+        The crucial difference from a normal app is that a developer programmed a traditional app's
+        decisions in advance. An agent makes its decisions at
         runtime: it chooses tools, chains calls, and can spawn helpers. Hold that picture; it is why a
         pre-registered, build-time identity model does not fit.</p>
     </aside>
@@ -897,6 +1052,40 @@ sequenceDiagram
   </div>
 </section>
 
+<!-- ═══════════════════════ SLIDE · DELEGATION VS IMPERSONATION ═══════════════════════ -->
+<section class="slide" id="s-delegation" data-title="Delegation not impersonation" style="--c: var(--accent-4)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>The reframing</p>
+    <h1 class="rv" style="--d:.06s">Delegation is not <em>impersonation.</em></h1>
+    <p class="lede rv" style="--d:.12s">This is the jump from <strong>client to actor</strong>. Hand the
+      agent your token and it only <strong>acts as you</strong>. Give it its own identity and it acts
+      <strong>on your behalf</strong>, with you still in the picture.</p>
+    <div class="duo">
+      <div class="half" data-step="1">
+        <span class="num" style="--c: var(--accent-5)">Impersonation</span>
+        <h3>Acts as you</h3>
+        <p>It reuses the <b>user's own access token</b>, just like an OAuth client. Every booking is
+          logged as the user, and the agent inherits <b>everything the user can do</b>, not just travel.</p>
+      </div>
+      <div class="half" data-step="1">
+        <span class="num" style="--c: var(--accent-2)">Delegation</span>
+        <h3>Acts on your behalf</h3>
+        <p>It calls with <b>its own identity</b> (on-behalf-of). Both principals are visible, so you can
+          trace, scope, and revoke the agent on its own.</p>
+      </div>
+    </div>
+    <div class="thread" data-step="2"><p><b>And your token is not even enough</b> the agent often needs authority you do not have, like charging a corporate card you cannot. As its own principal, it brings its own.</p></div>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This distinction is the conceptual key to why agents need their own identity. If the agent just
+        borrows the user's token, every action looks like the user did it, and the agent inherits the
+        user's full reach. Delegation keeps two identities in play: the user who asked, and the agent
+        who acted. That is what makes attribution, least privilege, and revocation possible.</p>
+    </aside>
+  </div>
+</section>
+
 <!-- ═══════════════════════ SLIDE · THE REFRAMING ═══════════════════════ -->
 <section class="slide" id="s-reframing" data-title="Human, workload, or new layer" style="--c: var(--accent-2)">
   <div class="inner">
@@ -931,69 +1120,6 @@ sequenceDiagram
         you own, you can collapse that layer into workload identity. The moment an agent crosses into
         territory its issuing platform does not reach, the layer becomes its own thing. We will return
         to exactly this when we compare the industry's options.</p>
-    </aside>
-  </div>
-</section>
-
-<!-- ═══════════════════════ SLIDE · DELEGATION VS IMPERSONATION ═══════════════════════ -->
-<section class="slide" id="s-delegation" data-title="Delegation not impersonation" style="--c: var(--accent-4)">
-  <div class="inner">
-    <p class="kicker rv"><span class="snum"></span>The reframing</p>
-    <h1 class="rv" style="--d:.06s">Delegation is not <em>impersonation.</em></h1>
-    <p class="lede rv" style="--d:.12s">Do not hand the agent the user's identity. You need
-      <strong>both</strong> the user and the agent in the picture.</p>
-    <div class="duo">
-      <div class="half" data-step="1">
-        <span class="num" style="--c: var(--accent-5)">Impersonation</span>
-        <h3>Reuses your token</h3>
-        <p>It calls the booking API with the <b>user's own access token</b>. Every booking is logged as
-          the user, and the agent inherits <b>everything the user can do</b>, not just travel.</p>
-      </div>
-      <div class="half" data-step="1">
-        <span class="num" style="--c: var(--accent-2)">Delegation</span>
-        <h3>Acts on your behalf</h3>
-        <p>It calls with <b>its own identity</b>, on the user's behalf (on-behalf-of). Both principals
-          are visible, so you can trace, scope, and revoke the agent on its own.</p>
-      </div>
-    </div>
-
-    <aside class="talk">
-      <span class="ttag">Talk track</span>
-      <p>This distinction is the conceptual key to why agents need their own identity. If the agent just
-        borrows the user's token, every action looks like the user did it, and the agent inherits the
-        user's full reach. Delegation keeps two identities in play: the user who asked, and the agent
-        who acted. That is what makes attribution, least privilege, and revocation possible.</p>
-    </aside>
-  </div>
-</section>
-
-<!-- ═══════════════════════ SLIDE · REGISTRY TO PRINCIPAL ═══════════════════════ -->
-<section class="slide" id="s-principal" data-title="Registry to principal" style="--c: var(--accent-3)">
-  <div class="inner">
-    <p class="kicker rv"><span class="snum"></span>The reframing</p>
-    <h1 class="rv" style="--d:.06s">From a rich <em>registry</em> to a runtime principal.</h1>
-    <p class="lede rv" style="--d:.12s">An agent is described in detail somewhere: name, tools,
-      permissions, policy. But at runtime you need one <strong>stable, verifiable principal</strong>.</p>
-    <div class="loop rv" style="--d:.2s">
-      <span class="step">Registry: name · tools · permissions</span>
-      <span class="larr">→</span>
-      <span class="step">Runtime principal</span>
-      <span class="larr">→</span>
-      <span class="step">Authorize</span>
-      <span class="larr">·</span>
-      <span class="step">Attribute</span>
-      <span class="larr">·</span>
-      <span class="step">Revoke</span>
-    </div>
-    <p class="lede rv" style="--d:.3s; margin-top: 24px;">That principal is what you use to make an
-      authorization decision, to attribute an action after the fact, and to revoke the agent.</p>
-
-    <aside class="talk">
-      <span class="ttag">Talk track</span>
-      <p>Bridge from "what is an agent" to "what does its identity have to be." The registry entry is
-        useful for humans and catalogs, but it is not what shows up on the wire. At runtime you need a
-        crisp, verifiable principal that answers three operational questions: can it do this, who did
-        it, and how do I turn it off. Keep this short; it is the setup for everything that breaks next.</p>
     </aside>
   </div>
 </section>
@@ -1053,35 +1179,45 @@ sequenceDiagram
   </div>
 </section>
 
-<!-- ═══════════════════════ SLIDE · BREAK 1 · CAPABILITY GAP ═══════════════════════ -->
-<section class="slide" id="s-break-capability" data-title="Break 1: capability gap" style="--c: var(--accent-1)">
+<!-- ═══════════════════════ SLIDE · BREAK 1 · IDENTITY DOESN'T TRAVEL ═══════════════════════ -->
+<section class="slide" id="s-break-domains" data-title="Break 1: identity doesn't travel" style="--c: var(--accent-1)">
   <div class="inner">
     <p class="kicker rv"><span class="snum"></span>Where it breaks · 1 of 5</p>
-    <h1 class="rv" style="--d:.06s">The booking agent needs <em>more</em> than you.</h1>
-    <p class="lede rv" style="--d:.12s">You can request a trip, but charging the <strong>corporate
-      card</strong> and pulling <strong>negotiated corporate fares</strong> needs authority your own
-      access token does not carry.</p>
+    <h1 class="rv" style="--d:.06s">It crosses orgs. The <em>trust doesn't.</em></h1>
+    <p class="lede rv" style="--d:.12s">Booking the trip touches your <strong>company's</strong> travel
+      API, the <strong>airline's</strong>, then a <strong>payment processor</strong>: three different
+      trust domains. Nothing about the agent carries trust from one into the next.</p>
     <div class="duo">
       <div class="half" data-step="1">
-        <span class="num" style="--c: var(--accent-5)">Use your token</span>
-        <h3>Fails, or over-grants</h3>
-        <p>Either the booking <b>fails at the charge</b>, or you are handed <b>broad finance rights</b>
-          you should never personally hold.</p>
+        <span class="num" style="--c: var(--accent-5)">OAuth's answer</span>
+        <h3>Pre-arranged trust</h3>
+        <p>A client can <b>self-publish its identity</b> now (Client ID Metadata Document) and Cross-App
+          Access can bridge domains, but each server still <b>chooses which identities to trust</b>,
+          usually a pre-arranged list, for an app in a consent flow.</p>
       </div>
       <div class="half" data-step="1">
-        <span class="num" style="--c: var(--accent-2)">Give the agent its own</span>
-        <h3>Scoped to the job</h3>
-        <p>The agent holds <b>its own scoped authority</b> (<code>payments:charge</code>, corporate
-          fares), distinct from any one traveller.</p>
+        <span class="num" style="--c: var(--accent-2)">What agents need</span>
+        <h3>Trusted on first contact</h3>
+        <p>An autonomous agent <b>accepted the first time</b> it reaches a resource in a domain you do
+          not control, carrying who it is <b>and whose authority</b>, with no pre-arranged list and no
+          human at a browser.</p>
       </div>
     </div>
+    <div class="thread" data-step="2"><p><b>Park this</b> self-publishing identity is the right instinct, and OAuth is reaching for it; AAuth takes it all the way, to the agent as a cross-domain actor.</p></div>
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
-      <p>The capability gap is the cleanest argument for agent identity. A specialized agent often needs
-        permissions the requesting user does not have, and should not have, such as charging the
-        corporate card. Propagating the user's token forces a bad choice: fail, or over-grant. The agent
-        needs its own identity and its own scoped authority.</p>
+      <p>This is the break plain workload identity cannot fix either, and you have to be fair here
+        because OAuth has moved. With the Client ID Metadata Document draft a client can publish its own
+        identity at a URL and a server can fetch it with no pre-registration, which is genuinely the
+        self-published-identity idea, and Cross-App Access can bridge two paired domains. But notice what
+        is still true: every server decides which of those identities it will actually trust, and in
+        enterprises that becomes a pre-arranged allow-list; what is published is an app in a
+        browser-consent flow, not an autonomous agent carrying delegated authority. What agents need is
+        to be accepted as an actor the first time they reach a resource in a domain you do not control,
+        identity and authority together, with no human at a browser. That is the harder problem AAuth
+        targets; the self-published-identity idea, which OAuth is now reaching for too, is just the first
+        piece of it.</p>
     </aside>
   </div>
 </section>
@@ -1119,29 +1255,28 @@ sequenceDiagram
 </section>
 
 <!-- ═══════════════════════ SLIDE · BREAK 3 · MULTI-HOP ASYNC ═══════════════════════ -->
-<section class="slide" id="s-break-multihop" data-title="Break 3: multi-hop async" style="--c: var(--accent-4)">
+<section class="slide" id="s-break-multihop" data-title="Break 3: multi-hop chain" style="--c: var(--accent-4)">
   <div class="inner">
     <p class="kicker rv"><span class="snum"></span>Where it breaks · 3 of 5</p>
-    <h1 class="rv" style="--d:.06s">The token rides a <em>chain,</em> hours later.</h1>
-    <p class="lede rv" style="--d:.12s">Agent tasks are long-running and multi-hop. The neat
-      browser-and-session shape of OAuth simply is not there anymore.</p>
+    <h1 class="rv" style="--d:.06s">The token rides a chain today's OAuth <em>doesn't enforce.</em></h1>
+    <p class="lede rv" style="--d:.12s">Hours later, several hops deep, agent → booking API → payment
+      processor, across providers, and no one at a browser to approve anything.</p>
     <ul class="bullets" data-step="1">
-      <li>An access token is <b>passed down a chain</b>: agent, booking API, payment processor, across providers.</li>
-      <li>OAuth can <b>represent</b> the chain (RFC 8693 <code>act</code> claims) but the spec says prior actors are <b>informational only, never enforced</b>.</li>
-      <li>The user's browser session <b>expired hours ago</b>; the fare needs manager approval and no one is at a browser.</li>
-      <li>The agent needs an authorization decision <b>mid-task</b> (approve this fare), not at login.</li>
+      <li>OAuth can <b>record</b> the chain (RFC 8693 <code>act</code> claims), but the spec says prior actors are <b>informational only, never enforced</b>.</li>
+      <li>Making it enforceable takes <b>yet another draft</b> (verifiable actor-chains, attenuation tokens), so today a token <b>hops deep and hours old</b> is still accepted, no live check, no human in the loop.</li>
     </ul>
-    <p class="mercap rv" style="--d:.34s; margin-top: 14px;">OAuth's own standard admits it does not enforce the multi-hop chain<a class="reflink" href="https://workos.com/blog/oauth-multi-hop-delegation-ai-agents" target="_blank" rel="noopener" aria-label="Open the source: WorkOS, AI agents and the multi-hop delegation problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a></p>
+    <p class="mercap rv" style="--d:.3s; margin-top: 14px;">OAuth's own standard admits it does not enforce the multi-hop chain<a class="reflink" href="https://workos.com/blog/oauth-multi-hop-delegation-ai-agents" target="_blank" rel="noopener" aria-label="Open the source: WorkOS, AI agents and the multi-hop delegation problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a></p>
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
-      <p>Two things break at once here: the call graph and the clock. Authority has to travel down a
-        multi-hop chain that may cross trust domains, and it has to do so long after any human session
-        ended. Do not miss the sourced line: OAuth can carry the chain in RFC 8693 act claims, but the
-        standard itself says those prior actors are informational only, never enforced for access
-        control. That is precisely the gap AAuth closes later with one continuous cryptographic chain.
-        OAuth's model also assumes a person at a browser who can be redirected to approve; agents need
-        authorization that can pause, wait, and resume as a normal part of the protocol.</p>
+      <p>The sharp, citable break. OAuth can carry the delegation chain in RFC 8693 act claims, but the
+        standard itself says those prior actors are informational only, never enforced in an access
+        decision, so writing the chain down changes nothing. The fix does exist, as verifiable
+        actor-chains and attenuation-token drafts, but only as competing proposals, not the shipped
+        standard, which is exactly the patch-sprawl we pivot on next. Layer on the clock: the token is
+        several hops deep and hours past any human session, with no browser to redirect for approval.
+        That is the gap AAuth closes with one continuous cryptographic chain, and with authorization
+        that can pause, wait, and resume instead of assuming a person at a browser.</p>
     </aside>
   </div>
 </section>
@@ -1169,8 +1304,10 @@ sequenceDiagram
       <p>This is the failure the audience already fears: prompt injection. The agent holds a legitimate
         bookings:write scope, and a poisoned search result or itinerary email makes it book a far more
         expensive, non-refundable fare that is still inside that scope. Scope is a standing grant; it has
-        no idea about the intent of a single call. Promise that we come back to this with R3, where the
-        resource gets to weigh in on the specific call.</p>
+        no idea about the intent of a single call. And before someone says use Rich Authorization
+        Requests: RAR makes the request more precise, but it is still issued ahead of time; the resource
+        still never sees the actual call. Promise that we come back to this with R3, where the resource
+        gets to weigh in on the specific call.</p>
     </aside>
   </div>
 </section>
@@ -1215,39 +1352,14 @@ sequenceDiagram
   </div>
 </section>
 
-<!-- ═══════════════════════ SLIDE · PIVOT · PATCH ═══════════════════════ -->
-<section class="slide dark board" id="s-pivot" data-title="Patching is not enough" style="--c: var(--accent-3)">
-  <div class="inner">
-    <p class="kicker rv"><span class="snum"></span>The transition</p>
-    <div class="statement rv" style="--d:.06s">
-      You cannot patch your way to a <b>new principal.</b>
-    </div>
-    <p class="lede rv" style="--d:.18s; margin-top: 22px;">People are already bolting fixes on: DPoP,
-      token exchange, MCP with dynamic client registration. MCP's own experience shows the ceiling:
-      agents still get a <strong>different client id per server</strong>, still hold bearer tokens, and
-      still have no portable identity, no resource identity, and no governance.</p>
-    <p class="quote rv" style="--d:.3s">Identity has to move from a build-time fact to a runtime,
-      provable, governable thing. <b>A protocol change, not a token change.</b>
-      <span class="attr">The thesis · say it here, and again at the close</span></p>
-
-    <aside class="talk">
-      <span class="ttag">Talk track</span>
-      <p>This is the hinge of the whole talk. Be plain: the broken assumptions are foundational, not
-        peripheral, so bolting more onto OAuth does not get you there. MCP is the proof. It adopted
-        OAuth 2.1, immediately needed dynamic client registration, and still left agents with no
-        portable identity, no resource identity, and no governance layer. Then say the thesis slowly.
-        Identity has to become a runtime, provable, governable thing. That is a protocol change.</p>
-    </aside>
-  </div>
-</section>
-
 <!-- ═══════════════════════ SLIDE · DIVIDER · INDUSTRY ═══════════════════════ -->
 <section class="slide dark board" id="s-act-industry" data-title="Industry responses" style="--c: var(--accent-1)">
   <div class="inner">
     <p class="kicker rv"><span class="snum"></span>Part three · the responses</p>
     <h1 class="rv" style="--d:.06s">So how is the industry <em>answering?</em></h1>
-    <p class="lede rv" style="--d:.14s">Several real projects, on a spectrum. The useful question for
-      each: does agent identity collapse into workload identity, or stand as its own layer?</p>
+    <p class="lede rv" style="--d:.14s">Two fronts. The standards bodies are <strong>extending OAuth</strong>,
+      a draft for every break. The platforms are <strong>building agent-identity layers</strong> of their
+      own. We'll take each, then judge them by one lens.</p>
     <div class="chalkscene rv" style="--d:.22s" aria-hidden="true">
       <svg viewBox="0 0 360 180" fill="none">
         <line class="cd" x1="36" y1="148" x2="326" y2="148" pathLength="1" style="--dl:.10s"/>
@@ -1262,9 +1374,99 @@ sequenceDiagram
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
-      <p>Move from problem to landscape. Stay vendor-neutral here; the goal is to orient, not to sell.
-        The lens that makes them comparable is the one from the reframing slide: collapse into workload
-        identity, or a layer above.</p>
+      <p>Move from problem to landscape, and frame it as two distinct responses. First, the standards
+        world is bolting agent extensions onto OAuth, which is the very next slide. Second, the platforms
+        are each shipping their own agent-identity story, which is the spectrum and the deep dives after
+        it. Stay vendor-neutral; the goal is to orient, not to sell. The single lens that makes the
+        platforms comparable, collapse into workload identity or a layer above, lands two slides from
+        now.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · STANDARDS · PATCH SPRAWL ═══════════════════════ -->
+<section class="slide dark board" id="s-pivot" data-title="Patching is not enough" style="--c: var(--accent-3)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>How the industry is responding · the standards</p>
+    <div class="statement rv" style="--d:.06s; font-size: clamp(18px, 2.6vw, 30px); max-width: 18em;">
+      OAuth can be stretched to meet <b>every</b> one of these breaks.
+    </div>
+    <p class="lede rv" style="--d:.16s; margin-top: 12px;">There's an IETF spec for each.
+      <strong>That's exactly the problem.</strong></p>
+    <table class="maptbl rv" style="--d:.22s; max-width: 44em; margin-top: 8px;">
+      <thead><tr><th>The break</th><th>OAuth's in-flight patch</th></tr></thead>
+      <tbody>
+        <tr><td>Identity doesn't travel</td><td><b>Cross-App Access</b><a class="reflink" href="https://datatracker.ietf.org/doc/draft-ietf-oauth-identity-assertion-authz-grant/" target="_blank" rel="noopener" aria-label="Open the draft: Identity Assertion JWT Authorization Grant (Cross-App Access)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a> · <b>identity-chaining</b><a class="reflink" href="https://datatracker.ietf.org/doc/draft-ietf-oauth-identity-chaining/" target="_blank" rel="noopener" aria-label="Open the draft: OAuth Identity and Authorization Chaining Across Domains"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a></td></tr>
+        <tr><td>Who actually did it?</td><td><b>verifiable actor-chains</b><a class="reflink" href="https://datatracker.ietf.org/doc/draft-mw-spice-actor-chain/" target="_blank" rel="noopener" aria-label="Open the draft: Cryptographically Verifiable Actor Chains for OAuth 2.0 Token Exchange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a></td></tr>
+        <tr><td>The chain isn't enforced</td><td><b>attenuation tokens</b><a class="reflink" href="https://datatracker.ietf.org/doc/html/draft-niyikiza-oauth-attenuating-agent-tokens-00" target="_blank" rel="noopener" aria-label="Open the draft: Attenuating Authorization Tokens for Agentic Delegation Chains"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a></td></tr>
+        <tr><td>Intent vs scope</td><td><b>Rich Authorization Requests</b><a class="reflink" href="https://datatracker.ietf.org/doc/html/rfc9396" target="_blank" rel="noopener" aria-label="Open the spec: RFC 9396 Rich Authorization Requests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a></td></tr>
+        <tr><td>Stolen tokens on each hop</td><td><b>TLS-session-bound tokens</b><a class="reflink" href="https://datatracker.ietf.org/doc/draft-mw-oauth-tls-session-bound-tokens/" target="_blank" rel="noopener" aria-label="Open the draft: TLS-Session-Bound Access Tokens for OAuth 2.0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a></td></tr>
+      </tbody>
+    </table>
+    <p class="lede rv" style="--d:.3s; margin-top: 4px; font-size: clamp(11.5px, 1.25vw, 13.5px);"><strong>PAR</strong><a class="reflink" href="https://datatracker.ietf.org/doc/html/rfc9126" target="_blank" rel="noopener" aria-label="Open the spec: RFC 9126 Pushed Authorization Requests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a> and <strong>RAR</strong><a class="reflink" href="https://datatracker.ietf.org/doc/html/rfc9396" target="_blank" rel="noopener" aria-label="Open the spec: RFC 9396 Rich Authorization Requests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a> already shipped as RFCs; everything else, even self-published client identity (<strong>Client ID Metadata Document</strong><a class="reflink" href="https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/" target="_blank" rel="noopener" aria-label="Open the draft: OAuth Client ID Metadata Document"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a>), is still a draft.</p>
+    <p class="quote rv" style="--d:.4s; margin-top: 8px;">Still <b>no authoritative way for an agent to carry its identity and delegation across domains.</b> Agents need a protocol of their own.<span class="attr">The thesis · say it here, and again at the close</span></p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This is the hinge of the whole talk, and it has to be fair to OAuth or the experts tune out.
+        Concede the strong version first: OAuth <b>can</b> reach every one of these breaks, and there is
+        a real IETF spec for each. Be precise about how far along they are: two already shipped as RFCs,
+        PAR and Rich Authorization Requests, and the rest are still racing as drafts, Cross-App Access,
+        identity-chaining, and the Client ID Metadata Document for cross-domain and registration-free
+        identity, verifiable actor-chains for attribution, attenuation tokens for the enforceable chain,
+        TLS-session-bound tokens for theft.
+        Then turn it: that is a stack of separate, non-converged specs, each with its own claims,
+        endpoints, and pre-arranged trust. You can assemble them, but you have built a protocol out of
+        patches and you <i>still</i> have no authoritative way for the agent to carry its identity and delegation across domains. MCP is the lived proof: it adopted
+        OAuth 2.1, immediately needed dynamic client registration, and still left agents with a different
+        client id per server and no governance. So say the thesis slowly: identity has to become a
+        runtime, provable, governable thing, and the agent a first-class actor. You do not get there by
+        extending OAuth; agents need a protocol of their own.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ═══════════════════════ SLIDE · COLLAPSE · WORKLOAD IS THE AGENT ═══════════════════════ -->
+<section class="slide" id="s-collapse" data-title="When the workload is the agent" style="--c: var(--accent-2)">
+  <div class="inner">
+    <p class="kicker rv"><span class="snum"></span>How the industry is responding · the platforms</p>
+    <h1 class="rv" style="--d:.06s; font-size: clamp(24px, 3.4vw, 38px);">Sometimes the workload <em>is</em> the agent.</h1>
+    <p class="lede rv" style="--d:.12s">We called an agent <em>not quite a workload</em>. Inside one trust
+      domain it can be one, and <strong>Uber</strong> wrote up how: each agent is a Kubernetes workload
+      anchored to <strong>SPIRE</strong>, in an <strong>Agent Registry</strong>, with one token service.
+      Three invariants make it hold.</p>
+    <div class="abc" data-step="1" style="margin-top: 12px;">
+      <div class="aff">
+        <span class="letter">1</span>
+        <h3>One-to-one <em>mapping</em></h3>
+        <p>One agent ↔ one workload. The token service checks the registry that <b>this</b> agent may run on <b>this</b> workload.</p>
+      </div>
+      <div class="aff">
+        <span class="letter">2</span>
+        <h3>A <em>registry</em></h3>
+        <p>A single source of truth for which agent is which, the Agent Registry above.</p>
+      </div>
+      <div class="aff">
+        <span class="letter">3</span>
+        <h3>Identity <em>continuity</em></h3>
+        <p>Stable across schedule, pause, and resume, anchored in that SPIRE credential.</p>
+      </div>
+    </div>
+    <div class="thread" data-step="2" style="margin-top: 10px;"><p><b>The catch</b> all three hold for Uber inside one trust domain. Let the agent roam cross-domain or lose the shared registry, and identity has to become a layer of its own.</p></div>
+    <p class="mercap rv" style="--d:.4s; margin-top: 12px;">Worked example · Uber, "Solving the Identity Crisis for AI Agents"<a class="reflink" href="https://www.uber.com/au/en/blog/solving-the-agent-identity-crisis/" target="_blank" rel="noopener" aria-label="Open the source: Uber, Solving the Identity Crisis for AI Agents"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></a></p>
+
+    <aside class="talk">
+      <span class="ttag">Talk track</span>
+      <p>This answers a question the next slides assume: when do you even need a separate agent identity?
+        Often you do not. If one agent maps to one workload, a registry records which is which, and that
+        identity stays continuous as the workload is rescheduled, the agent can just ride its workload
+        identity. Uber's writeup is the clean worked example: agents run as Kubernetes workloads, each
+        anchored to a SPIRE workload credential; an Agent Registry is the source of truth; a central
+        token service mints the agent's token only after checking that this agent is authorized on this
+        workload. It works beautifully because every one of those invariants holds inside Uber's single
+        trust domain. That is the tell for the whole survey that follows: the moment an agent roams into
+        a domain you do not control, or there is no shared registry, the collapse stops working and
+        identity has to become a layer of its own.</p>
     </aside>
   </div>
 </section>
@@ -1275,8 +1477,7 @@ sequenceDiagram
     <p class="kicker rv"><span class="snum"></span>How the industry is responding</p>
     <h1 class="rv" style="--d:.06s">Collapse into workload identity, <em>until you can't.</em></h1>
     <div class="spectrum rv" style="--d:.14s">
-      <div class="sp"><span class="pos">Collapsed</span><h3>kagent · Uber</h3><p>Agent per pod. Workload identity <b>is</b> the agent identity.</p></div>
-      <div class="sp"><span class="pos">Collapsible</span><h3>kagent + substrate</h3><p>Distinct actors, but holds the three invariants, so it can still collapse.</p></div>
+      <div class="sp"><span class="pos">Collapsible</span><h3>Google Agent Substrate + kagent</h3><p>Distinct actors on a Kubernetes substrate, but holds the three invariants, so it can still collapse.</p></div>
       <div class="sp"><span class="pos">Layer above</span><h3>AWS AgentCore</h3><p>Stable agent ARN above a churning microVM. AWS owns the stack.</p></div>
       <div class="sp"><span class="pos">Layer above</span><h3>Entra Agent ID</h3><p>A specialized Entra service principal. Single vendor, one domain.</p></div>
       <div class="sp hl"><span class="pos">Layer above</span><h3>AAuth</h3><p>Cloud-agnostic. Bootstraps from workload identity, no central plane.</p></div>
@@ -1286,12 +1487,11 @@ sequenceDiagram
 
     <aside class="talk">
       <span class="ttag">Talk track</span>
-      <p>This is the orienting slide. Read left to right. When you own the infrastructure in one trust
-        domain and hold three invariants (one-to-one mapping, a registry, identity continuity), you can
-        collapse agent identity into workload identity, as Uber and kagent do. Substrate makes the layer
-        visible but still collapsible. AgentCore, Entra, and AAuth treat it as a layer above. The tell
-        we will use next: everything except AAuth assumes a single control plane in a single trust
-        domain.</p>
+      <p>This is the orienting slide, and it follows the collapse lens from the slide before. Read left
+        to right, from collapsible to a layer of its own. Google's Agent Substrate keeps agents
+        collapsible: distinct actors that still hold the three invariants. AgentCore, Entra, and AAuth
+        treat agent identity as a layer above the workload. The tell we will use next: everything except
+        AAuth assumes a single control plane in a single trust domain.</p>
     </aside>
   </div>
 </section>
@@ -1353,7 +1553,7 @@ sequenceDiagram
     <p class="lede rv" style="--d:.12s">From Dick Hardt, an author of OAuth 2.0. A layer above that
       <strong>bootstraps from</strong> workload identity rather than replacing it.</p>
     <ul class="bullets" data-step="1">
-      <li>Self-published identity, <code>aauth:local@domain</code>, with <b>no pre-registration</b>.</li>
+      <li>Self-published identity for the <b>agent as an actor</b>, <code>aauth:local@domain</code>, no pre-registration.</li>
       <li>Works <b>across trust boundaries</b>, with no single central control plane.</li>
       <li>Designed to <b>coexist with OAuth</b>, not replace it.</li>
     </ul>
@@ -1363,8 +1563,12 @@ sequenceDiagram
       <span class="ttag">Talk track</span>
       <p>AAuth is the one built for the open, cross-domain case. Each agent publishes its own
         cryptographic identity at a well-known URL, verifiable by anyone, with no portal and no shared
-        secret. It does not throw away workload identity; it bootstraps from it. This is the option to
-        spend real time on, because it is the one targeting the hard problem the others assume away.</p>
+        secret. That self-published-identity idea is not unique to AAuth; OAuth is reaching for it now
+        with Client ID Metadata Documents. What AAuth adds is the rest of the agent: that identity
+        carries delegated authority across domains, with proof on every call, missions, and an
+        enforceable chain, not just an app registering itself. It does not throw away workload identity;
+        it bootstraps from it. This is the option to spend real time on, because it is the one targeting
+        the hard problem the others assume away.</p>
     </aside>
   </div>
 </section>
