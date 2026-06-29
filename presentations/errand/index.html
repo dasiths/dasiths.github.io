@@ -302,14 +302,16 @@
     position: absolute;
     inset: 0;
     display: flex;
+    align-items: center;
+    justify-content: center;
     visibility: hidden;
     opacity: 0;
     transform: translateY(14px) scale(.985);
     transition: opacity .5s var(--ease), transform .5s var(--ease), visibility 0s .5s;
-    overflow-y: auto;
+    overflow: hidden;
     padding: 76px 0 70px;
   }
-  body.present .slide .inner { margin: auto; }
+  body.present .slide .inner { margin: 0; transform-origin: center center; }
   body.present .slide.active {
     visibility: visible;
     opacity: 1;
@@ -382,7 +384,7 @@
     line-height: 1.04;
     letter-spacing: -.028em;
     margin: 14px 0 16px;
-    max-width: 16em;
+    max-width: 20em;
     font-variation-settings: "opsz" 96;
   }
   .slide h1 em {
@@ -397,7 +399,7 @@
   .lede {
     font-size: clamp(15.5px, 1.7vw, 19px);
     color: var(--muted);
-    max-width: 38em;
+    max-width: 44em;
     font-weight: 380;
     margin-bottom: 10px;
   }
@@ -405,7 +407,7 @@
   .slide.dark .lede { color: #b9c0c9; }
   .slide.dark .lede strong { color: #efe9da; }
 
-  .bullets { list-style: none; margin-top: 18px; max-width: 46em; }
+  .bullets { list-style: none; margin-top: 18px; max-width: 52em; }
   .bullets li {
     position: relative;
     padding: 7px 0 7px 26px;
@@ -1343,7 +1345,7 @@
     max-height: 56vh;
     box-shadow: 0 12px 28px rgba(40,30,15,.12);
   }
-  body.present .merframe { max-height: 60vh; }
+  body.present .merframe { max-height: none; overflow: visible; }
   .merframe .mermaid { font-family: var(--display); text-align: center; }
   .merframe .mermaid svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
   .mercap {
@@ -2276,6 +2278,39 @@
   }
 
   /* ── present-mode activation ── */
+  // ─── Scale-to-fit (present mode only) ───
+  // Scales the active slide's content (via transform) to fill the viewport,
+  // shrinking content that's too tall so it fits instead of overflowing.
+  const FIT_MAX = 2;      // never zoom past 2x natural size
+  const FIT_MIN = 0.5;    // never shrink below 0.5x
+  const FIT_SIDE = 0.95;  // keep a little horizontal breathing room
+  function fitSlide(s) {
+    if (!s) return;
+    const inner = $('.inner', s);
+    if (!inner) return;
+    if (mode !== 'present') { inner.style.transform = ''; return; }
+    const typed = $$('[data-type]', s);
+    const saved = typed.map((el) => el.textContent);
+    typed.forEach((el) => { el.textContent = el.dataset.full || el.textContent; });
+    const cw = inner.offsetWidth, ch = inner.offsetHeight;
+    typed.forEach((el, i) => { el.textContent = saved[i]; });
+    const cs = getComputedStyle(s);
+    const availW = s.clientWidth * FIT_SIDE;
+    const availH = s.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    let scale = Math.min(availW / cw, availH / ch);
+    scale = Math.max(FIT_MIN, Math.min(FIT_MAX, scale));
+    inner.style.transform = Math.abs(scale - 1) < 0.005 ? '' : 'scale(' + scale.toFixed(4) + ')';
+  }
+  let fitRaf = 0;
+  function scheduleFit() {
+    if (mode !== 'present') return;
+    cancelAnimationFrame(fitRaf);
+    fitRaf = requestAnimationFrame(() => fitSlide(slides[cur]));
+  }
+  const toggleNotes = () => { document.body.classList.toggle('notes-open'); setTimeout(scheduleFit, 430); };
+  addEventListener('resize', scheduleFit);
+  document.addEventListener('fullscreenchange', () => setTimeout(scheduleFit, 60));
+
   const counter = $('#counter'), progress = $('#progress');
   const npBody = $('#np-body'), npCount = $('#np-count');
   function activate(i) {
@@ -2289,6 +2324,7 @@
       }
     });
     const s = slides[cur];
+    fitSlide(s);
     $$('.rv, [data-step]', s).forEach((el) => el.classList.remove('in'));
     requestAnimationFrame(() => requestAnimationFrame(() => {
       $$('.rv', s).forEach((el) => el.classList.add('in'));
@@ -2371,7 +2407,7 @@
       activate(keepPos ? cur : 0);
     } else {
       document.body.classList.remove('notes-open');
-      slides.forEach((s) => s.classList.remove('active'));
+      slides.forEach((s) => { s.classList.remove('active'); const inr = $('.inner', s); if (inr) inr.style.transform = ''; });
       $$('.rv, [data-step]').forEach((el) => el.classList.remove('in'));
       clearDelays();
       typedSlides = new WeakSet();
@@ -2381,7 +2417,7 @@
     }
   }
   btnMode.addEventListener('click', () => setMode(mode === 'present' ? 'read' : 'present', true));
-  btnNotes.addEventListener('click', () => document.body.classList.toggle('notes-open'));
+  btnNotes.addEventListener('click', toggleNotes);
   $('#btn-menu').addEventListener('click', toggleMenu);
   btnFull.addEventListener('click', () => {
     document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
@@ -2401,7 +2437,7 @@
     else if (k === 'arrowleft' || (k === ' ' && e.shiftKey) || k === 'pageup') { e.preventDefault(); prev(); }
     else if (k === 'home') { e.preventDefault(); activate(0); }
     else if (k === 'end') { e.preventDefault(); activate(slides.length - 1); }
-    else if (k === 'n') { document.body.classList.toggle('notes-open'); }
+    else if (k === 'n') { toggleNotes(); }
     else if (k === 'f') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
   });
 
@@ -2421,7 +2457,7 @@
 <script>
   if (window.mermaid) {
     window.mermaid.initialize({
-      startOnLoad: true,
+      startOnLoad: false,
       securityLevel: 'loose',
       theme: 'base',
       fontFamily: "'Bricolage Grotesque', 'Avenir Next', sans-serif",
@@ -2447,6 +2483,7 @@
       },
       sequence: { useMaxWidth: true, mirrorActors: false, wrap: true, width: 150 }
     });
+    window.mermaid.run().then(() => dispatchEvent(new Event('resize'))).catch(() => {});
   }
 </script>
 
