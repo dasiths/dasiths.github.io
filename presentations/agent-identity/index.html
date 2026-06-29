@@ -112,7 +112,8 @@
   body.present { overflow: hidden; height: 100dvh; }
   body.present .deckwrap { height: 100dvh; position: relative; }
   body.present .slide { position: absolute; inset: 0; display: flex; visibility: hidden; opacity: 0; transform: translateY(14px) scale(.985); transition: opacity .5s var(--ease), transform .5s var(--ease), visibility 0s .5s; overflow-y: auto; padding: 76px 0 70px; }
-  body.present .slide .inner { margin: auto; }
+  body.present .slide .inner { margin: auto; transform-origin: center center; }
+  body.present .slide.active .inner { transition: transform .3s var(--ease); will-change: transform; }
   body.present .slide.active { visibility: visible; opacity: 1; transform: none; transition: opacity .5s var(--ease), transform .5s var(--ease), visibility 0s 0s; z-index: 2; }
   body.present .talk { display: none; }
 
@@ -1978,6 +1979,38 @@ sequenceDiagram
     return _typeSlide(s);
   }
 
+  // ─── Scale-to-fit (present mode only) ───
+  const FIT_MAX = 2;      // never zoom past 2x natural size
+  const FIT_SIDE = 0.95;  // keep a little horizontal breathing room
+  function fitSlide(s) {
+    if (!s) return;
+    const inner = $('.inner', s);
+    if (!inner) return;
+    if (mode !== 'present') { inner.style.transform = ''; return; }
+    inner.style.transform = 'none';
+    // Measure at full content size so the typing animation can't shrink the fit.
+    const typed = $$('[data-type]', s);
+    const saved = typed.map((el) => el.textContent);
+    typed.forEach((el) => { el.textContent = el.dataset.full || el.textContent; });
+    const cw = inner.offsetWidth, ch = inner.offsetHeight;
+    typed.forEach((el, i) => { el.textContent = saved[i]; });
+    const cs = getComputedStyle(s);
+    const availW = s.clientWidth * FIT_SIDE;
+    const availH = s.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    let scale = Math.min(availW / cw, availH / ch);
+    scale = Math.max(1, Math.min(FIT_MAX, scale));
+    inner.style.transform = scale > 1.001 ? 'scale(' + scale.toFixed(4) + ')' : '';
+  }
+  let fitRaf = 0;
+  function scheduleFit() {
+    if (mode !== 'present') return;
+    cancelAnimationFrame(fitRaf);
+    fitRaf = requestAnimationFrame(() => fitSlide(slides[cur]));
+  }
+  const toggleNotes = () => { document.body.classList.toggle('notes-open'); setTimeout(scheduleFit, 430); };
+  addEventListener('resize', scheduleFit);
+  document.addEventListener('fullscreenchange', () => setTimeout(scheduleFit, 60));
+
   const counter = $('#counter'), progress = $('#progress');
   const npBody = $('#np-body'), npCount = $('#np-count');
   function activate(i) {
@@ -1988,6 +2021,7 @@ sequenceDiagram
       if (!active) { $$('.rv, [data-step]', s).forEach((el) => el.classList.remove('in')); clearDelays(s); }
     });
     const s = slides[cur];
+    fitSlide(s);
     $$('.rv, [data-step]', s).forEach((el) => el.classList.remove('in'));
     requestAnimationFrame(() => requestAnimationFrame(() => {
       $$('.rv', s).forEach((el) => el.classList.add('in'));
@@ -2051,7 +2085,7 @@ sequenceDiagram
       activate(keepPos ? cur : 0);
     } else {
       document.body.classList.remove('notes-open');
-      slides.forEach((s) => s.classList.remove('active'));
+      slides.forEach((s) => { s.classList.remove('active'); const inr = $('.inner', s); if (inr) inr.style.transform = ''; });
       $$('.rv, [data-step]').forEach((el) => el.classList.remove('in'));
       clearDelays();
       typedSlides = new WeakSet();
@@ -2061,7 +2095,7 @@ sequenceDiagram
     }
   }
   btnMode.addEventListener('click', () => setMode(mode === 'present' ? 'read' : 'present', true));
-  btnNotes.addEventListener('click', () => document.body.classList.toggle('notes-open'));
+  btnNotes.addEventListener('click', toggleNotes);
   $('#btn-menu').addEventListener('click', toggleMenu);
   btnFull.addEventListener('click', () => { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); });
   $('#btn-prev').addEventListener('click', prev);
@@ -2078,7 +2112,7 @@ sequenceDiagram
     else if (k === 'arrowleft' || (k === ' ' && e.shiftKey) || k === 'pageup') { e.preventDefault(); prev(); }
     else if (k === 'home') { e.preventDefault(); activate(0); }
     else if (k === 'end') { e.preventDefault(); activate(slides.length - 1); }
-    else if (k === 'n') { document.body.classList.toggle('notes-open'); }
+    else if (k === 'n') { toggleNotes(); }
     else if (k === 'f') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
   });
 
