@@ -269,7 +269,7 @@
 <script>
   if (window.mermaid) {
     window.mermaid.initialize({
-      startOnLoad: true,
+      startOnLoad: false,
       securityLevel: 'loose',
       theme: 'base',
       fontFamily: "var(--display)",
@@ -292,6 +292,69 @@
       },
       sequence: { useMaxWidth: true, mirrorActors: false, wrap: true, width: 150 }
     });
+
+    // Mermaid gives every sequence diagram the same marker ids (#arrowhead, ...),
+    // so a second diagram's url(#arrowhead) resolves to the FIRST diagram's marker;
+    // in present mode the first diagram is visibility:hidden, so the second
+    // diagram's arrowheads disappear. Renaming markers per-svg fixes it. Harmless
+    // for a single diagram, so always include it.
+    const dedupeMermaidMarkers = () => {
+      document.querySelectorAll('.mermaid svg').forEach((svg, i) => {
+        const ns = 'mmk' + i + '-';
+        svg.querySelectorAll('marker[id]').forEach((m) => {
+          const oldId = m.id;
+          const newId = ns + oldId;
+          m.id = newId;
+          svg.querySelectorAll('[marker-start], [marker-mid], [marker-end]').forEach((el) => {
+            ['marker-start', 'marker-mid', 'marker-end'].forEach((attr) => {
+              const v = el.getAttribute(attr);
+              if (v && v.indexOf('#' + oldId + ')') !== -1) {
+                el.setAttribute(attr, 'url(#' + newId + ')');
+              }
+            });
+          });
+        });
+      });
+    };
+
+    // Optional: highlight a sequence-diagram message (its arrow + label) on hover,
+    // dimming the rest. Mermaid emits each message as a run of messageText
+    // element(s) (one per wrapped line) followed by its messageLine, so group them
+    // in document order and lay a transparent hit-rect over each. Sequence diagrams
+    // only — flow diagrams are skipped by the guard below.
+    const wireSequenceHover = () => {
+      const NS = 'http://www.w3.org/2000/svg';
+      document.querySelectorAll('.merframe .mermaid svg').forEach((svg) => {
+        if (svg.dataset.seqHover) return;
+        if (!svg.querySelector('text.messageText, [class*="messageLine"]')) return;
+        svg.dataset.seqHover = '1';
+        let labelBuf = [];
+        [...svg.querySelectorAll('[class*="messageLine"], text.messageText')].forEach((node) => {
+          if (node.matches('text.messageText')) { labelBuf.push(node); return; }
+          const grp = [node, ...labelBuf];
+          labelBuf = [];
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          grp.forEach((el) => {
+            let b; try { b = el.getBBox(); } catch (e) { return; }
+            minX = Math.min(minX, b.x); minY = Math.min(minY, b.y);
+            maxX = Math.max(maxX, b.x + b.width); maxY = Math.max(maxY, b.y + b.height);
+          });
+          if (!isFinite(minX)) return;
+          const pad = 6;
+          const hit = document.createElementNS(NS, 'rect');
+          hit.setAttribute('x', minX - pad); hit.setAttribute('y', minY - pad);
+          hit.setAttribute('width', (maxX - minX) + pad * 2); hit.setAttribute('height', (maxY - minY) + pad * 2);
+          hit.setAttribute('class', 'msg-hit');
+          hit.addEventListener('mouseenter', () => { grp.forEach((el) => el.classList.add('msg-hl')); svg.classList.add('msg-active'); });
+          hit.addEventListener('mouseleave', () => { grp.forEach((el) => el.classList.remove('msg-hl')); svg.classList.remove('msg-active'); });
+          svg.appendChild(hit);
+        });
+      });
+    };
+
+    // startOnLoad is false so wiring runs after diagrams render. The resize event
+    // re-runs the engine's scale-to-fit once diagrams have their final size.
+    window.mermaid.run().then(dedupeMermaidMarkers).then(wireSequenceHover).then(() => dispatchEvent(new Event('resize')));
   }
 </script>
 -->

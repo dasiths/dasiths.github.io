@@ -1345,9 +1345,16 @@
     max-height: 56vh;
     box-shadow: 0 12px 28px rgba(40,30,15,.12);
   }
-  body.present .merframe { max-height: none; overflow: visible; }
+  body.present .merframe { max-height: 60vh; overflow: auto; }
   .merframe .mermaid { font-family: var(--display); text-align: center; }
   .merframe .mermaid svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+  /* Sequence-diagram message hover highlight */
+  .merframe .mermaid svg [class*="messageLine"], .merframe .mermaid svg text.messageText { transition: opacity .15s var(--ease), stroke .15s var(--ease), fill .15s var(--ease); }
+  .merframe .mermaid svg .msg-hit { fill: transparent; cursor: pointer; }
+  .merframe .mermaid svg [class*="messageLine"].msg-hl { stroke: var(--c, var(--accent-1)) !important; stroke-width: 3 !important; }
+  .merframe .mermaid svg text.messageText.msg-hl { fill: var(--c, var(--accent-1)) !important; font-weight: 700 !important; }
+  .merframe .mermaid svg.msg-active [class*="messageLine"]:not(.msg-hl),
+  .merframe .mermaid svg.msg-active text.messageText:not(.msg-hl) { opacity: .35; }
   .mercap {
     font-family: var(--mono);
     font-size: 9.5px;
@@ -1772,6 +1779,7 @@
       with the accounts office applying the chain's own policy.</p>
     <div class="merframe rv" style="--d:.18s">
       <pre class="mermaid">sequenceDiagram
+    autonumber
     actor Mom as Mom (Person)
     participant Sam as Sam (Agent)
     participant Patel as Patel (Resource)
@@ -2124,6 +2132,7 @@
       intent; anything that doesn't fit <strong>goes back to Mom</strong>.</p>
     <div class="merframe rv" style="--d:.18s">
       <pre class="mermaid">sequenceDiagram
+    autonumber
     actor Mom as Mom (Person)
     participant Sam as Sam (Agent)
     participant Dad as Dad (Person Server)
@@ -2483,7 +2492,66 @@
       },
       sequence: { useMaxWidth: true, mirrorActors: false, wrap: true, width: 150 }
     });
-    window.mermaid.run().then(() => dispatchEvent(new Event('resize'))).catch(() => {});
+    // Mermaid gives every sequence diagram the same marker ids (#arrowhead, ...),
+    // so a second diagram's url(#arrowhead) resolves to the FIRST diagram's marker;
+    // in present mode the first diagram is visibility:hidden, so the second
+    // diagram's arrowheads disappear. Renaming markers per-svg makes each
+    // diagram self-contained.
+    const dedupeMermaidMarkers = () => {
+      document.querySelectorAll('.mermaid svg').forEach((svg, i) => {
+        const ns = 'mmk' + i + '-';
+        svg.querySelectorAll('marker[id]').forEach((m) => {
+          const oldId = m.id;
+          const newId = ns + oldId;
+          m.id = newId;
+          svg.querySelectorAll('[marker-start], [marker-mid], [marker-end]').forEach((el) => {
+            ['marker-start', 'marker-mid', 'marker-end'].forEach((attr) => {
+              const v = el.getAttribute(attr);
+              if (v && v.indexOf('#' + oldId + ')') !== -1) {
+                el.setAttribute(attr, 'url(#' + newId + ')');
+              }
+            });
+          });
+        });
+      });
+    };
+    // Highlight a sequence-diagram message (its arrow + label line(s)) on hover.
+    // Each message is a run of messageText element(s) (one per wrapped line)
+    // followed by its messageLine, in document order; group them and lay a
+    // transparent hit-rect over each for a comfortable hover target.
+    const wireSequenceHover = () => {
+      const NS = 'http://www.w3.org/2000/svg';
+      document.querySelectorAll('.merframe .mermaid svg').forEach((svg) => {
+        if (svg.dataset.seqHover) return;
+        if (!svg.querySelector('text.messageText, [class*="messageLine"]')) return; // sequence diagrams only
+        svg.dataset.seqHover = '1';
+        // Each message is a run of messageText element(s) (one per wrapped line)
+        // followed by its messageLine, in document order. Group them so multi-line
+        // labels highlight together with their arrow.
+        let labelBuf = [];
+        [...svg.querySelectorAll('[class*="messageLine"], text.messageText')].forEach((node) => {
+          if (node.matches('text.messageText')) { labelBuf.push(node); return; }
+          const grp = [node, ...labelBuf];
+          labelBuf = [];
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          grp.forEach((el) => {
+            let b; try { b = el.getBBox(); } catch (e) { return; }
+            minX = Math.min(minX, b.x); minY = Math.min(minY, b.y);
+            maxX = Math.max(maxX, b.x + b.width); maxY = Math.max(maxY, b.y + b.height);
+          });
+          if (!isFinite(minX)) return;
+          const pad = 6;
+          const hit = document.createElementNS(NS, 'rect');
+          hit.setAttribute('x', minX - pad); hit.setAttribute('y', minY - pad);
+          hit.setAttribute('width', (maxX - minX) + pad * 2); hit.setAttribute('height', (maxY - minY) + pad * 2);
+          hit.setAttribute('class', 'msg-hit');
+          hit.addEventListener('mouseenter', () => { grp.forEach((el) => el.classList.add('msg-hl')); svg.classList.add('msg-active'); });
+          hit.addEventListener('mouseleave', () => { grp.forEach((el) => el.classList.remove('msg-hl')); svg.classList.remove('msg-active'); });
+          svg.appendChild(hit);
+        });
+      });
+    };
+    window.mermaid.run().then(dedupeMermaidMarkers).then(wireSequenceHover).then(() => dispatchEvent(new Event('resize'))).catch(() => {});
   }
 </script>
 

@@ -52,7 +52,24 @@ The engine consists of:
 3. **Slide layout** — `body.present` (viewport-fitted) and `body.read` (stacked scrolling) rules.
 4. **Reveal system** — `.rv` class for fade-up on intersection (read) or activation (present); `[data-step]` for sequenced reveals within a slide.
 5. **Components** — `.kicker`, `.lede`, `.statement`, `.quote`, `.bullets`, `.card`, `.duo`, `.abc`, `.term`, `.maptbl`, `.chips`, `.stats`, `.loop`, `.thread`, `.cta`, `.merframe`.
-6. **Script** — mode switching, keyboard shortcuts, IntersectionObserver for read-mode reveals, hash-based navigation, slide numbering, data-step sequencing, terminal typing animation (see `presentations-engine.js`).
+6. **Script** — mode switching, keyboard shortcuts, IntersectionObserver for read-mode reveals, hash-based navigation, slide numbering, data-step sequencing, terminal typing animation, present-mode scale-to-fit (see `presentations-engine.js`).
+
+## Present-Mode Scale-to-Fit
+
+In present mode each slide's `.inner` is scaled with a CSS `transform` so the content fills the viewport — scaling up on large displays and shrinking to fit when content is taller than the screen. This is built into the reference files (`fitSlide()` in `presentations-engine.js` plus the `body.present .slide` / `.inner` rules in `presentations-base.css`); copy them as-is and it works.
+
+How it fits together:
+
+- `body.present .slide` is `display: flex` + `align-items: center` + `justify-content: center` with `overflow: hidden`, and `.inner` has `transform-origin: center`. The slide centers its content and clips the unscaled overflow, so a shrunk slide shows no scrollbars.
+- `fitSlide(s)` measures the natural `.inner` size (temporarily expanding any `[data-type]` text so the typing animation can't skew the measurement), then sets `transform: scale(...)` clamped to `[0.5, 2]` with a small horizontal margin (`FIT_SIDE`).
+- It re-fits on slide activation, window `resize`, `fullscreenchange`, and notes-panel toggle (which changes the deck width). For Mermaid decks, dispatch a `resize` after `mermaid.run()` resolves so diagram slides re-fit once their SVGs have final size.
+
+Supporting rules already in the base files:
+
+- Text caps are widened so content fills more on tall/portrait screens: `h1` `max-width: 20em`, `.lede` `44em`, `.bullets` `52em`.
+- `body.present .merframe { max-height: 60vh; overflow: auto; }` caps a diagram's height in present mode so a *very tall* sequence diagram scrolls inside its frame instead of forcing scale-to-fit to shrink the whole slide (and its text) to fit. Moderate diagrams under the cap still render in full. Tune the cap to trade diagram size against how small the slide text is allowed to get.
+
+On portrait screens the fit stays near 1× (width-constrained), so some vertical whitespace is expected and by design.
 
 ## Theming
 
@@ -80,7 +97,7 @@ The mono font always appears **uppercase with `letter-spacing: .12em–.26em`** 
 
 ### Heading style
 
-- `h1` is large (`clamp(34px, 5vw, 66px)`), heavy (`font-weight: 750`), tight (`letter-spacing: -.028em`, `line-height: 1.04`), capped at `max-width: 16em`.
+- `h1` is large (`clamp(34px, 5vw, 66px)`), heavy (`font-weight: 750`), tight (`letter-spacing: -.028em`, `line-height: 1.04`), capped at `max-width: 20em`.
 - Put **one or two accent words** in `<em>`. These render in **serif italic, in the slide's accent color** — this is the signature look. Example: `The bread shows the simple <em>case.</em>`
 - Title-slide `h1` is larger (`clamp(44px, 7vw, 92px)`); use class `titleslide` on the section.
 - On dark slides, `h1` color lightens automatically — no extra markup needed.
@@ -208,7 +225,97 @@ When converting a blog post to slides:
 
 - Wrap in `<div class="merframe"><div class="mermaid">...</div><p class="mercap">Caption</p></div>`.
 - Configure Mermaid with `theme: 'base'` and custom `themeVariables` matching the presentation's color tokens.
-- Use `securityLevel: 'loose'` and `startOnLoad: true`.
+- Use `securityLevel: 'loose'`. Set `startOnLoad: true` for a simple deck, or set `startOnLoad: false` and call `window.mermaid.run().then(...)` when you need a post-render hook (marker dedupe and the hover helper below).
+- Add `autonumber` as the first line of a `sequenceDiagram` to number each message — the house style numbers sequence messages.
+
+### Multiple sequence diagrams: keep arrowheads (required for 2+ diagrams)
+
+Mermaid gives every sequence diagram the same SVG marker ids (`#arrowhead`, `#crosshead`, …). A second diagram's `url(#arrowhead)` then resolves to the **first** diagram's marker; in present mode the first diagram is `visibility: hidden`, so the second diagram's **arrowheads disappear**. Rename each diagram's markers to a per-SVG namespace after render:
+
+```js
+const dedupeMermaidMarkers = () => {
+  document.querySelectorAll('.mermaid svg').forEach((svg, i) => {
+    const ns = 'mmk' + i + '-';
+    svg.querySelectorAll('marker[id]').forEach((m) => {
+      const oldId = m.id;
+      const newId = ns + oldId;
+      m.id = newId;
+      svg.querySelectorAll('[marker-start], [marker-mid], [marker-end]').forEach((el) => {
+        ['marker-start', 'marker-mid', 'marker-end'].forEach((attr) => {
+          const v = el.getAttribute(attr);
+          if (v && v.indexOf('#' + oldId + ')') !== -1) {
+            el.setAttribute(attr, 'url(#' + newId + ')');
+          }
+        });
+      });
+    });
+  });
+};
+```
+
+It's harmless for a single diagram, so always include it and chain it first after `run()` (see the combined chain below).
+
+### Sequence-diagram message hover highlight (optional)
+
+Highlights one sequence message — its arrow and label — when the viewer hovers it, and dims the rest. Sequence diagrams only; flow diagrams are skipped automatically. The helper and CSS already live in `presentations-base.css` and the `presentations-scaffold.html` Mermaid block — include them when a deck has sequence diagrams and you want hover emphasis.
+
+Why it needs a helper: Mermaid renders each message as separate, ungrouped sibling elements (`text.messageText` — one per wrapped line — plus `line.messageLine0`/`.messageLine1` and `text.sequenceNumber`), and the arrow is a ~1.5px-thin hover target. The helper groups each message's label line(s) with its arrow in document order (a message is a run of `messageText` elements followed by its `messageLine`, so wrapped multi-line labels group correctly) and lays a transparent hit-rect over each for a comfortable target.
+
+CSS (in `presentations-base.css`, merframe section):
+
+```css
+.merframe .mermaid svg [class*="messageLine"],
+.merframe .mermaid svg text.messageText { transition: opacity .15s var(--ease), stroke .15s var(--ease), fill .15s var(--ease); }
+.merframe .mermaid svg .msg-hit { fill: transparent; cursor: pointer; }
+.merframe .mermaid svg [class*="messageLine"].msg-hl { stroke: var(--c, var(--accent-1)) !important; stroke-width: 3 !important; }
+.merframe .mermaid svg text.messageText.msg-hl { fill: var(--c, var(--accent-1)) !important; font-weight: 700 !important; }
+.merframe .mermaid svg.msg-active [class*="messageLine"]:not(.msg-hl),
+.merframe .mermaid svg.msg-active text.messageText:not(.msg-hl) { opacity: .35; }
+```
+
+JS — set `startOnLoad: false` and wire it after `run()` resolves (the trailing `resize` dispatch lets the scale-to-fit re-run once diagrams have their final size):
+
+```js
+const wireSequenceHover = () => {
+  const NS = 'http://www.w3.org/2000/svg';
+  document.querySelectorAll('.merframe .mermaid svg').forEach((svg) => {
+    if (svg.dataset.seqHover) return;
+    if (!svg.querySelector('text.messageText, [class*="messageLine"]')) return; // sequence diagrams only
+    svg.dataset.seqHover = '1';
+    // Each message is a run of messageText element(s) (one per wrapped line)
+    // followed by its messageLine, in document order.
+    let labelBuf = [];
+    [...svg.querySelectorAll('[class*="messageLine"], text.messageText')].forEach((node) => {
+      if (node.matches('text.messageText')) { labelBuf.push(node); return; }
+      const grp = [node, ...labelBuf];
+      labelBuf = [];
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      grp.forEach((el) => {
+        let b; try { b = el.getBBox(); } catch (e) { return; }
+        minX = Math.min(minX, b.x); minY = Math.min(minY, b.y);
+        maxX = Math.max(maxX, b.x + b.width); maxY = Math.max(maxY, b.y + b.height);
+      });
+      if (!isFinite(minX)) return;
+      const pad = 6;
+      const hit = document.createElementNS(NS, 'rect');
+      hit.setAttribute('x', minX - pad); hit.setAttribute('y', minY - pad);
+      hit.setAttribute('width', (maxX - minX) + pad * 2); hit.setAttribute('height', (maxY - minY) + pad * 2);
+      hit.setAttribute('class', 'msg-hit');
+      hit.addEventListener('mouseenter', () => { grp.forEach((el) => el.classList.add('msg-hl')); svg.classList.add('msg-active'); });
+      hit.addEventListener('mouseleave', () => { grp.forEach((el) => el.classList.remove('msg-hl')); svg.classList.remove('msg-active'); });
+      svg.appendChild(hit);
+    });
+  });
+};
+
+window.mermaid.run().then(dedupeMermaidMarkers).then(wireSequenceHover).then(() => dispatchEvent(new Event('resize')));
+```
+
+Notes:
+
+- The highlight color is the slide accent (`var(--c)`). Mermaid's own line and text colors come from an ID-scoped `<style>` block inside the SVG, so the `.msg-hl` rules use `!important` to win.
+- Message arrows and labels are direct `<svg>` children in user space, so the `getBBox()` hit-rect coordinates line up regardless of the present-mode scale transform.
+- `data-seqHover` keeps wiring idempotent if `run()` is ever called again.
 
 ## Accessibility and Quality
 

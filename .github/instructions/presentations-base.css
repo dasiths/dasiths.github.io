@@ -289,14 +289,17 @@ body.present .slide {
   position: absolute;
   inset: 0;
   display: flex;
+  align-items: center;
+  justify-content: center;
   visibility: hidden;
   opacity: 0;
   transform: translateY(14px) scale(.985);
   transition: opacity .5s var(--ease), transform .5s var(--ease), visibility 0s .5s;
-  overflow-y: auto;
+  overflow: hidden;
   padding: 76px 0 70px;
 }
-body.present .slide .inner { margin: auto; }
+/* The active slide's .inner is scaled to fit the viewport by fitSlide() in the engine. */
+body.present .slide .inner { margin: 0; transform-origin: center center; }
 body.present .slide.active {
   visibility: visible;
   opacity: 1;
@@ -378,7 +381,7 @@ body.present [data-step].in { transform: none; }
   line-height: 1.04;
   letter-spacing: -.028em;
   margin: 14px 0 16px;
-  max-width: 16em;
+  max-width: 20em;
 }
 .slide h1 em {
   font-family: var(--serif);
@@ -393,7 +396,7 @@ body.present [data-step].in { transform: none; }
 .lede {
   font-size: clamp(15.5px, 1.7vw, 19px);
   color: var(--muted);
-  max-width: 38em;
+  max-width: 44em;
   font-weight: 380;
   margin-bottom: 10px;
 }
@@ -402,7 +405,7 @@ body.present [data-step].in { transform: none; }
 .slide.dark .lede strong { color: #efe9da; }
 
 /* ── Bullet list ── */
-.bullets { list-style: none; margin-top: 18px; max-width: 46em; }
+.bullets { list-style: none; margin-top: 18px; max-width: 52em; }
 .bullets li {
   position: relative;
   padding: 7px 0 7px 26px;
@@ -745,9 +748,19 @@ body.present [data-step].in { transform: none; }
   max-height: 56vh;
   box-shadow: 0 12px 28px rgba(0,0,0,.12);
 }
-body.present .merframe { max-height: 60vh; }
+/* Cap diagram height in present mode so a very tall sequence diagram scrolls
+   inside its frame instead of forcing scale-to-fit to shrink the whole slide. */
+body.present .merframe { max-height: 60vh; overflow: auto; }
 .merframe .mermaid { text-align: center; }
 .merframe .mermaid svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+/* Sequence-diagram message hover highlight (optional; wired by wireSequenceHover) */
+.merframe .mermaid svg [class*="messageLine"],
+.merframe .mermaid svg text.messageText { transition: opacity .15s var(--ease), stroke .15s var(--ease), fill .15s var(--ease); }
+.merframe .mermaid svg .msg-hit { fill: transparent; cursor: pointer; }
+.merframe .mermaid svg [class*="messageLine"].msg-hl { stroke: var(--c, var(--accent-1)) !important; stroke-width: 3 !important; }
+.merframe .mermaid svg text.messageText.msg-hl { fill: var(--c, var(--accent-1)) !important; font-weight: 700 !important; }
+.merframe .mermaid svg.msg-active [class*="messageLine"]:not(.msg-hl),
+.merframe .mermaid svg.msg-active text.messageText:not(.msg-hl) { opacity: .35; }
 .mercap {
   font-family: var(--mono);
   font-size: 9.5px;

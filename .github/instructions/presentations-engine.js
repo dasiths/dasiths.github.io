@@ -71,6 +71,42 @@
     }
   }
 
+  /* ── scale-to-fit (present mode only) ── */
+  // Scales the active slide's .inner (via transform, from center) to fill the
+  // viewport, shrinking content that's too tall so it fits instead of overflowing.
+  // Pairs with the base CSS: body.present .slide is flex-centered with overflow
+  // hidden, and .inner has transform-origin: center.
+  const FIT_MAX = 2;      // never zoom past 2x natural size
+  const FIT_MIN = 0.5;    // never shrink below 0.5x
+  const FIT_SIDE = 0.95;  // keep a little horizontal breathing room
+  function fitSlide(s) {
+    if (!s) return;
+    const inner = $('.inner', s);
+    if (!inner) return;
+    if (mode !== 'present') { inner.style.transform = ''; return; }
+    // Measure at full content size so the typing animation can't change the fit.
+    const typed = $$('[data-type]', s);
+    const savedText = typed.map((el) => el.textContent);
+    typed.forEach((el) => { el.textContent = el.dataset.full || el.textContent; });
+    const cw = inner.offsetWidth, ch = inner.offsetHeight;
+    typed.forEach((el, i) => { el.textContent = savedText[i]; });
+    const cs = getComputedStyle(s);
+    const availW = s.clientWidth * FIT_SIDE;
+    const availH = s.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    let scale = Math.min(availW / cw, availH / ch);
+    scale = Math.max(FIT_MIN, Math.min(FIT_MAX, scale));
+    inner.style.transform = Math.abs(scale - 1) < 0.005 ? '' : 'scale(' + scale.toFixed(4) + ')';
+  }
+  let fitRaf = 0;
+  function scheduleFit() {
+    if (mode !== 'present') return;
+    cancelAnimationFrame(fitRaf);
+    fitRaf = requestAnimationFrame(() => fitSlide(slides[cur]));
+  }
+  const toggleNotes = () => { document.body.classList.toggle('notes-open'); setTimeout(scheduleFit, 430); };
+  addEventListener('resize', scheduleFit);
+  document.addEventListener('fullscreenchange', () => setTimeout(scheduleFit, 60));
+
   /* ── present-mode activation ── */
   const counter = $('#counter'), progress = $('#progress');
   const npBody = $('#np-body'), npCount = $('#np-count');
@@ -85,6 +121,7 @@
       }
     });
     const s = slides[cur];
+    fitSlide(s);
     $$('.rv, [data-step]', s).forEach((el) => el.classList.remove('in'));
     requestAnimationFrame(() => requestAnimationFrame(() => {
       $$('.rv', s).forEach((el) => el.classList.add('in'));
@@ -168,7 +205,7 @@
       activate(keepPos ? cur : 0);
     } else {
       document.body.classList.remove('notes-open');
-      slides.forEach((s) => s.classList.remove('active'));
+      slides.forEach((s) => { s.classList.remove('active'); const inr = $('.inner', s); if (inr) inr.style.transform = ''; });
       $$('.rv, [data-step]').forEach((el) => el.classList.remove('in'));
       clearDelays();
       typedSlides = new WeakSet();
@@ -178,7 +215,7 @@
     }
   }
   btnMode.addEventListener('click', () => setMode(mode === 'present' ? 'read' : 'present', true));
-  btnNotes.addEventListener('click', () => document.body.classList.toggle('notes-open'));
+  btnNotes.addEventListener('click', toggleNotes);
   $('#btn-menu').addEventListener('click', toggleMenu);
   btnFull.addEventListener('click', () => {
     document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
@@ -198,7 +235,7 @@
     else if (k === 'arrowleft' || (k === ' ' && e.shiftKey) || k === 'pageup') { e.preventDefault(); prev(); }
     else if (k === 'home') { e.preventDefault(); activate(0); }
     else if (k === 'end') { e.preventDefault(); activate(slides.length - 1); }
-    else if (k === 'n') { document.body.classList.toggle('notes-open'); }
+    else if (k === 'n') { toggleNotes(); }
     else if (k === 'f') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
   });
 
