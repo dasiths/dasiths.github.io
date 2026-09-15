@@ -44,6 +44,8 @@ Selected public work from this period:
 
 * Shared production lessons from multidisciplinary teams building LLM-powered customer solutions, covering safety, compliance, misuse, accuracy, and security in [Lessons from the Trenches in an LLM Frontier](/2024/10/30/llm-lessons-api-days-2024/)
 * Documented a customer-derived design pattern that keeps identity-scoped parameters outside LLM-generated tool inputs to reduce prompt-injection risk in [LLM Prompt Injection Considerations With Tool Use](/2024/05/03/llm-prompt-injection-considerations-for-tool-use/)
+* Initiated and led the [MCP authorization specification proposal](https://github.com/modelcontextprotocol/modelcontextprotocol/issues/205) to separate OAuth resource-server and authorization-server responsibilities. The resulting change landed through [PR #338](https://github.com/modelcontextprotocol/modelcontextprotocol/pull/338) and shipped in the [MCP 2025-06-18 specification](https://modelcontextprotocol.io/specification/2025-06-18/changelog#major-changes), making existing enterprise authorization servers easier to use with remote MCP servers
+* Researched OCI 1.1 and ORAS artifact storage in [What is ORAS and why should you care?](/2023/06/04/what-is-oras/) and opened [OCI image-spec PR #1100](https://github.com/opencontainers/image-spec/pull/1100) to improve guidance and examples for `artifactType` and `config.mediaType`. The recommendations were credited and incorporated into merged [OCI PR #1101](https://github.com/opencontainers/image-spec/pull/1101) and the corresponding [ORAS documentation update](https://github.com/oras-project/oras-www/pull/248)
 * Co-presented practices used by the team to secure software supply chains for government and defence customers, including SBOMs, OCI artifacts, signing, attestations, and policy enforcement in [Building Trust Brick by Brick](/2024/01/05/secure-supply-chain-api-days-2023/)
 * Presented lessons from deploying Kubernetes workloads with GitOps to intermittently connected and air-gapped edge fleets in [EdgeDevOps in the Bush, Air and Underwater](/2023/01/06/edge-devops-apidays-australia-2022/)
 * Published [.NET and Python OpenTelemetry samples](https://github.com/dasiths/OpenTelemetryDistributedTracingSample) for trace-context propagation across HTTP, RabbitMQ, and MQTT, including traces, metrics, and logs
@@ -101,7 +103,7 @@ During this period I published the [Event Sourcing Examined](/2016/12/02/event-s
 
 May 2009 to June 2016, Melbourne
 
-I led the design and development of a multi-user, multi-currency ERP platform for the plant-hire industry. It covered asset management, rental, sales, CRM, inventory, workshop operations, accounting, web access, and third-party integrations. The system included a Windows client, web and mobile applications, a SQL Server database with more than 250 tables, SOAP and REST APIs, background services, and integrations with mapping, accounting, registry, email, and marketing platforms.
+I led the design and development of a multi-user, multi-currency ERP platform for the plant-hire industry. It covered asset management, rental, sales, CRM, inventory, workshop operations, accounting, web access, and third-party integrations. The system included a Windows client, web and mobile applications, a SQL Server, SOAP and REST APIs, background services, and integrations with mapping, accounting, registry, email, and marketing platforms.
 
 ### Native Innovation
 
@@ -117,8 +119,6 @@ I led a small development team delivering HR, telecommunications, distributed, a
   2008 to 2009
 * Bachelor of Science in Information Technology, Swinburne University of
   Technology, 2007 to 2008
-* Bachelor of Science in Computer Science, SLIIT, 2004 to 2007
-* Advanced Level in Mathematics, D. S. Senanayake College, 1996 to 2004
 
 ## Core expertise
 
