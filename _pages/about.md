@@ -7,41 +7,54 @@ categories: []
 tags: []
 permalink: /about/
 ---
-Disclaimer. Most of my friends don't have the slightest idea about what I actually do. I recently had a hilarious conversation a with few friends where their best guess was something close to this.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/fXpVEwEhamw?si=ip50Ryhi_5K-bZGO" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<!-- markdownlint-disable MD013 -->
 
-If you have a minute to spare have a read of this post I made about my early days as a developer. Link: [https://dasith.me/2016/11/29/first-blog-post/](http://dasith.me/2016/11/29/first-blog-post/)
+I am a Principal Software Engineer in Microsoft's Forward Deployed Engineering practice. I work with enterprise customers across the Asia-Pacific region, Microsoft product teams, and open-source communities to engineer production AI and distributed systems.
 
-<hr />
+I have spent more than 20 years building software, from native-language tools and enterprise applications to cloud-native platforms. Distributed systems are the thread running through that work. I care about good design, manageable codebases, observability, security, and helping teams carry what we build into production.
 
-I am a polyglot software engineer with experience in consulting environments as well as solution architecture. I have been working with Microsoft technologies for close to 2 decades. My focus is distributed systems and I have extensive experience in development across the stack. In most of my development projects I employ an Agile method of development with emphasis on good design principles, manageable codebases and scalability. These days I mostly utilize Azure and AWS offerings to design & deliver cloud native solutions.
+## What I am working on
 
-I started developing software professionally around 2004 but decided to pursue higher education while doing that. So, after completing my Masters degree in 2009 at Swinburne University of Technology, I joined a construction company called Luxton Plant as a software engineer and led the development of the best in class ERP software for hire, service and sales of earth moving equipment in that industry. I then worked for one of the top trade printing companies in Australia (called Whirlwind Print), integrating and streamlining their printing process and building a B2B framework. At this point I went into consulting and worked for <a href="https://readify.net/" target="_blank" rel="noopener">Readify</a> as a senior developer doing consulting work for clients of varying sizes. During this time Readify got acquired by Telstra and was renamed as Telstra Purple. A couple of promotions later, I joined Microsoft as a Senior Consultant. After a year of working in Microsoft Consulting Services, I took up an opportunity in [Commercial Software Engineering](https://devblogs.microsoft.com/cse/about/) as an Senior Software Engineer to work on some very exciting cutting edge solutions.
+My attention is currently on the engineering challenges behind agentic systems:
 
-I love participating in the community, listening to war stories from the tech trenches and talking about my own experiences. My public speaker profile can be found here: https://sessionize.com/dasiths/
+* Designing and building production-ready GenAI and LLM-based solutions
+* Developing agentic architectures that can operate reliably at enterprise scale
+* Exploring identity and security patterns for agents, including MCP and A2A
+* Designing observable AI systems with OpenTelemetry and contributing to GenAI semantic conventions
+* Improving software supply-chain security for customers and open-source projects
+* Running intelligent systems at the edge with Kubernetes and GitOps
 
-**Currently my attention is on cloud native solutions and Kubernetes on edge:**
-- Converting monolithic systems into modularized cohesive parts + microservices.
-- Event sourcing, CQRS & Eventually consistent models and distributed systems.
-- Event driven serverless solutions. (Azure Event Hub / Event Grid with Azure Functions or AWS SQS and AWS Lambda).
-- Containerised workloads and orchestration (Kubernetes, Dapr + Tye).
-- Running intelligent systems on edge using Kubernetes and modern workflows using GitOps.
+This work builds on years spent designing cloud-native and event-driven systems, modernising applications, and helping teams adopt DevOps and DevSecOps practices.
 
-My stack usually consists of the following...
+## How I got here
 
-### Technologies:
-.NET Core, ASP.NET Core, NodeJs, GoLang, Angular, React
+I started developing software professionally in 2004 while pursuing higher education. After completing my master's degree at Swinburne University of Technology in 2009, I joined Luxton Plant and led the development of an ERP platform for the hire, service, and sale of earth-moving equipment.
 
-### Languages:
-C#, C++, Go, JavaScript, TypeScript, Kotlin, Python, Bash and Powershell scripting
+I later joined Whirlwind Print, where I worked on B2B integration, messaging, and the gradual replacement of a monolithic system. From there I moved into consulting at Readify, which became Telstra Purple after its acquisition by Telstra. I worked with teams across Australia on solution architecture, cloud adoption, application modernisation, delivery practices, and technical leadership.
 
-### Platforms:
-Azure / AWS / Edge (PaaS, Serverless, Windows and Linux Containers, Kubernetes) 
+I joined Microsoft Consulting Services as a Senior Consultant in 2021. In 2022, I moved to [Commercial Software Engineering](https://devblogs.microsoft.com/cse/about/) as a Senior Software Engineer, working with customers on significant technical challenges and production-ready solutions. In 2025, I became a Principal Software Engineer in Forward Deployed Engineering, with a focus on AI engineering.
 
-### IDE / Tools:
-Visual Studio, VS Code, Git tools, Dev Containers
+## Community
 
-### CI/CD:
-Azure DevOps, GitHub, TeamCity, Octopus Deploy, AWS CodePipeline, 
-ARM templates, Bicep, CloudFormation, Terraform, GitOps tools
+I enjoy participating in the engineering community, listening to war stories from the tech trenches, and sharing what I have learned. You can find my talks on [my speaker profile](https://sessionize.com/dasiths/), my open-source work on [GitHub](https://github.com/dasiths), and my longer-form writing throughout this site.
+
+For more about my early days as a developer, read [my first blog post](/2016/11/29/first-blog-post/).
+
+Most of my friends still do not have the slightest idea what I actually do. Their best guess is something close to this:
+
+{% include video id="fXpVEwEhamw" provider="youtube" %}
+
+## Technology
+
+My day-to-day stack usually includes:
+
+* .NET, ASP.NET Core, Python, TypeScript, and Go
+* Azure, AWS, and edge platforms
+* PaaS, serverless architectures, containers, and Kubernetes
+* OpenTelemetry, infrastructure as code, CI/CD, and GitOps
+* Visual Studio, Visual Studio Code, GitHub, and development containers
+
+## CV
+
+For a complete overview of my experience, education, and technical background, [view my resume](/resume/).
